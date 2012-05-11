@@ -78,21 +78,11 @@ class Url {
         }       
     }
     
-    
-    public function __toString() {
-/**
- *
-     * -scheme
-     * -host
-     * -port
-     * -user
-     * -pass
-     * -path
-     * -query - after the question mark ?
-     * -fragment - after the hashmark #
- *  
- */        
-        
+    /**
+     *
+     * @return string 
+     */
+    public function __toString() {              
         $url = '';
         
         if ($this->hasScheme()) {
