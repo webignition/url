@@ -17,7 +17,7 @@ class HostNormalisationTest extends AbstractUrlTest {
         );
         
         foreach ($casedHosts as $casedHost) {
-            $url = new \webignition\Url\Url(self::SCHEME_HTTP.'://'.$casedHost.$this->completeUrlPath());
+            $url = new \webignition\Url\Url(self::SCHEME_HTTP.'://'.$casedHost.$this->completePath());
             $this->assertTrue($url->getHost() === self::HOST);
         }
     } 

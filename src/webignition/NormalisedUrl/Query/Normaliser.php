@@ -27,7 +27,7 @@ class Parser {
      * @param string $url 
      */
     public function __construct($url) {
-        $this->origin = $url;     
+        $this->origin = $url;      
     }
     
     
@@ -37,7 +37,8 @@ class Parser {
      */
     public function getKeyValuePairs() {        
         if (is_null($this->keyValuePairs)) {            
-            $this->parse();
+            $this->parse();            
+            $this->normalise();
         }
         
         return $this->keyValuePairs;
@@ -54,6 +55,10 @@ class Parser {
             
             $this->keyValuePairs[$key] = $value;            
         }
+    }
+    
+    private function normalise() {         
+        ksort($this->keyValuePairs);
     }
     
 }

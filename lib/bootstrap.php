@@ -17,4 +17,6 @@ function autoload( $rootDir ) {
 
 autoload( '/usr/share/php' );
 autoload( __DIR__ . '/../tests');
+autoload( __DIR__ . '/../tests/regular');
+autoload( __DIR__ . '/../tests/normalised');
 autoload( __DIR__ . '/../src');

@@ -55,7 +55,6 @@ class Parser {
         $this->parse();        
     }
     
-    
     /**
      *
      * @return array
@@ -64,22 +63,26 @@ class Parser {
         if (is_null($this->parts)) {
             $this->parse();
         }
-        
+
         return $this->parts;
-    }   
+    }
+    
         
-    private function parse() {
+    private function parse() {        
         $this->prepareOriginUrl();
         
         $this->parts = parse_url($this->preparedOrigin);
+        
         if (isset($this->parts['query'])) {            
             $this->parts['query'] = new \webignition\Url\Query\Query($this->parts['query']);
         }
         
-        $this->normalisePort();
-        
         if ($this->hasProtocolRelativeDummyScheme) {
             unset($this->parts['scheme']);
+        }
+        
+        if (isset($this->parts['port'])) {
+            $this->parts['port'] = (int)$this->parts['port'];
         }
     }
     
@@ -117,21 +120,4 @@ class Parser {
         
         return $this->protocolRelativeDummyScheme;
     }
-    
-    
-    private function normalisePort() {
-        if (isset($this->parts['port'])) {
-            $this->parts['port'] = filter_var($this->parts['port'], FILTER_VALIDATE_INT, array(
-                'options' => array(
-                    'default' => self::DEFAULT_PORT,
-                    'min_range' => self::MIN_PORT,
-                    'max_range' => self::MAX_PORT
-                ),
-                'flags' => FILTER_FLAG_ALLOW_OCTAL,
-            ));
-        } else {
-            $this->parts['port'] = self::DEFAULT_PORT;
-        }
-    }   
-    
 }

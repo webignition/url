@@ -64,7 +64,7 @@ class Normaliser {
      * Remove default HTTP port 
      */
     private function normalisePort() {
-        if ($this->parts['port'] == self::DEFAULT_PORT) {
+        if (isset($this->parts['port']) && $this->parts['port'] == self::DEFAULT_PORT) {
             unset($this->parts['port']);
         }
     }
@@ -72,7 +72,8 @@ class Normaliser {
     
     private function normalisePath() {
         $this->removeDotSegments();
-        $this->addTrailingSlash();        
+        $this->addTrailingSlash();
+        $this->addLeadingSlash();
     }
     
     /**
@@ -99,6 +100,19 @@ class Normaliser {
         if ($lastPathCharacter != '/') {
             $this->parts['path'] .= '/';
         }        
+    }
+    
+    
+    /**
+     * Prepend path with leading slash if this URL has a host and the path lacks
+     * the leading slash 
+     */
+    private function addLeadingSlash() {
+        $firstPathCharacter = substr($this->parts['path'], 0, 1);
+        
+        if (isset($this->parts['host']) && $firstPathCharacter != '/') {
+            $this->parts['path'] = '/' . $this->parts['path'];
+        }
     }
     
     

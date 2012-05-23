@@ -31,8 +31,7 @@ abstract class AbstractUrlTest extends PHPUnit_Framework_TestCase {
     
     public function __construct() {
         $this->urls = $this->urls();
-    }    
-
+    }
     
     /**
      *
@@ -42,10 +41,10 @@ abstract class AbstractUrlTest extends PHPUnit_Framework_TestCase {
         $this->inputAndExpectedOutputUrls = $inputAndExpectedOutputUrls;
     }
     
-    protected function runInputToExpectedOutputTests() {             
+    protected function runInputToExpectedOutputTests() {        
         foreach ($this->inputAndExpectedOutputUrls as $inputUrl => $expectedOutputUrl) {
             $url = new \webignition\Url\Url($inputUrl);            
-            $this->assertEquals($expectedOutputUrl, (string)$url);            
+            $this->assertEquals($expectedOutputUrl, (string)$url);
         }         
     }
     
@@ -56,12 +55,9 @@ abstract class AbstractUrlTest extends PHPUnit_Framework_TestCase {
     private function urls() {
         return array(
             'complete' => $this->completeUrl(),
-            'normalised-complete' => $this->normalisedCompleteUrl(),
-            'protocol-agnostic-regular' => $this->protocolRelativeRegularUrl(),
-            'relative-root-url' => $this->relativeRootUrl(),
-            'relative-url' => $this->relativeUrl(),
-            'no-scheme' => '://'.self::USER.':'.self::PASS.'@'.self::HOST.':'.self::PORT_REGULAR.'/firstPathPart/lastPathPart/?key1=value1&key2=value2#fragment',
-            'no-host' => self::SCHEME_HTTP.'://'.self::USER.':'.self::PASS.'@:'.self::PORT_REGULAR.'/firstPathPart/lastPathPart/?key1=value1&key2=value2#fragment'
+            'protocol-relative' => $this->protocolRelativeUrl(),            
+            'root-relative' => $this->rootRelativeUrl(),
+            'relative' => $this->relativeUrl()            
         );
     } 
     
@@ -72,7 +68,17 @@ abstract class AbstractUrlTest extends PHPUnit_Framework_TestCase {
      */
     private function completeUrl() {
         return  self::SCHEME_HTTP
-                .'://'
+                .':'
+                .$this->protocolRelativeUrl();
+    }
+    
+    
+    /**
+     *
+     * @return string
+     */
+    protected function protocolRelativeUrl() {        
+        return  '//'
                 .self::USER
                 .':'
                 .self::PASS
@@ -80,37 +86,37 @@ abstract class AbstractUrlTest extends PHPUnit_Framework_TestCase {
                 .self::HOST
                 .':'
                 .self::PORT_REGULAR
-                .$this->completeUrlPath()
-                .'?'
-                .$this->completeUrlQueryString()
-                .'#fragment';
-    }
- 
-    
-    /**
-     *
-     * @return string
-     */
-    private function normalisedCompleteUrl() {
-        return  self::SCHEME_HTTP
-                .'://'
-                .self::USER
-                .':'
-                .self::PASS
-                .'@'
-                .self::HOST
-                .$this->completeUrlPath()
-                .'?'
-                .$this->sortedCompleteUrlQueryString()
-                .'#fragment';
+                .$this->rootRelativeUrl();
     }    
     
+
     /**
      *
      * @return string
      */
-    protected function completeUrlPath() {
-        return self::PATH_PART_DELIMITER.implode(self::PATH_PART_DELIMITER, array(
+    protected function rootRelativeUrl() {
+        return self::PATH_PART_DELIMITER
+               .$this->relativeUrl();
+        }
+    
+    
+    /**
+     *
+     * @return string
+     */
+    protected function relativeUrl() {
+        return $this->completePath()
+               .'?'
+               .$this->completeUrlQueryString()
+               .'#fragment';
+    }
+    
+    /**
+     *
+     * @return string
+     */
+    protected function completePath() {
+        return implode(self::PATH_PART_DELIMITER, array(
             self::PATH_PART_ONE,
             self::PATH_PART_TWO,
             self::PATH_PART_THREE
@@ -135,46 +141,26 @@ abstract class AbstractUrlTest extends PHPUnit_Framework_TestCase {
      *
      * @return string
      */
-    protected function sortedCompleteUrlQueryString() {
-        $queryPairs = array(
-            urlencode(self::QUERY_KEY_1) => urlencode(self::QUERY_VALUE_1),
-            urlencode(self::QUERY_KEY_2) => urlencode(self::QUERY_VALUE_2),
-            urlencode(self::QUERY_KEY_3) => urlencode(self::QUERY_VALUE_3)              
-        );
-        
-        ksort($queryPairs);
-        
-        $queryStringPairs = array();
-        
-        foreach ($queryPairs as $key => $value) {
-            $queryStringPairs[] = $key.'='.$value;
-        }
-        
-        return implode('&', $queryStringPairs);
-    }    
+//    protected function sortedCompleteUrlQueryString() {
+//        $queryPairs = array(
+//            urlencode(self::QUERY_KEY_1) => urlencode(self::QUERY_VALUE_1),
+//            urlencode(self::QUERY_KEY_2) => urlencode(self::QUERY_VALUE_2),
+//            urlencode(self::QUERY_KEY_3) => urlencode(self::QUERY_VALUE_3)              
+//        );
+//        
+//        ksort($queryPairs);
+//        
+//        $queryStringPairs = array();
+//        
+//        foreach ($queryPairs as $key => $value) {
+//            $queryStringPairs[] = $key.'='.$value;
+//        }
+//        
+//        return implode('&', $queryStringPairs);
+//    }       
+
     
-    /**
-     *
-     * @return string
-     */
-    protected function protocolRelativeRegularUrl() {
-        return '//'.self::HOST.$this->completeUrlPath();
-    }
-    
-    /**
-     *
-     * @return string
-     */
-    protected function relativeRootUrl() {
-        return $this->completeUrlPath();
-    }
-    
-    /**
-     *
-     * @return string
-     */
-    protected function relativeUrl() {
-        return substr($this->completeUrlPath(), 1);
-    }
+   
+
     
 }

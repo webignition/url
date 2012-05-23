@@ -10,13 +10,13 @@ class SchemeNormalisationTest extends AbstractUrlTest {
     
     public function testNormalisedUrlIgnoresSchemeCase() {      
         $casedHttpUrls = array(
-            'Http:'.$this->protocolRelativeRegularUrl(),
-            'hTtp:'.$this->protocolRelativeRegularUrl()
+            'Http:'.$this->protocolRelativeUrl(),
+            'hTtp:'.$this->protocolRelativeUrl()
         );
         
         $casedHttpsUrls = array(
-            'httPS:'.$this->protocolRelativeRegularUrl(),
-            'HttpS:'.$this->protocolRelativeRegularUrl(),
+            'httPS:'.$this->protocolRelativeUrl(),
+            'HttpS:'.$this->protocolRelativeUrl(),
         );
         
         foreach ($casedHttpUrls as $casedHttpUrl) {
