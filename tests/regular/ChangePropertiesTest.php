@@ -6,7 +6,7 @@ require_once(__DIR__.'/../../lib/bootstrap.php');
  * Check that URL properties can be changed
  *  
  */
-class ChangePropertiesTest extends AbstractUrlTest {      
+class ChangePropertiesTest extends AbstractRegularUrlTest {      
     
     public function testChangeScheme() {        
         $url = new \webignition\Url\Url('http://example.com/');        

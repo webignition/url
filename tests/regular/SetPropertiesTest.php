@@ -6,7 +6,7 @@ require_once(__DIR__.'/../../lib/bootstrap.php');
  * Check that URL properties can be set
  *  
  */
-class SetPropertiesTest extends AbstractUrlTest {   
+class SetPropertiesTest extends AbstractRegularUrlTest {   
     
     public function testSetScheme() {         
         $url = new \webignition\Url\Url($this->urls['protocol-relative']);                        

@@ -67,7 +67,7 @@ class Url {
      *
      * @return array
      */
-    private function &parts() {
+    protected function &parts() {
         if (is_null($this->parts)) {
             $this->parts = $this->parser()->getParts();
         }
@@ -315,7 +315,7 @@ class Url {
             $url .= ':' . $this->getPort();
         }
         
-        $url .= $this->getPath();     
+        $url .= $this->getPath();
         
         if ($this->hasQuery()) {
             $url .= '?' . $this->getQuery();
@@ -388,33 +388,6 @@ class Url {
         if ($partName == 'fragment') {
             return $this->addFragment($value);
         }
-        
-        var_dump($this->originUrl, $this->getNextPart($partName));
-        
-//        if ($partName == 'fragment') {
-//            $this->originUrl .= '#' . $value . $this->originUrl;
-//            return true;
-//        }
-//        
-        if (($nextPartName = $this->getNextPart($partName)) !== null) {
-            $offsets = &$this->offsets();
-            if ($offsets[$nextPartName] === 0) {
-                $this->originUrl = $value . $this->originUrl;
-            } else {
-//                $preNewPart = substr($this->originUrl, 0, $offsets[$nextPartName]);
-//                $postNewPart = substr($this->originUrl, $offsets[$nextPartName]);
-//                //var_dump($preNewPart, $postNewPart);
-//                //exit();
-//                ;
-//                $this->originUrl = $preNewPart . $value . $postNewPart;
-                
-               // $this->originUrl = substr_replace($this->originUrl, $value, $offsets[$nextPartName]);
-            }
-            
-        } 
-//        
-        var_dump($this->originUrl);
-        exit();
     }
     
     
@@ -629,7 +602,7 @@ class Url {
     }
     
     
-    private function reset() {
+    protected function reset() {
         $this->parser = null;
         $this->parts = $this->parser()->getParts();
     }
@@ -670,7 +643,7 @@ class Url {
      * @param string $partName
      * @return mixed
      */
-    private function getPart($partName) {
+    protected function getPart($partName) {
         $parts = &$this->parts();
         
         return (isset($parts[$partName])) ? $parts[$partName] : null;

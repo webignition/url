@@ -1,6 +1,6 @@
 <?php
 
-namespace webignition\Url;
+namespace webignition\NormalisedUrl;
 
 class Normaliser {
     
@@ -37,6 +37,7 @@ class Normaliser {
         $this->normaliseHost();
         $this->normalisePort();
         $this->normalisePath();
+        $this->normaliseQuery();
     }
     
     
@@ -158,5 +159,11 @@ class Normaliser {
         $this->parts['path'] = implode('/', $normalisedPathParts);        
     }   
     
+    
+    private function normaliseQuery() {
+        if (isset($this->parts['query'])) {
+            $this->parts['query'] = new \webignition\NormalisedUrl\Query\Query((string)$this->parts['query']);
+        }
+    }
     
 }

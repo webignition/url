@@ -1,13 +1,13 @@
 <?php
 ini_set('display_errors', 'On');
-require_once(__DIR__.'/../lib/bootstrap.php');
+require_once(__DIR__.'/../../lib/bootstrap.php');
 
 /**
  * Check that normailsation removes the default port if present
  * http://www.example.com:80/bar.html => http://www.example.com/bar.html
  *   
  */
-class DefaultPortNormalisationTest extends AbstractUrlTest {   
+class DefaultPortNormalisationTest extends AbstractNormalisedUrlTest {   
     
     public function testNormlisedUrlRemovesDefaultPort() {      
         $this->setInputAndExpectedOutputUrls(array(

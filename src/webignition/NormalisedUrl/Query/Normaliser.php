@@ -1,8 +1,8 @@
 <?php
 
-namespace webignition\Url\Query;
+namespace webignition\NormalisedUrl\Query;
 
-class Parser {
+class Normaliser {
     
     const PAIR_DELIMITER = '&';
     const KEY_VALUE_DELIMITER = '=';

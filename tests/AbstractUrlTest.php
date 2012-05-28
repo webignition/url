@@ -34,6 +34,13 @@ abstract class AbstractUrlTest extends PHPUnit_Framework_TestCase {
     }
     
     /**
+     * 
+     * @param string $inputUrl
+     * @return \webignition\Url\Url
+     */
+    abstract protected function newUrl($inputUrl);
+    
+    /**
      *
      * @param array $inputAndExpectedOutputUrls 
      */  
@@ -43,8 +50,8 @@ abstract class AbstractUrlTest extends PHPUnit_Framework_TestCase {
     
     protected function runInputToExpectedOutputTests() {        
         foreach ($this->inputAndExpectedOutputUrls as $inputUrl => $expectedOutputUrl) {
-            $url = new \webignition\Url\Url($inputUrl);            
-            $this->assertEquals($expectedOutputUrl, (string)$url);
+            $url = $this->newUrl($inputUrl);
+            $this->assertEquals($expectedOutputUrl, (string)$this->newUrl($inputUrl));
         }         
     }
     
@@ -52,7 +59,7 @@ abstract class AbstractUrlTest extends PHPUnit_Framework_TestCase {
      *
      * @return array
      */
-    private function urls() {
+    protected function urls() {
         return array(
             'complete' => $this->completeUrl(),
             'protocol-relative' => $this->protocolRelativeUrl(),            
@@ -66,7 +73,7 @@ abstract class AbstractUrlTest extends PHPUnit_Framework_TestCase {
      *
      * @return string
      */
-    private function completeUrl() {
+    protected function completeUrl() {
         return  self::SCHEME_HTTP
                 .':'
                 .$this->protocolRelativeUrl();
@@ -135,32 +142,5 @@ abstract class AbstractUrlTest extends PHPUnit_Framework_TestCase {
         );
         
         return implode('&', $queryStringPairs);
-    }
-    
-    /**
-     *
-     * @return string
-     */
-//    protected function sortedCompleteUrlQueryString() {
-//        $queryPairs = array(
-//            urlencode(self::QUERY_KEY_1) => urlencode(self::QUERY_VALUE_1),
-//            urlencode(self::QUERY_KEY_2) => urlencode(self::QUERY_VALUE_2),
-//            urlencode(self::QUERY_KEY_3) => urlencode(self::QUERY_VALUE_3)              
-//        );
-//        
-//        ksort($queryPairs);
-//        
-//        $queryStringPairs = array();
-//        
-//        foreach ($queryPairs as $key => $value) {
-//            $queryStringPairs[] = $key.'='.$value;
-//        }
-//        
-//        return implode('&', $queryStringPairs);
-//    }       
-
-    
-   
-
-    
+    }    
 }

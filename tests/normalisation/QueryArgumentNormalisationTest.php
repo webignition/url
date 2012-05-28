@@ -1,13 +1,13 @@
 <?php
 ini_set('display_errors', 'On');
-require_once(__DIR__.'/../lib/bootstrap.php');
+require_once(__DIR__.'/../../lib/bootstrap.php');
 
 /**
  * Check that arguements in the query string are normalised into
  * alphabetical order by key
  *   
  */
-class QueryArgumentNormalisationTest extends AbstractUrlTest {   
+class QueryArgumentNormalisationTest extends AbstractNormalisedUrlTest {   
     
     public function testNormalisedUrlAlphabeticallyOrdersQueryStringArguments() {      
         $this->setInputAndExpectedOutputUrls(array(

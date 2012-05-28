@@ -1,12 +1,12 @@
 <?php
 ini_set('display_errors', 'On');
-require_once(__DIR__.'/../lib/bootstrap.php');
+require_once(__DIR__.'/../../lib/bootstrap.php');
 
 /**
  * Check that normalisation un-encodes unreservered characters
  *  
  */
-class PercentDecodingUnreservedCharactersTest extends AbstractUrlTest {   
+class PercentDecodingUnreservedCharactersTest extends AbstractNormalisedUrlTest {   
     
     public function testNormalisedUrlDecodesUnreservedCharacters() {      
         $alpha = 'abcdefghijklmnopqrstuvwxyz';
@@ -38,7 +38,7 @@ class PercentDecodingUnreservedCharactersTest extends AbstractUrlTest {
         $encodedQueryString = implode('&', $encodedKeyValuePairs);
         $decodedQueryString = implode('&', $decodedKeyValuePairs);
      
-        $url = new \webignition\Url\Url(self::SCHEME_HTTP.'://'.self::HOST.'/?'.$encodedQueryString);        
+        $url = new \webignition\NormalisedUrl\NormalisedUrl(self::SCHEME_HTTP.'://'.self::HOST.'/?'.$encodedQueryString);        
         $this->assertEquals($decodedQueryString, (string)$url->getQuery());      
     } 
 }

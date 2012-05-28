@@ -1,13 +1,13 @@
 <?php
 ini_set('display_errors', 'On');
-require_once(__DIR__.'/../lib/bootstrap.php');
+require_once(__DIR__.'/../../lib/bootstrap.php');
 
 /**
  * Check that normalisation appends a trailing slash to directory-ending URLs
  * http://www.example.com => http://www.example.com/
  *   
  */
-class TrailingSlashNormalisationTest extends AbstractUrlTest {   
+class TrailingSlashNormalisationTest extends AbstractNormalisedUrlTest {   
     
     public function testNormalisedUrlAddsTrailingSlash() {      
         $this->setInputAndExpectedOutputUrls(array(

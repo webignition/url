@@ -1,6 +1,6 @@
 <?php
 
-namespace webignition\Url\Query;
+namespace webignition\NormalisedUrl\Query;
 
 class Query {
     
@@ -16,7 +16,7 @@ class Query {
      *
      * @var \webignition\Url\Query\Parser
      */
-    private $parser = null;
+    private $normaliser = null;
     
     
     /**
@@ -50,7 +50,7 @@ class Query {
      */
     public function pairs() {        
         if (is_null($this->pairs)) {
-            $this->pairs = $this->parser()->getKeyValuePairs();
+            $this->pairs = $this->parser()->getKeyValuePairs();          
         }
         
         return $this->pairs;
@@ -62,11 +62,11 @@ class Query {
      * @return \webignition\Url\Query\Parser 
      */
     private function parser() {
-        if (is_null($this->parser)) {
-            $this->parser = new \webignition\Url\Query\Parser($this->origin);
+        if (is_null($this->normaliser)) {
+            $this->normaliser = new \webignition\NormalisedUrl\Query\Normaliser($this->origin);
         }
         
-        return $this->parser;
+        return $this->normaliser;
     }   
     
 }

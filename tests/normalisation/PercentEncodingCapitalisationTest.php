@@ -1,12 +1,12 @@
 <?php
 ini_set('display_errors', 'On');
-require_once(__DIR__.'/../lib/bootstrap.php');
+require_once(__DIR__.'/../../lib/bootstrap.php');
 
 /**
  * Check that normalisation capitalises percent-encoded entities
  *  
  */
-class PercentEncodingCapitalisationTest extends AbstractUrlTest {   
+class PercentEncodingCapitalisationTest extends AbstractNormalisedUrlTest {   
     
     public function testNormalisedUrlCapitalisesPercentEncodedEntities() {      
         $reservedCharacters = array('!','*',"'",'(',')',';',':','@','&','=','+','$',',','/','?','#','[',']');
@@ -42,7 +42,7 @@ class PercentEncodingCapitalisationTest extends AbstractUrlTest {
         $percentEncodedQueryString = substr($percentEncodedQueryString, 1);
         $lowercasePercentEncodedQueryString = substr($lowercasePercentEncodedQueryString, 1);
         
-        $url = new \webignition\Url\Url(self::SCHEME_HTTP.'://'.self::HOST.'/?'.$lowercasePercentEncodedQueryString);
+        $url = new \webignition\NormalisedUrl\NormalisedUrl(self::SCHEME_HTTP.'://'.self::HOST.'/?'.$lowercasePercentEncodedQueryString);
         $this->assertEquals($percentEncodedQueryString, (string)$url->getQuery());
     } 
 }

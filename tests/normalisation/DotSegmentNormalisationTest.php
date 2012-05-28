@@ -1,12 +1,12 @@
 <?php
 ini_set('display_errors', 'On');
-require_once(__DIR__.'/../lib/bootstrap.php');
+require_once(__DIR__.'/../../lib/bootstrap.php');
 
 /**
  * Check that dot segments are removed from a normalised URL
  *   
  */
-class DotSegmentNormalisationTest extends AbstractUrlTest {   
+class DotSegmentNormalisationTest extends AbstractNormalisedUrlTest {   
     
     public function testSingleOrDoubleDotPathIsRemoved() {      
         $this->setInputAndExpectedOutputUrls(array(
