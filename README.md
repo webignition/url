@@ -22,7 +22,7 @@ Usage
 
 ```php
 <?php
-$url = new \webignition\Url('https://github.com/webignition/url/');
+$url = new \webignition\Url\Url('https://github.com/webignition/url/');
 
 $this->assertEquals('https', $url->getScheme());
 $this->assertFalse($url->hasUser());
@@ -33,7 +33,7 @@ $this->assertFalse($url->hasQuery());
 
 ```php
 <?php
-$url = new \webignition\Url('http://www.example.com?a=1&c=3&b=2');
+$url = new \webignition\NormalisedUrl\NormalisedUrl('http://www.example.com?a=1&c=3&b=2');
 $this->assertEquals('http://www.example.com/?a=1&b=2&c=3', (string)$url);
 
 $url = new \webignition\Url('http://www.example.com?');
