@@ -436,9 +436,9 @@ class Url {
         $nextPartName = $this->getNextPart('user');
         $offsets = &$this->offsets();
         
-        if ($nextPartName == 'host') {            
-            $preNewPart = substr($this->originUrl, 0, $offsets[$nextPartName]);
-            $postNewPart = substr($this->originUrl, $offsets[$nextPartName]);
+        if ($nextPartName == 'host') {
+            $preNewPart = substr($this->originUrl, 0, $offsets[$nextPartName]);            
+            $postNewPart = substr($this->originUrl, $offsets[$nextPartName]);              
             
             return $this->originUrl = $preNewPart . $user . ':@' . $postNewPart;
         }
@@ -569,8 +569,10 @@ class Url {
     }
     
     
-    private function &offsets() {
+    private function &offsets() {        
         if (is_null($this->offsets)) {
+            $this->offsets = array();
+            
             $partNames = array();
             foreach ($this->availablePartNames as $availablePartName) {
                 if ($this->hasPart($availablePartName)) {
@@ -609,6 +611,7 @@ class Url {
     protected function reset() {
         $this->parser = null;
         $this->parts = $this->parser()->getParts();
+        $this->offsets = null;
     }
     
     

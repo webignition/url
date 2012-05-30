@@ -126,4 +126,22 @@ class SetPropertiesTest extends AbstractRegularUrlTest {
         $this->assertEquals('www.example.com', $url->getHost());
         $this->assertEquals('//www.example.com/path', (string)$url);
     }
+    
+    public function testSetPathThenHostThenSchemeThenUser() {
+        $url = new \webignition\Url\Url('example.php');
+        
+        $this->assertEquals('example.php', (string)$url);
+        
+        $url->setPath('/pathOne/Path2/path2/example2.php');        
+        $this->assertEquals('/pathOne/Path2/path2/example2.php', (string)$url);
+        
+        $url->setHost('www.example.com');
+        $this->assertEquals('//www.example.com/pathOne/Path2/path2/example2.php', (string)$url);
+        
+        $url->setScheme('http');
+        $this->assertEquals('http://www.example.com/pathOne/Path2/path2/example2.php', (string)$url);
+        
+        $url->setUser('user');
+        $this->assertEquals('http://user:@www.example.com/pathOne/Path2/path2/example2.php', (string)$url);
+    }
 }
