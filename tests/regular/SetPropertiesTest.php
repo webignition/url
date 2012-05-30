@@ -117,5 +117,13 @@ class SetPropertiesTest extends AbstractRegularUrlTest {
         $url->setFragment('#fragment');
         $this->assertEquals('fragment', $url->getFragment());
         $this->assertEquals('http://example.com/#fragment', (string)$url);         
-    }   
+    }
+    
+    public function testSetHostForRelativeUrlWithPathOnly() {
+        $url = new \webignition\Url\Url('path');
+        
+        $url->setHost('www.example.com');
+        $this->assertEquals('www.example.com', $url->getHost());
+        $this->assertEquals('//www.example.com/path', (string)$url);
+    }
 }

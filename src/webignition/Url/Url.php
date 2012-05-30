@@ -220,7 +220,7 @@ class Url {
     
     /**
      *
-     * @return string
+     * @return \webignition\Url\Path\Path
      */
     public function getPath() {        
         return $this->getPart('path');
@@ -483,9 +483,13 @@ class Url {
      * @param string $host
      * @return boolean 
      */
-    private function addHost($host) {
+    private function addHost($host) {        
         if ($this->hasHost()) {
             return false;
+        }
+ 
+        if ($this->hasPath() && $this->getPath()->isRelative()) {
+            $this->setPath('/' . $this->getPath());
         }
         
         return $this->originUrl = '//' . $host . $this->originUrl;        
@@ -643,7 +647,7 @@ class Url {
      * @param string $partName
      * @return mixed
      */
-    protected function getPart($partName) {
+    protected function getPart($partName) {        
         $parts = &$this->parts();
         
         return (isset($parts[$partName])) ? $parts[$partName] : null;
@@ -655,7 +659,7 @@ class Url {
      * @param string $partName
      * @return boolean
      */
-    private function hasPart($partName) {        
+    private function hasPart($partName) {                
         return !is_null($this->getPart($partName));
     }
 
