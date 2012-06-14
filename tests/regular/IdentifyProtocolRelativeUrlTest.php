@@ -3,21 +3,21 @@ ini_set('display_errors', 'On');
 require_once(__DIR__.'/../../lib/bootstrap.php');
 
 /**
- * Check that relative URLs are identified as such
+ * Check that protocol relative URLs are identified as such
  *  
  */
-class IdentifyRelativeUrlTest extends AbstractRegularUrlTest {   
+class IdentifyProtocolRelativeUrlTest extends AbstractRegularUrlTest {   
     
     public function testRelativeUrlIsRecognisedAsRelative() {        
-        $url = new \webignition\Url\Url('/relative/url/here');
+        $url = new \webignition\Url\Url('//example.com/protocol/relative/url');
         
-        $this->assertTrue($url->isRelative());
+        $this->assertTrue($url->isProtocolRelative());
     }
     
     public function testAbsoluteUrlIsRecognisedAsNonRelative() {
         $url = new \webignition\Url\Url('http://example.com/absolute/url');
         
-        $this->assertFalse($url->isRelative());        
+        $this->assertFalse($url->isProtocolRelative());        
     }
     
 }

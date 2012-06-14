@@ -344,6 +344,19 @@ class Url {
         
         return true;
     }
+    
+    
+    /**
+     *
+     * @return boolean 
+     */
+    public function isProtocolRelative() {
+        if ($this->hasScheme()) {
+            return false;
+        }
+        
+        return $this->hasHost();
+    }
 
     
     /**
