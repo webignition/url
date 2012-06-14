@@ -357,7 +357,20 @@ class Url {
         
         return $this->hasHost();
     }
+    
 
+    /**
+     *
+     * @return boolean
+     */
+    public function isAbsolute() {
+        if ($this->isRelative()) {
+            return false;
+        }
+        
+        return !$this->isProtocolRelative();
+    }
+    
     
     /**
      *
