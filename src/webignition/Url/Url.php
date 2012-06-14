@@ -327,6 +327,23 @@ class Url {
         
         return $url;        
     }
+    
+    
+    /**
+     *
+     * @return boolean 
+     */
+    public function isRelative() {
+        if ($this->hasScheme()) {
+            return false;
+        }
+        
+        if ($this->hasHost()) {
+            return false;
+        }
+        
+        return true;
+    }
 
     
     /**
