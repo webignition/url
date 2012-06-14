@@ -65,4 +65,29 @@ class Path {
     public function __toString() {              
         return $this->get();       
     }
+    
+    
+    /**
+     *
+     * @return boolean
+     */
+    public function hasFilename() {
+        return substr_count(basename($this->path), '.') > 0;
+    }
+    
+    /**
+     *
+     * @return string
+     */
+    public function getFilename() {
+        return $this->hasFilename() ? basename($this->path) : '';
+    }
+    
+    /**
+     *
+     * @return string
+     */
+    public function getDirectory() {
+        return $this->hasFilename() ? dirname($this->path) : $this->path;
+    }
 }
