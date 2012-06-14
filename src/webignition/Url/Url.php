@@ -231,7 +231,7 @@ class Url {
      *
      * @param string $path 
      */
-    public function setPath($path) {
+    public function setPath($path) {        
         $this->setPart('path', $path);
     }
     
@@ -388,6 +388,10 @@ class Url {
         if ($partName == 'fragment') {
             return $this->addFragment($value);
         }
+        
+        if ($partName == 'path') {
+            return $this->addPath($value);
+        }
     }
     
     
@@ -433,7 +437,7 @@ class Url {
             return false;
         }
         
-        $nextPartName = $this->getNextPart('user');
+        $nextPartName = $this->getNextPartName('user');
         $offsets = &$this->offsets();
         
         if ($nextPartName == 'host') {
@@ -543,13 +547,37 @@ class Url {
     
     
     /**
+     *  Add a path to a URL that does not already have one
+     * 
+     * @param string $path
+     * @return boolean 
+     */
+    public function addPath($path) {
+        if ($this->hasPath()) {
+            return false;
+        }
+        
+        $nextPartName = $this->getNextPartName('path');
+        $offsets = &$this->offsets();
+        
+        $offset = $offsets[$nextPartName];
+        
+        if ($nextPartName == 'fragment') {
+            $offset -= 1;
+        }
+        
+        return $this->originUrl = substr($this->originUrl, 0, $offset) . $path . substr($this->originUrl, $offset);        
+    }
+    
+    
+    /**
      * Get the next url part after $partName that is present in this
      * url
      * 
      * @param string $partName
      * @return string
      */
-    private function getNextPart($partName) {        
+    private function getNextPartName($partName) {        
         $hasFoundPart = false;        
         foreach ($this->availablePartNames as $availablePartName) {
             if ($partName == $availablePartName) {
