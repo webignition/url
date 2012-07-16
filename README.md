@@ -14,6 +14,7 @@ Applies semantically-lossless normalisation for comparisons:
  * trailing / added to directory-ending URLs
  * default port removed
  * dot segments (/./ and /../) are removed
+ * query string arguments are sorted by key name
 
 Usage
 -----
