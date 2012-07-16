@@ -1,6 +1,8 @@
 <?php
 namespace webignition\Url;
 
+require_once  __DIR__ . '/../vendor/autoload.php';
+
 function autoload( $rootDir ) {
     spl_autoload_register(function( $className ) use ( $rootDir ) {        
         $file = sprintf(
@@ -16,7 +18,6 @@ function autoload( $rootDir ) {
 }
 
 autoload( '/usr/share/php' );
-autoload( __DIR__ . '/../tests');
-autoload( __DIR__ . '/../tests/regular');
-autoload( __DIR__ . '/../tests/normalisation');
-autoload( __DIR__ . '/../src');
+autoload( __DIR__ . '/');
+autoload( __DIR__ . '/regular');
+autoload( __DIR__ . '/normalisation');

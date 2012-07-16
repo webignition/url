@@ -1,6 +1,5 @@
 <?php
 ini_set('display_errors', 'On');
-require_once(__DIR__.'/../../lib/bootstrap.php');
 
 /**
  * Check that normailsation removes the default port if present
