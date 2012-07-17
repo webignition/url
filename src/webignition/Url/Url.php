@@ -388,7 +388,7 @@ class Url {
      * @param string $partName
      * @param string $value 
      */
-    private function setPart($partName, $value) {                
+    private function setPart($partName, $value) {
         if ($this->hasPart($partName)) {
             $this->replacePart($partName, $value);
         } else {
@@ -606,7 +606,7 @@ class Url {
      * @param string $path
      * @return boolean 
      */
-    public function addPath($path) {
+    public function addPath($path) {       
         if ($this->hasPath()) {
             return false;
         }
@@ -748,8 +748,12 @@ class Url {
      * @param string $partName
      * @return boolean
      */
-    private function hasPart($partName) {                
-        return !is_null($this->getPart($partName));
+    protected function hasPart($partName) {
+        if (is_null($this->getPart($partName))) {
+            return false;
+        }
+        
+        return isset($this->parts[$partName]);
     }
 
     
