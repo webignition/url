@@ -611,6 +611,10 @@ class Url {
             return false;
         }
         
+        if (!$this->hasPart('query') && !$this->hasPart('fragment')) {
+            return $this->originUrl = $this->originUrl . $path;
+        }
+        
         $nextPartName = $this->getNextPartName('path');
         $offsets = &$this->offsets();
         
