@@ -65,6 +65,35 @@ class Url {
     
     /**
      *
+     * @return string 
+     */
+    public function getRoot() {
+        $rawRootUrl = '';
+        
+        if ($this->hasScheme()) {
+            $rawRootUrl .= $this->getScheme() . ':';
+        }
+        
+        if ($this->hasHost()) {
+            $rawRootUrl .= '//';
+            
+            if ($this->hasCredentials()) {
+                $rawRootUrl .= $this->getCredentials() . '@';
+            }            
+            
+            $rawRootUrl .= $this->getHost();
+        }        
+        
+        if ($this->hasPort()) {
+            $rawRootUrl .= ':' . $this->getPort();
+        }
+        
+        return $rawRootUrl;
+    }
+    
+    
+    /**
+     *
      * @return array
      */
     protected function &parts() {
@@ -294,26 +323,8 @@ class Url {
      *
      * @return string 
      */
-    public function __toString() {              
-        $url = '';
-        
-        if ($this->hasScheme()) {
-            $url .= $this->getScheme() . ':';
-        }
-        
-        if ($this->hasHost()) {
-            $url .= '//';
-            
-            if ($this->hasCredentials()) {
-                $url .= $this->getCredentials() . '@';
-            }            
-            
-            $url .= $this->getHost();
-        }        
-        
-        if ($this->hasPort()) {
-            $url .= ':' . $this->getPort();
-        }
+    public function __toString() {
+        $url = $this->getRoot();
         
         $url .= $this->getPath();
         
