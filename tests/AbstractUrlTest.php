@@ -1,5 +1,4 @@
 <?php
-ini_set('display_errors', 'On');
 
 abstract class AbstractUrlTest extends PHPUnit_Framework_TestCase {
     

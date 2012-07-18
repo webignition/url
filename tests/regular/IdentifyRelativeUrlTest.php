@@ -1,5 +1,4 @@
 <?php
-ini_set('display_errors', 'On');
 
 /**
  * Check that relative URLs are identified as such

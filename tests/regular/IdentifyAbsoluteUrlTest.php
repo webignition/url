@@ -1,5 +1,5 @@
 <?php
-ini_set('display_errors', 'On');
+
 /**
  * Check that absolute URLs are identified as such
  *  

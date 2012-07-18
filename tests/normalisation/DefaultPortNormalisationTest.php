@@ -1,5 +1,4 @@
 <?php
-ini_set('display_errors', 'On');
 
 /**
  * Check that normailsation removes the default port if present

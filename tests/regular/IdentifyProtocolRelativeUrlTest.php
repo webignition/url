@@ -1,6 +1,4 @@
 <?php
-ini_set('display_errors', 'On');
-
 /**
  * Check that protocol relative URLs are identified as such
  *  

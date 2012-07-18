@@ -1,5 +1,4 @@
 <?php
-ini_set('display_errors', 'On');
 
 /**
  * Check that normalisation appends a trailing slash to directory-ending URLs

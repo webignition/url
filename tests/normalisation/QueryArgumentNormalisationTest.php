@@ -1,5 +1,4 @@
 <?php
-ini_set('display_errors', 'On');
 
 /**
  * Check that arguements in the query string are normalised into

@@ -1,5 +1,4 @@
 <?php
-ini_set('display_errors', 'On');
 
 /**
  * Check that a URL's root can be derived as expected
