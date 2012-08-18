@@ -460,10 +460,8 @@ class Url {
             return false;
         }
         
-        // A scheme cannot be added to a URL that has no host; this results in
-        // an invalid URL.
-        if (!$this->hasHost()) {
-            return false;
+        if (!$this->isProtocolRelative()) {
+            $this->originUrl = '//' . $this->originUrl;
         }
         
         if (substr($this->originUrl, 0, 1) != ':') {
