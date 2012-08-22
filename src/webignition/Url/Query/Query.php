@@ -100,7 +100,6 @@ class Query {
     
     
     protected function reset() {
-        $this->origin = null;
         $this->pairs = null;
         $this->parser = null;
     }
@@ -126,9 +125,24 @@ class Query {
     public function remove($encodedKey) {
         if ($this->contains(urldecode($encodedKey))) {
             unset($this->pairs[urldecode($encodedKey)]);
+            $this->setOrigin((string)$this);
         }
         
         $this->reset();
+    }
+    
+    
+    /**
+     *
+     * @param string $encodedKey
+     * @param string $encodedValue 
+     */
+    public function set($encodedKey, $encodedValue) {
+        if ($this->contains(urldecode($encodedKey))) {
+            $this->pairs[urldecode($encodedKey)] = urldecode($encodedValue);
+        } else {
+            $this->add($encodedKey, $encodedValue);
+        }
     }
     
 }

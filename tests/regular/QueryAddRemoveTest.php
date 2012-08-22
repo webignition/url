@@ -11,6 +11,7 @@ class QueryAddRemoveTest extends AbstractRegularUrlTest {
         $url->getQuery()->add('key3', 'value3');
         
         $this->assertTrue($url->getQuery()->contains('key3'));
+        $this->assertEquals('key1=value&key2=value2&key3=value3', (string)$url->getQuery());
     }
     
     
@@ -19,5 +20,6 @@ class QueryAddRemoveTest extends AbstractRegularUrlTest {
         $url->getQuery()->remove('key3');
         
         $this->assertFalse($url->getQuery()->contains('key3'));
+        $this->assertEquals('key1=value&key2=value2', (string)$url->getQuery());
     }    
 }
