@@ -61,12 +61,21 @@ class Query {
      *
      * @return \webignition\Url\Query\Parser 
      */
-    private function parser() {
+    protected function parser() {
         if (is_null($this->parser)) {
-            $this->parser = new \webignition\Url\Query\Parser($this->origin);
+            $this->parser = new \webignition\Url\Query\Parser($this->getOrigin());
         }
         
         return $this->parser;
     }   
+    
+    
+    /**
+     *
+     * @return string
+     */
+    protected function getOrigin() {
+        return $this->origin;
+    }
     
 }
