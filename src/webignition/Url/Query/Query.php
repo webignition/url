@@ -30,8 +30,8 @@ class Query {
      * 
      * @param string $encodedQueryString 
      */
-    public function __construct($encodedQueryString) {        
-        $this->origin = trim($encodedQueryString);
+    public function __construct($encodedQueryString) { 
+        $this->setOrigin($encodedQueryString);
     }
     
     
@@ -86,6 +86,49 @@ class Query {
      */
     public function contains($key) {
         return array_key_exists($key, $this->pairs());
+    }
+    
+    
+    /**
+     *
+     * @param string $origin 
+     */
+    private function setOrigin($origin) {
+        $this->origin = $origin;
+    }
+    
+    
+    
+    protected function reset() {
+        $this->origin = null;
+        $this->pairs = null;
+        $this->parser = null;
+    }
+    
+    
+    /**
+     *
+     * @param string $encodedKey
+     * @param string $encodedValue 
+     */
+    public function add($encodedKey, $encodedValue) {        
+        if (!$this->contains(urldecode($encodedKey))) {
+            $this->reset();
+            $this->setOrigin($this->getOrigin() . '&' . $encodedKey . '=' . $encodedValue);            
+        }
+    }
+    
+    
+    /**
+     *
+     * @param string $encodedKey 
+     */
+    public function remove($encodedKey) {
+        if ($this->contains(urldecode($encodedKey))) {
+            unset($this->pairs[urldecode($encodedKey)]);
+        }
+        
+        $this->reset();
     }
     
 }
