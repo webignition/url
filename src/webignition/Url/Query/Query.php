@@ -78,4 +78,14 @@ class Query {
         return $this->origin;
     }
     
+    
+    /**
+     *
+     * @param string $key
+     * @return boolean
+     */
+    public function contains($key) {
+        return array_key_exists($key, $this->pairs());
+    }
+    
 }
