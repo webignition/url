@@ -29,8 +29,9 @@ class Normaliser {
     
     private function normalise() {
         $this->removeDotSegments();
+        $this->reduceMultipleSlashes();
         $this->addTrailingSlash();
-        $this->addLeadingSlash();
+        $this->addLeadingSlash();        
     }
     
     /**
@@ -109,6 +110,20 @@ class Normaliser {
         }
         
         $this->path = implode('/', $normalisedPathParts);        
-    }     
+    }
+    
+    
+    private function reduceMultipleSlashes() {
+        $currentPathParts = explode('/', $this->path);
+        $pathParts = array();
+        
+        foreach ($currentPathParts as $currentPathPart) {
+            if (trim($currentPathPart) != '') {
+                $pathParts[] = $currentPathPart;
+            }
+        }
+        
+        $this->path = '/' . implode('/', $pathParts) ;
+    }
     
 }
