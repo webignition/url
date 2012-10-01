@@ -29,7 +29,7 @@ class Normaliser {
     
     private function normalise() {
         $this->removeDotSegments();
-        $this->reduceMultipleSlashes();
+        $this->reduceMultipleTrailingSlashes();
         $this->addTrailingSlash();
         $this->addLeadingSlash();        
     }
@@ -113,17 +113,24 @@ class Normaliser {
     }
     
     
-    private function reduceMultipleSlashes() {
+    private function reduceMultipleTrailingSlashes() {
         $currentPathParts = explode('/', $this->path);
-        $pathParts = array();
+        $reversePathParts = array();
+        $hasFoundNonBlankPart = false;
         
-        foreach ($currentPathParts as $currentPathPart) {
-            if (trim($currentPathPart) != '') {
-                $pathParts[] = $currentPathPart;
+        for ($partIndex = count($currentPathParts) - 1; $partIndex >= 0; $partIndex--) {            
+            $part = trim($currentPathParts[$partIndex]);
+            
+            if ($part != '') {
+                $hasFoundNonBlankPart = true;
+            }
+            
+            if ($hasFoundNonBlankPart || (!$hasFoundNonBlankPart && $part != '')) {
+                $reversePathParts[] = $part;
             }
         }
         
-        $this->path = '/' . implode('/', $pathParts) ;
+        $this->path = implode('/', array_reverse($reversePathParts)) ;
     }
     
 }

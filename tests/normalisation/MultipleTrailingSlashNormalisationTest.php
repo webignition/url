@@ -13,7 +13,8 @@ class MultipleTrailingSlashNormalisationTest extends AbstractNormalisedUrlTest {
             'http://www.example.com///' => 'http://www.example.com/',
             'http://www.example.com/one/two/' => 'http://www.example.com/one/two/',            
             'http://www.example.com/one/two//' => 'http://www.example.com/one/two/',
-            'http://www.example.com/one/two///' => 'http://www.example.com/one/two/'
+            'http://www.example.com//one/two///' => 'http://www.example.com//one/two/',
+            'http://www.example.com///one/two///' => 'http://www.example.com///one/two/'
         ));
         
         $this->runInputToExpectedOutputTests();
