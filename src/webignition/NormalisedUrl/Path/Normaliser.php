@@ -47,7 +47,14 @@ class Normaliser {
             return $this->path = '/';
         }
         
+
+        
         $pathParts = explode('/', $this->path);
+        
+//        var_dump($pathParts, $this->path);
+//        exit();
+        
+        return;        
         $lastPathPart = $pathParts[count($pathParts) - 1];
 
         if (substr_count($lastPathPart, '.')) {
@@ -114,9 +121,56 @@ class Normaliser {
     
     
     private function reduceMultipleTrailingSlashes() {
+        if (!substr_count($this->path, '//')) {
+            return;
+        }
+        
+        $lastCharacter = substr($this->path, strlen($this->path) - 1);
+        if ($lastCharacter != '/')  {
+            return;
+        }
+        
+        $trailingSlashSegmentIndex = strlen($this->path) - 1;
+        $hasReachedNonSlashCharacter = false;
+        
+        //var_dump($this->path);
+        
+        for ($characterIndex = strlen($this->path) - 1; $characterIndex >= 0; $characterIndex--) {
+            if (!$hasReachedNonSlashCharacter) {
+                //var_dump($characterIndex);
+                if ($this->path[$characterIndex] == '/') {
+                    //var_dump("beep $characterIndex");
+                    $trailingSlashSegmentIndex = $characterIndex;
+                } else {
+                    $hasReachedNonSlashCharacter = true;
+                }                
+            }
+        }
+        
+//        var_dump($trailingSlashSegmentIndex);
+//        exit();
+//        
+        $trailingSlashSegment = ($trailingSlashSegmentIndex == 0) ? $this->path : substr($this->path, $trailingSlashSegmentIndex);
+        
+        while (substr_count($trailingSlashSegment, '//')) {
+            $trailingSlashSegment = str_replace('//', '/', $trailingSlashSegment);
+        }
+        
+        $this->path = substr($this->path, 0, $trailingSlashSegmentIndex) . $trailingSlashSegment;
+        
+        return;
+        
+        var_dump($trailingSlashSegment);
+        
+        exit();
+        
+        
         $currentPathParts = explode('/', $this->path);
         $reversePathParts = array();
         $hasFoundNonBlankPart = false;
+        
+        var_dump($currentPathParts);
+//        /exit();
         
         for ($partIndex = count($currentPathParts) - 1; $partIndex >= 0; $partIndex--) {            
             $part = trim($currentPathParts[$partIndex]);
@@ -129,6 +183,9 @@ class Normaliser {
                 $reversePathParts[] = $part;
             }
         }
+        
+        var_dump(array_reverse($reversePathParts));
+        exit();
         
         $this->path = implode('/', array_reverse($reversePathParts)) ;
     }

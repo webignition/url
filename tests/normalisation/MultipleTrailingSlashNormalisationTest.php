@@ -8,6 +8,7 @@ class MultipleTrailingSlashNormalisationTest extends AbstractNormalisedUrlTest {
     
     public function testNormalisedUrlAddsTrailingSlash() {      
         $this->setInputAndExpectedOutputUrls(array(
+            'http://www.example.com' => 'http://www.example.com/',
             'http://www.example.com/' => 'http://www.example.com/',
             'http://www.example.com//' => 'http://www.example.com/',
             'http://www.example.com///' => 'http://www.example.com/',

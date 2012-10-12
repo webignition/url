@@ -6,14 +6,20 @@
  *   
  */
 class TrailingSlashNormalisationTest extends AbstractNormalisedUrlTest {   
-    
-    public function testNormalisedUrlAddsTrailingSlash() {      
+
+    public function testNormalisedUrlAddsLeadingSlash() {      
         $this->setInputAndExpectedOutputUrls(array(
-            'http://www.example.com' => 'http://www.example.com/',
-            'http://www.example.com/' => 'http://www.example.com/',
-            'http://www.example.com/part1' => 'http://www.example.com/part1/',
+            'http://www.example.com' => 'http://www.example.com/'
+        ));
+        
+        $this->runInputToExpectedOutputTests();
+    }     
+    
+    public function testNormalisedUrlDoesNotAllTrailingSlash() {      
+        $this->setInputAndExpectedOutputUrls(array(
+            'http://www.example.com/part1' => 'http://www.example.com/part1',
             'http://www.example.com/part1/' => 'http://www.example.com/part1/',
-            'http://www.example.com/part1/part2' => 'http://www.example.com/part1/part2/',
+            'http://www.example.com/part1/part2' => 'http://www.example.com/part1/part2',
             'http://www.example.com/part1/part2/' => 'http://www.example.com/part1/part2/',
             'http://www.example.com/part1/part2/example.html' => 'http://www.example.com/part1/part2/example.html'
         ));

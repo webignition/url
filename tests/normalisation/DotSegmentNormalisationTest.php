@@ -11,8 +11,8 @@ class DotSegmentNormalisationTest extends AbstractNormalisedUrlTest {
             'http://www.example.com' => 'http://www.example.com/',
             'http://www.example.com/..' => 'http://www.example.com/',
             'http://www.example.com/.' => 'http://www.example.com/',
-            'http://www.example.com/a/b/c/./../../g' => 'http://www.example.com/a/g/',
-            'http://www.example.com/mid/content=5/../6' => 'http://www.example.com/mid/6/',
+            'http://www.example.com/a/b/c/./../../g' => 'http://www.example.com/a/g',
+            'http://www.example.com/mid/content=5/../6' => 'http://www.example.com/mid/6',
             'http://www.example.com/./././././././././././././././' => 'http://www.example.com/',
             'http://www.example.com/../../../../../../' => 'http://www.example.com/',            
         ));
