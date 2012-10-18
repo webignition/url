@@ -81,6 +81,10 @@ class Parser {
             $this->parts['path'] = new \webignition\Url\Path\Path($this->parts['path']);                    
         }                
         
+        if (isset($this->parts['host'])) {
+            $this->parts['host'] = new \webignition\Url\Host\Host($this->parts['host']);                    
+        }           
+        
         if ($this->hasProtocolRelativeDummyScheme) {
             unset($this->parts['scheme']);
         }

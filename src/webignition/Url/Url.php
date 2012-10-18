@@ -142,7 +142,7 @@ class Url {
     
     /**
      *
-     * @return string
+     * @return \webignition\Url\Host\Host
      */
     public function getHost() {
         return $this->getPart('host');
