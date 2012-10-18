@@ -42,7 +42,7 @@ class HostTest extends AbstractRegularUrlTest {
         ));
         
         $this->assertTrue($url3->getHost()->isEquivalentTo(
-                $url1->getHost(),
+                $url1 ->getHost(),
                 array('www')
         ));        
     }
