@@ -56,7 +56,7 @@ class Normaliser {
      */
     private function normaliseHost() {
         if (isset($this->parts['host'])) {
-            $this->parts['host'] = strtolower(trim($this->parts['host']));
+            $this->parts['host']->set(strtolower(trim($this->parts['host']->get())));
         }
     }
     
