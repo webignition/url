@@ -46,4 +46,19 @@ class HostTest extends AbstractRegularUrlTest {
                 array('www')
         ));        
     }
+    
+    public function testIdnEquivalence() {
+        $idnUrl1 = new \webignition\Url\Url('http://econom.ía.com');
+        $idnUrl2 = new \webignition\Url\Url('http://econom.xn--a-iga.com');
+        
+        $idnUrl3 = new \webignition\Url\Url('http://ヒキワリ.ナットウ.ニホン');
+        $idnUrl4 = new \webignition\Url\Url('http://xn--nckwd5cta.xn--gckxcpg.xn--idk6a7d');
+
+        $idnUrl5 = new \webignition\Url\Url('http://транспорт.com'); 
+        $idnUrl6 = new \webignition\Url\Url('http://xn--80a0addceeeh.com'); 
+        
+        $this->assertTrue($idnUrl1->getHost()->isEquivalentTo($idnUrl2->getHost()));
+        $this->assertTrue($idnUrl3->getHost()->isEquivalentTo($idnUrl4->getHost()));
+        $this->assertTrue($idnUrl5->getHost()->isEquivalentTo($idnUrl6->getHost()));
+    }
 }

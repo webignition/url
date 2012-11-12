@@ -89,12 +89,15 @@ class Host {
      * @return boolean
      */
     public function isEquivalentTo(Host $comparator, $excludeParts = array()) {
+        $thisHost = new Host(idn_to_ascii((string)$this));
+        $comparatorHost = new Host(idn_to_ascii((string)($comparator)));
+        
         if (!is_array($excludeParts) || count($excludeParts) == 0) {
-            return $this->equals($comparator);
+            return $thisHost->equals($comparatorHost);
         }
         
-        $thisParts = $this->excludeParts($this->getParts(), $excludeParts);
-        $comparatorParts = $this->excludeParts($comparator->getParts(), $excludeParts);
+        $thisParts = $this->excludeParts($thisHost->getParts(), $excludeParts);
+        $comparatorParts = $this->excludeParts($comparatorHost->getParts(), $excludeParts);
         
        return $thisParts == $comparatorParts;
     }
