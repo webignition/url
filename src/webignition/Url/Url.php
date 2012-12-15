@@ -388,7 +388,7 @@ class Url {
      * @param string $partName
      * @param string $value 
      */
-    private function setPart($partName, $value) {
+    private function setPart($partName, $value) {        
         if ($this->hasPart($partName)) {
             $this->replacePart($partName, $value);
         } else {
@@ -405,6 +405,11 @@ class Url {
      * @param string $value 
      */
     private function replacePart($partName, $value) {
+//        if ($partName == 'query') {
+//            var_dump("cp01");
+//            exit();
+//        }
+        
         if ($partName == 'query' && substr($value, 0, 1) == '?') {
             $value = substr($value, 1);
         }
@@ -481,6 +486,15 @@ class Url {
     private function addUser($user) {
         if ($this->hasUser()) {
             return false;
+        }
+        
+        if (!is_string($user)) {
+            $user = '';
+        }
+        
+        $user = trim($user);
+        if ($user == '') {
+            return true;
         }
         
         // A user cannot be added to a URL that has no host; this results in
@@ -563,6 +577,10 @@ class Url {
             return false;
         }
         
+        if (is_null($query)) {
+            return true;
+        }
+        
         if (substr($query, 0, 1) != '?') {
             $query = '?' . $query;
         }
@@ -590,6 +608,16 @@ class Url {
             return false;
         }
         
+        if (!is_string($fragment)) {
+            $fragment = '';
+        }
+        
+        $fragment = trim($fragment);
+        
+        if ($fragment == '') {
+            return true;
+        }
+
         if (substr($fragment, 0, 1) != '#') {
             $fragment = '#' . $fragment;
         }
