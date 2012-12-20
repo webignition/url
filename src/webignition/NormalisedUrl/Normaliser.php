@@ -52,11 +52,16 @@ class Normaliser {
     
     
     /**
-     * Host is case-insensitive, normalise to lowercase 
+     * Host is case-insensitive, normalise to lowercase and to ascii version of
+     * IDN format
      */
     private function normaliseHost() {
         if (isset($this->parts['host'])) {
-            $this->parts['host']->set(strtolower(trim($this->parts['host']->get())));
+            $host = idn_to_ascii($this->parts['host']->get());
+            $host = trim($host);
+            $host = strtolower($host);
+            
+            $this->parts['host']->set($host);
         }
     }
     
