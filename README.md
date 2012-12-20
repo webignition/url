@@ -15,6 +15,7 @@ Applies semantically-lossless normalisation for comparisons:
  * default port removed
  * dot segments (/./ and /../) are removed
  * query string arguments are sorted by key name
+ * IDN host names are normalised to the ASCII variant
 
 Usage
 -----
