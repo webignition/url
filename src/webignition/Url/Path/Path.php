@@ -71,7 +71,11 @@ class Path {
      *
      * @return boolean
      */
-    public function hasFilename() {
+    public function hasFilename() {        
+        if (substr($this->path, strlen($this->path) - 1) == '/') {
+            return false;
+        }
+        
         return substr_count(basename($this->path), '.') > 0;
     }
     
