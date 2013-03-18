@@ -94,4 +94,9 @@ class Path {
     public function getDirectory() {
         return $this->hasFilename() ? dirname($this->path) : $this->path;
     }
+    
+    
+    public function hasTrailingSlash() {
+        return substr($this->get(), strlen($this->get()) - 1) == '/';
+    }
 }
