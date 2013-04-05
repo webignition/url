@@ -388,7 +388,7 @@ class Url {
      * @param string $partName
      * @param string $value 
      */
-    private function setPart($partName, $value) {        
+    private function setPart($partName, $value) {
         if ($this->hasPart($partName)) {
             $this->replacePart($partName, $value);
         } else {
@@ -404,12 +404,7 @@ class Url {
      * @param string $partName
      * @param string $value 
      */
-    private function replacePart($partName, $value) {
-//        if ($partName == 'query') {
-//            var_dump("cp01");
-//            exit();
-//        }
-        
+    private function replacePart($partName, $value) {        
         if ($partName == 'query' && substr($value, 0, 1) == '?') {
             $value = substr($value, 1);
         }
@@ -418,7 +413,7 @@ class Url {
             $value = substr($value, 1);
         }
         
-        $offsets = &$this->offsets();
+        $offsets = &$this->offsets();        
         $this->originUrl = substr_replace($this->originUrl, $value, $offsets[$partName], strlen($this->getPart($partName)));  
     }
     
@@ -690,14 +685,14 @@ class Url {
                 if ($this->hasPart($availablePartName)) {
                     $partNames[] = $availablePartName;
                 }
-            }        
+            }
 
-            $originUrlComparison = str_split($this->originUrl);
+            $originUrlComparison = str_split(urldecode($this->originUrl));
             $originUrlLength = strlen($this->originUrl);
 
-            foreach ($partNames as $partName) {
+            foreach ($partNames as $partName) {                
                 $currentPartMatch = '';
-                $currentPart = (string)$this->parts[$partName];
+                $currentPart = urldecode((string)$this->parts[$partName]);
                 $currentPartFirstCharacter = substr($currentPart, 0, 1);                
 
                 while ($currentPartMatch != $currentPart) {
