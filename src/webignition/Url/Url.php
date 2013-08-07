@@ -51,7 +51,7 @@ class Url {
         'path',
         'query',
         'fragment'
-    );    
+    );
     
     
     /**
@@ -60,7 +60,7 @@ class Url {
      */
     public function __construct($originUrl) {
         $this->originUrl = $originUrl;
-    } 
+    }
     
     
     /**
@@ -388,7 +388,7 @@ class Url {
      * @param string $partName
      * @param string $value 
      */
-    private function setPart($partName, $value) {
+    public function setPart($partName, $value) {
         if ($this->hasPart($partName)) {
             $this->replacePart($partName, $value);
         } else {
