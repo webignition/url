@@ -21,4 +21,13 @@ class SetPathTest extends AbstractRegularUrlTest {
         $url->setPath('/js/scriptaculous.js');
         $this->assertEquals('/js/scriptaculous.js?load=effects%2Cbuilder', (string)$url);
     }    
+    
+    public function testSetPathWhenExistingPathContainsEncodedUrl() {        
+        $url = new \webignition\Url\Url('http://example.com/task/http%3A%2F%2Fexample.com%2F/');
+         
+        $url->setPath('/additional' . (string)$url->getPath());
+        $this->assertEquals('/additional/task/http%3A%2F%2Fexample.com%2F/', $url->getPath());
+        $this->assertEquals('http://example.com/additional/task/http%3A%2F%2Fexample.com%2F/', (string)$url);        
+        
+    }    
 }

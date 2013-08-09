@@ -404,7 +404,7 @@ class Url {
      * @param string $partName
      * @param string $value 
      */
-    private function replacePart($partName, $value) {        
+    private function replacePart($partName, $value) {               
         if ($partName == 'query' && substr($value, 0, 1) == '?') {
             $value = substr($value, 1);
         }
@@ -413,7 +413,7 @@ class Url {
             $value = substr($value, 1);
         }
         
-        $offsets = &$this->offsets();        
+        $offsets = &$this->offsets(); 
         $this->originUrl = substr_replace($this->originUrl, $value, $offsets[$partName], strlen($this->getPart($partName)));  
     }
     
@@ -688,26 +688,27 @@ class Url {
             }
 
             $originUrlComparison = str_split(urldecode($this->originUrl));
-            $originUrlLength = strlen($this->originUrl);
+            $index = 0;
 
-            foreach ($partNames as $partName) {                
+            foreach ($partNames as $partName) {
                 $currentPartMatch = '';
-                $currentPart = urldecode((string)$this->parts[$partName]);
-                $currentPartFirstCharacter = substr($currentPart, 0, 1);                
+                $currentPart = urldecode((string)$this->parts[$partName]);                
+                $currentPartFirstCharacter = substr($currentPart, 0, 1);                                
 
                 while ($currentPartMatch != $currentPart) {
+                    $currentCharacter = $originUrlComparison[0];                 
                     $nextCharacter = array_shift($originUrlComparison);
+                    $index++;
 
                     if ($currentPartMatch == '' && $nextCharacter != $currentPartFirstCharacter) {
                         continue;
                     }
-                    
-                    if ($currentPartMatch == '') {
-                        $this->offsets[$partName] = $originUrlLength - count($originUrlComparison) - 1;
-                    }
 
-                    $currentPartMatch .= $nextCharacter;
+                    $currentPartMatch .= $currentCharacter;
                 }
+                
+                $offset = $index - strlen($currentPartMatch);
+                $this->offsets[$partName] = $offset;
             }
         }
         
