@@ -785,9 +785,30 @@ class Url {
      */
     private function parser() {
         if (is_null($this->parser)) {
-            $this->parser = new \webignition\Url\Parser($this->originUrl);
+            $this->parser = new \webignition\Url\Parser($this->prepareOriginUrl());
         }
         
         return $this->parser;
+    }
+    
+    
+    /**
+     * 
+     * @return string
+     */
+    private function prepareOriginUrl() {
+        $preparedOriginUrl = $this->originUrl;
+        
+        // Unencoded leading or trailing whitespace is not allowed
+        $preparedOriginUrl = trim($preparedOriginUrl);
+        
+        // Whitespace that is not a regular space character is not allowed
+        // and should be removed.
+        // 
+        // Not clearly spec'd anywhere but is the default behaviour of Chrome
+        // and FireFox
+        $preparedOriginUrl = str_replace(array("\t", "\r", "\n"), '', $preparedOriginUrl);
+        
+        return $preparedOriginUrl;
     }
 }
