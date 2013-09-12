@@ -24,10 +24,10 @@ class Parser {
     
     /**
      *
-     * @param string $url 
+     * @param string $queryString 
      */
-    public function __construct($url) {
-        $this->origin = $url;     
+    public function __construct($queryString) {
+        $this->origin = $queryString;     
     }
     
     

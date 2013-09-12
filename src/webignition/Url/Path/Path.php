@@ -7,7 +7,7 @@ namespace webignition\Url\Path;
  */
 class Path {
     
-    const HOST_PATH_SEPARATOR = '/';
+    const PATH_PART_SEPARATOR = '/';
     
     /**
      * 
@@ -37,7 +37,7 @@ class Path {
      * @return boolean
      */
     public function isAbsolute() {
-        return substr($this->path, 0, 1) === self::HOST_PATH_SEPARATOR;
+        return substr($this->path, 0, 1) === self::PATH_PART_SEPARATOR;
     }
     
     
