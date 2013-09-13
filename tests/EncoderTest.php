@@ -51,4 +51,13 @@ class EncoderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals('http://example.com/foo1%25bar1/foo2%25bar2/foo3%25bar3/', (string)$encodedUrl);
     }
     
+    public function testEncodeWithNoPath() {
+        $url = new Url('http://example.com');
+        $encoder = new Encoder();
+        
+        $encodedUrl = $encoder->encode($url);
+        
+        $this->assertEquals('http://example.com', (string)$encodedUrl);        
+    }
+    
 }
