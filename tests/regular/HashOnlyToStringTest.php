@@ -8,7 +8,7 @@ class HashOnlyToStringTest extends AbstractRegularUrlTest {
     public function testHashOnlyUrlResolvesToBlankString() {         
         $url = new \webignition\Url\Url('#');                        
         
-        $this->assertEquals('', (string)$url);
+        $this->assertEquals('#', (string)$url);
     }  
     
     public function testHashWithIdentifierResolvesToHashWithIdentifier() {         

@@ -73,6 +73,10 @@ class Parser {
         
         $this->parts = parse_url($this->preparedOrigin);
         
+        if (substr($this->preparedOrigin, strlen($this->preparedOrigin) - 1) == '#') {
+            $this->parts['fragment'] = '';
+        }   
+        
         if (isset($this->parts['query'])) {            
             $this->parts['query'] = new \webignition\Url\Query\Query($this->parts['query']);
         }

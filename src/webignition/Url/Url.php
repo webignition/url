@@ -392,7 +392,7 @@ class Url {
         if ($this->hasPart($partName)) {
             $this->replacePart($partName, $value);
         } else {
-            $this->addPart($partName, $value);
+            $this->addPart($partName, $value);            
         }
 
         $this->reset();
@@ -404,7 +404,7 @@ class Url {
      * @param string $partName
      * @param string $value 
      */
-    private function replacePart($partName, $value) {               
+     private function replacePart($partName, $value) {               
         if ($partName == 'query' && substr($value, 0, 1) == '?') {
             $value = substr($value, 1);
         }
@@ -413,7 +413,13 @@ class Url {
             $value = substr($value, 1);
         }
         
-        $offsets = &$this->offsets(); 
+        $offsets = &$this->offsets();
+        
+        if ($partName == 'fragment' && is_null($value) && isset($offsets['fragment'])) {
+            $this->originUrl = substr($this->originUrl, 0, $offsets['fragment'] - 1);
+            return;
+        }
+        
         $this->originUrl = substr_replace($this->originUrl, $value, $offsets[$partName], strlen($this->getPart($partName)));  
     }
     
@@ -637,11 +643,11 @@ class Url {
         }
         
         $nextPartName = $this->getNextPartName('path');
-        $offsets = &$this->offsets();
+        $offsets = &$this->offsets();             
         
         $offset = $offsets[$nextPartName];
         
-        if ($nextPartName == 'fragment') {
+        if ($nextPartName == 'fragment' && $offset > 0) {
             $offset -= 1;
         }
         
@@ -686,8 +692,16 @@ class Url {
                     $partNames[] = $availablePartName;
                 }
             }
+            
+            if (count($partNames) == 1) {
+                $this->offsets = array(
+                    $partNames[0] => 0
+                );
+                
+                return $this->offsets;              
+            }
 
-            $originUrlComparison = str_split(urldecode($this->originUrl));
+            $originUrlComparison = str_split(urldecode($this->originUrl));            
             $index = 0;
 
             foreach ($partNames as $partName) {

@@ -126,4 +126,20 @@ class ParseTest extends AbstractRegularUrlTest {
         $this->assertEquals($this->urls['relative'], (string)$url);        
     }
     
+    
+    public function testParseHashOnly() {
+        $url = new \webignition\Url\Url('#');        
+        $this->assertTrue($url->hasFragment());
+    }
+    
+    public function testParsePathAndHashOnly() {
+        $url = new \webignition\Url\Url('/index.html#');
+        $this->assertTrue($url->hasFragment());
+    }      
+    
+    public function testParseHashAndIdentifierOnly() {
+        $url = new \webignition\Url\Url('#foo');
+        $this->assertTrue($url->hasFragment());
+    }    
+    
 }
