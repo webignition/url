@@ -58,8 +58,18 @@ class Url {
      *
      * @param string $originUrl 
      */
-    public function __construct($originUrl) {
+    public function __construct($originUrl = null) {
+        $this->init($originUrl);
+    }
+    
+    
+    /**
+     * 
+     * @param string $originUrl
+     */
+    public function init($originUrl) {
         $this->originUrl = $originUrl;
+        $this->reset();
     }
     
     
