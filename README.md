@@ -33,8 +33,6 @@ $this->assertEquals((string)$url1, (string)$url2);
 
 ```
 
-
-
 ### Example of component access
 
 ```php
@@ -45,6 +43,20 @@ $this->assertEquals('https', $url->getScheme());
 $this->assertFalse($url->hasUser());
 $this->assertFalse($url->hasQuery());
 ```
+
+### Example of component modification
+
+```php
+<?php
+$url = new \webignition\Url\Url('https://github.com/webignition/url/');
+
+$url->setScheme('http');
+$url->setHost('example.com');
+$url->setPath('/');
+
+$this->assertEquals('http://example.com/', (string)$url);
+```
+
 
 ### Example of query normalisation
 
