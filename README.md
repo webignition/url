@@ -20,6 +20,19 @@ Applies semantically-lossless normalisation for comparisons:
 Usage
 -----
 
+### Initialisation via constructor or init() method for DI convenience
+
+```php
+<?php
+$url1 = new \webignition\Url\Url('https://github.com/webignition/url/');
+
+$url2 = new \webignition\Url\Url();
+$url2->init('https://github.com/webignition/url/');
+
+$this->assertEquals((string)$url1, (string)$url2);
+
+```
+
 ### Example of component access
 
 ```php
@@ -30,6 +43,20 @@ $this->assertEquals('https', $url->getScheme());
 $this->assertFalse($url->hasUser());
 $this->assertFalse($url->hasQuery());
 ```
+
+### Example of component modification
+
+```php
+<?php
+$url = new \webignition\Url\Url('https://github.com/webignition/url/');
+
+$url->setScheme('http');
+$url->setHost('example.com');
+$url->setPath('/');
+
+$this->assertEquals('http://example.com/', (string)$url);
+```
+
 
 ### Example of query normalisation
 
