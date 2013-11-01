@@ -20,5 +20,5 @@ function autoload( $rootDir ) {
 
 autoload( '/usr/share/php' );
 autoload( __DIR__ . '/');
-autoload( __DIR__ . '/regular');
-autoload( __DIR__ . '/normalisation');
+autoload( __DIR__ . '/Url');
+autoload( __DIR__ . '/NormalisedUrl');

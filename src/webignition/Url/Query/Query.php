@@ -26,6 +26,14 @@ class Query {
      */
     private $pairs = null;
     
+    
+    /**
+     *
+     * @var string
+     */
+    private $nullValuePlaceholder = null;
+    
+    
     /**
      * 
      * @param string $encodedQueryString 
@@ -39,9 +47,57 @@ class Query {
      *
      * @return string
      */
-    public function __toString() {        
-        return str_replace(array('%7E'), array('~'), http_build_query($this->pairs()));
+    public function __toString() {
+        return str_replace(array('%7E'), array('~'), $this->buildQueryStringFromPairs());
     }
+    
+    
+    /**
+     * 
+     * @return string
+     */
+    private function buildQueryStringFromPairs() {
+        $pairs = $this->pairs();
+        foreach ($pairs as $key => $value) {
+            if (is_null($value)) {
+                $pairs[$key] = $this->getNullValuePlaceholder();
+            }
+        }        
+        
+        return str_replace('=' . $this->getNullValuePlaceholder(), '', http_build_query($pairs));
+    }
+    
+    
+    
+    /**
+     * 
+     * @return string
+     */
+    private function getNullValuePlaceholder() {
+        if (is_null($this->nullValuePlaceholder)) {
+            $placeholder = $this->generateNullValuePlaceholder();            
+            $values = array_values($this->pairs());            
+            while (in_array($placeholder, $values)) {
+                $placeholder = $this->generateNullValuePlaceholder();
+            }
+            
+            $this->nullValuePlaceholder = $placeholder;
+        }
+        
+        return $this->nullValuePlaceholder;
+    }
+    
+    
+    /**
+     * 
+     * @return string
+     */
+    private function generateNullValuePlaceholder() {
+        return md5(time());
+    }
+    
+    
+    
     
     
     /**
