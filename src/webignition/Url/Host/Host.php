@@ -119,9 +119,9 @@ class Host {
      * @param array $excludeParts
      * @return boolean
      */
-    public function isEquivalentTo(Host $comparator, $excludeParts = array()) {
-        $thisHost = new Host(idn_to_ascii((string) $this));
-        $comparatorHost = new Host(idn_to_ascii((string) ($comparator)));
+    public function isEquivalentTo(Host $comparator, $excludeParts = array()) {        
+        $thisHost = new Host(\Etechnika\IdnaConvert\IdnaConvert::encodeString((string) $this));
+        $comparatorHost = new Host(\Etechnika\IdnaConvert\IdnaConvert::encodeString((string) $comparator));
 
         if (!is_array($excludeParts) || count($excludeParts) == 0) {
             return $thisHost->equals($comparatorHost);

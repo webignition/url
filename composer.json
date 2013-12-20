@@ -16,7 +16,7 @@
     },    
     "require": {
         "php": ">=5.3.0",
-        "ext-intl": "*",
+        "etechnika/idna-convert": "1.0.*",
         "xrstf/ip-utils": "v1.0.0"
     }
 }

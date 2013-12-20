@@ -57,11 +57,8 @@ class Normaliser {
      */
     private function normaliseHost() {
         if (isset($this->parts['host'])) {
-            $host = idn_to_ascii($this->parts['host']->get());
-            $host = trim($host);
-            $host = strtolower($host);
-            
-            $this->parts['host']->set($host);
+            $asciiHost = trim(strtolower(\Etechnika\IdnaConvert\IdnaConvert::encodeString($this->parts['host']->get())));            
+            $this->parts['host']->set($asciiHost);
         }
     }
     
