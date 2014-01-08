@@ -29,9 +29,9 @@ class Query {
     
     /**
      *
-     * @var string
+     * @var \webignition\Url\Parser\Configuration
      */
-    private $nullValuePlaceholder = null;
+    private $configuration = null;    
     
     
     /**
@@ -57,47 +57,9 @@ class Query {
      * @return string
      */
     private function buildQueryStringFromPairs() {
-        $pairs = $this->pairs();
-        foreach ($pairs as $key => $value) {
-            if (is_null($value)) {
-                $pairs[$key] = $this->getNullValuePlaceholder();
-            }
-        }        
-        
-        return str_replace('=' . $this->getNullValuePlaceholder(), '', http_build_query($pairs));
-    }
-    
-    
-    
-    /**
-     * 
-     * @return string
-     */
-    private function getNullValuePlaceholder() {
-        if (is_null($this->nullValuePlaceholder)) {
-            $placeholder = $this->generateNullValuePlaceholder();            
-            $values = array_values($this->pairs());            
-            while (in_array($placeholder, $values)) {
-                $placeholder = $this->generateNullValuePlaceholder();
-            }
-            
-            $this->nullValuePlaceholder = $placeholder;
-        }
-        
-        return $this->nullValuePlaceholder;
-    }
-    
-    
-    /**
-     * 
-     * @return string
-     */
-    private function generateNullValuePlaceholder() {
-        return md5(time());
-    }
-    
-    
-    
+        $encoder = new Encoder($this->pairs(), $this->configuration);
+        return (string)$encoder;
+    }    
     
     
     /**
@@ -106,7 +68,7 @@ class Query {
      */
     public function pairs() {        
         if (is_null($this->pairs)) {
-            $this->pairs = $this->parser()->getKeyValuePairs();
+            $this->pairs = $this->getParser()->getKeyValuePairs();
         }
         
         return $this->pairs;
@@ -117,7 +79,7 @@ class Query {
      *
      * @return \webignition\Url\Query\Parser 
      */
-    protected function parser() {
+    public function getParser() {
         if (is_null($this->parser)) {
             $this->parser = new \webignition\Url\Query\Parser($this->getOrigin());
         }
@@ -200,5 +162,23 @@ class Query {
             $this->add($encodedKey, $encodedValue);
         }
     }
+    
+    
+    /**
+     * 
+     * @param \webignition\Url\Configuration $configuration
+     */
+    public function setConfiguration(\webignition\Url\Configuration $configuration) {
+        $this->configuration = $configuration;
+    }
+    
+    
+    /**
+     * 
+     * @return boolean
+     */
+    public function hasConfiguration() {
+        return !is_null($this->configuration);
+    }    
     
 }

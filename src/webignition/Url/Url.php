@@ -7,7 +7,15 @@ class Url {
      *
      * @var \webignition\Url\Parser
      */
-    private $parser = null;    
+    private $parser = null; 
+    
+    
+    /**
+     *
+     * @var \webignition\Url\Configuration
+     */
+    private $configuration = null;
+    
     
     /**
      * Original unmodified source URL
@@ -108,7 +116,7 @@ class Url {
      */
     protected function &parts() {
         if (is_null($this->parts)) {
-            $this->parts = $this->parser()->getParts();
+            $this->parts = $this->getParser()->getParts();
         }
         
         return $this->parts;
@@ -288,8 +296,13 @@ class Url {
      *
      * @return \webignition\Url\Query
      */
-    public function getQuery() {        
-        return $this->getPart('query');
+    public function getQuery() {
+        $query = $this->getPart('query');
+        if ($query instanceof Query\Query && !$query->hasConfiguration()) {
+            $query->setConfiguration($this->getConfiguration());
+        }
+        
+        return $query;
     }
     
     
@@ -333,7 +346,7 @@ class Url {
      *
      * @return string 
      */
-    public function __toString() {
+    public function __toString() {        
         $url = $this->getRoot();
         
         $url .= $this->getPath();
@@ -742,7 +755,7 @@ class Url {
     
     protected function reset() {
         $this->parser = null;
-        $this->parts = $this->parser()->getParts();
+        $this->parts = $this->getParser()->getParts();
         $this->offsets = null;
     }
     
@@ -805,11 +818,11 @@ class Url {
     
     /**
      *
-     * @return \webignition\Url\Parser
+     * @return \webignition\Url\Parser\Parser
      */
-    private function parser() {
+    public function getParser() {
         if (is_null($this->parser)) {
-            $this->parser = new \webignition\Url\Parser($this->prepareOriginUrl());
+            $this->parser = new Parser($this->prepareOriginUrl());
         }
         
         return $this->parser;
@@ -835,4 +848,18 @@ class Url {
         
         return $preparedOriginUrl;
     }
+    
+    
+    /**
+     * 
+     * @return \webignition\Url\Parser\Configuration
+     */
+    public function getConfiguration() {
+        if (is_null($this->configuration)) {
+            $this->configuration = new Configuration();
+        }
+        
+        return $this->configuration;
+    }    
+    
 }

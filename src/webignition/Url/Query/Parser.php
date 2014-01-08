@@ -12,7 +12,7 @@ class Parser {
      * 
      * @var string
      */
-    private $origin = null; 
+    private $origin = null;
     
     
     /**
@@ -35,7 +35,7 @@ class Parser {
      *
      * @return array
      */
-    public function getKeyValuePairs() {        
+    public function getKeyValuePairs() {
         if (is_null($this->keyValuePairs)) {            
             $this->parse();
         }
@@ -44,13 +44,13 @@ class Parser {
     }    
     
         
-    private function parse() {
+    private function parse() {        
         $pairStrings = explode(self::PAIR_DELIMITER, $this->origin);
-        foreach ($pairStrings as $pairString) {            
+        
+        foreach ($pairStrings as $pairString) {                        
             $currentPair = explode(self::KEY_VALUE_DELIMITER, $pairString);
-            
-            $key = urldecode($currentPair[0]);
-            $value = isset($currentPair[1]) ? urldecode($currentPair[1]) : null;
+            $key = rawurldecode($currentPair[0]);
+            $value = isset($currentPair[1]) ? rawurldecode($currentPair[1]) : null;
             
             $this->keyValuePairs[$key] = $value;            
         }
