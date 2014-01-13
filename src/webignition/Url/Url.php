@@ -427,7 +427,13 @@ class Url {
      * @param string $partName
      * @param string $value 
      */
-     private function replacePart($partName, $value) {               
+    private function replacePart($partName, $value) {
+        if ($partName == 'scheme' && is_null($value)) {
+            $offsets = &$this->offsets();
+            $this->originUrl = '//' . substr($this->originUrl, $offsets['host']);
+            return;
+        }
+         
         if ($partName == 'query' && substr($value, 0, 1) == '?') {
             $value = substr($value, 1);
         }
