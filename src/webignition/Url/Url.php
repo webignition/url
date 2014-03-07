@@ -105,7 +105,7 @@ class Url {
         if ($this->hasPort()) {
             $rawRootUrl .= ':' . $this->getPort();
         }
-        
+
         return $rawRootUrl;
     }
     
@@ -481,6 +481,10 @@ class Url {
         if ($partName == 'path') {
             return $this->addPath($value);
         }
+
+        if ($partName == 'port') {
+            return $this->addPort($value);
+        }
     }
     
     
@@ -683,6 +687,19 @@ class Url {
         return $this->originUrl = substr($this->originUrl, 0, $offset) . $path . substr($this->originUrl, $offset);        
     }
     
+
+    public function addPort($value)
+    {
+        if (!$value or $this->hasPort()) {
+            return false;
+        }
+
+        $this->parts['port'] = $value;
+        $host = $this->getHost();
+
+        return $this->originUrl = str_replace($host, $host.':'.$value, $this->originUrl);
+    }
+
     
     /**
      * Get the next url part after $partName that is present in this
