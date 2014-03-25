@@ -97,9 +97,15 @@ class Url {
             
             if ($this->hasCredentials()) {
                 $rawRootUrl .= $this->getCredentials() . '@';
-            }            
+            }
             
-            $rawRootUrl .= $this->getHost();
+            $host = (string)$this->getHost();
+            
+            if ($this->getConfiguration()->getConvertIdnToUtf8()) {
+                $host = \Etechnika\IdnaConvert\IdnaConvert::decodeString($host);
+            }
+            
+            $rawRootUrl .= $host;
         }        
         
         if ($this->hasPort()) {
