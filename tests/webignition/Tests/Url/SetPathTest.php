@@ -1,7 +1,7 @@
 <?php
 
 namespace webignition\Tests\Url;
-use webignition\Tests\Url\AbstractRegularUrlTest;
+use webignition\Url\Url;
 
 /**
  * Check that URL properties can be set
@@ -10,7 +10,7 @@ use webignition\Tests\Url\AbstractRegularUrlTest;
 class SetPathTest extends AbstractRegularUrlTest {  
     
     public function testSetPlainPath() {
-        $url = new \webignition\Url\Url('http://example.com/');
+        $url = new Url('http://example.com/');
                 
         $url->setPath('/path');        
         $this->assertEquals('/path', $url->getPath());
@@ -18,7 +18,7 @@ class SetPathTest extends AbstractRegularUrlTest {
     } 
     
     public function testSetPathWhenExistingPathIsUrlEncoded() {
-        $url = new \webignition\Url\Url('js/scriptaculous.js?load=effects,builder');
+        $url = new Url('js/scriptaculous.js?load=effects,builder');
         $this->assertEquals('js/scriptaculous.js?load=effects%2Cbuilder', (string)$url);
         
         $url->setPath('/js/scriptaculous.js');
@@ -26,11 +26,18 @@ class SetPathTest extends AbstractRegularUrlTest {
     }    
     
     public function testSetPathWhenExistingPathContainsEncodedUrl() {        
-        $url = new \webignition\Url\Url('http://example.com/task/http%3A%2F%2Fexample.com%2F/');
+        $url = new Url('http://example.com/task/http%3A%2F%2Fexample.com%2F/');
          
         $url->setPath('/additional' . (string)$url->getPath());
         $this->assertEquals('/additional/task/http%3A%2F%2Fexample.com%2F/', $url->getPath());
         $this->assertEquals('http://example.com/additional/task/http%3A%2F%2Fexample.com%2F/', (string)$url);        
         
-    }    
+    }
+
+    public function testSetPathOnUrlWithPlusesInQuery() {
+        $url = new Url('example.html?foo=++');
+        $url->setPath('/example.html');
+
+        $this->assertEquals('/example.html?foo=%2B%2B', (string)$url);
+    }
 }

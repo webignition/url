@@ -284,7 +284,7 @@ class Url {
      *
      * @param string $path 
      */
-    public function setPath($path) {        
+    public function setPath($path) {
         $this->setPart('path', $path);
     }
     
@@ -447,9 +447,8 @@ class Url {
         if ($partName == 'fragment' && substr($value, 0, 1) == '#') {
             $value = substr($value, 1);
         }
-        
+
         $offsets = &$this->offsets();
-        
         if ($partName == 'fragment' && is_null($value) && isset($offsets['fragment'])) {
             $this->originUrl = substr($this->originUrl, 0, $offsets['fragment'] - 1);
             return;
@@ -753,16 +752,17 @@ class Url {
                 return $this->offsets;              
             }
 
-            $originUrlComparison = str_split(urldecode($this->originUrl));            
+            $originUrlComparison = str_split(rawurldecode($this->originUrl));
             $index = 0;
 
             foreach ($partNames as $partName) {
                 $currentPartMatch = '';
-                $currentPart = urldecode((string)$this->parts[$partName]);                
-                $currentPartFirstCharacter = substr($currentPart, 0, 1);                                
+                $currentPart = urldecode((string)$this->parts[$partName]);
+                $currentPartFirstCharacter = substr($currentPart, 0, 1);
 
                 while ($currentPartMatch != $currentPart) {
-                    $currentCharacter = $originUrlComparison[0];                 
+                    $currentCharacter = $originUrlComparison[0];
+
                     $nextCharacter = array_shift($originUrlComparison);
                     $index++;
 
@@ -772,7 +772,7 @@ class Url {
 
                     $currentPartMatch .= $currentCharacter;
                 }
-                
+
                 $offset = $index - strlen($currentPartMatch);
                 $this->offsets[$partName] = $offset;
             }
@@ -847,7 +847,7 @@ class Url {
     
     /**
      *
-     * @return \webignition\Url\Parser\Parser
+     * @return \webignition\Url\Parser
      */
     public function getParser() {
         if (is_null($this->parser)) {
@@ -881,7 +881,7 @@ class Url {
     
     /**
      * 
-     * @return \webignition\Url\Parser\Configuration
+     * @return \webignition\Url\Parser
      */
     public function getConfiguration() {
         if (is_null($this->configuration)) {
