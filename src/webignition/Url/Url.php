@@ -761,6 +761,10 @@ class Url {
                 $currentPartFirstCharacter = substr($currentPart, 0, 1);
 
                 while ($currentPartMatch != $currentPart) {
+                    if(!isset($originUrlComparison[0])){
+                        break;
+                    }
+                    
                     $currentCharacter = $originUrlComparison[0];
 
                     $nextCharacter = array_shift($originUrlComparison);
