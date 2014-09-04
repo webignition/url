@@ -5,6 +5,11 @@ namespace webignition\NormalisedUrl;
 class Normaliser {
     
     const DEFAULT_PORT = 80;
+
+    private $knownPorts = array(
+        'http' => 80,
+        'https' => 443
+    );
     
     /**
      * Collection of the different parts of the URL
@@ -67,8 +72,10 @@ class Normaliser {
      * Remove default HTTP port 
      */
     private function normalisePort() {
-        if (isset($this->parts['port']) && $this->parts['port'] == self::DEFAULT_PORT) {
-            unset($this->parts['port']);
+        if (isset($this->parts['port']) && isset($this->parts['scheme'])) {
+            if (isset($this->knownPorts[$this->parts['scheme']]) && $this->knownPorts[$this->parts['scheme']] == $this->parts['port']) {
+                unset($this->parts['port']);
+            }
         }
     }    
     

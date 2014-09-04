@@ -12,7 +12,8 @@ class DefaultPortNormalisationTest extends AbstractNormalisedUrlTest {
     
     public function testNormlisedUrlRemovesDefaultPort() {      
         $this->setInputAndExpectedOutputUrls(array(
-            'http://www.example.com:80' => 'http://www.example.com/'
+            'http://www.example.com:80' => 'http://www.example.com/',
+            'https://www.example.com:443' => 'https://www.example.com/'
         ));
         
         $this->runInputToExpectedOutputTests();
@@ -20,7 +21,8 @@ class DefaultPortNormalisationTest extends AbstractNormalisedUrlTest {
     
     public function testNormlisedUrlDoesNotRemoveNonDefaultPort() {      
         $this->setInputAndExpectedOutputUrls(array(
-            'http://www.example.com:443' => 'http://www.example.com:443/'
+            'http://www.example.com:443' => 'http://www.example.com:443/',
+            'https://www.example.com:80' => 'https://www.example.com:80/',
         ));
         
         $this->runInputToExpectedOutputTests();
