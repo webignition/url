@@ -450,7 +450,12 @@ class Url {
 
         $offsets = &$this->offsets();
         if ($partName == 'fragment' && is_null($value) && isset($offsets['fragment'])) {
-            $this->originUrl = substr($this->originUrl, 0, $offsets['fragment'] - 1);
+            if ($this->getFragment() == '') {
+                $this->originUrl = substr($this->originUrl, 0, $offsets['fragment']);
+            } else {
+                $this->originUrl = substr($this->originUrl, 0, $offsets['fragment'] - 1);
+            }
+
             return;
         }
         
