@@ -367,6 +367,16 @@ class Url {
         
         return $url;        
     }
+
+
+    /**
+     * Return a semantically marked-up string
+     *
+     * @return string
+     */
+    public function __toSemanticString() {
+        return '';
+    }
     
     
     /**
@@ -802,7 +812,7 @@ class Url {
      *
      * @return boolean
      */
-    private function hasCredentials() {
+    public function hasCredentials() {
         return $this->hasUser() || $this->hasPass();
     }
     
@@ -890,7 +900,7 @@ class Url {
     
     /**
      * 
-     * @return \webignition\Url\Parser
+     * @return \webignition\Url\Configuration
      */
     public function getConfiguration() {
         if (is_null($this->configuration)) {
