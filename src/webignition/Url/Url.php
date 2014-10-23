@@ -300,7 +300,7 @@ class Url {
     
     /**
      *
-     * @return \webignition\Url\Query
+     * @return \webignition\Url\Query\Query
      */
     public function getQuery() {
         $query = $this->getPart('query');
