@@ -72,7 +72,7 @@ class Parser {
         $this->prepareOriginUrl();
         
         $this->parts = parse_url($this->preparedOrigin);
-        
+
         if (substr($this->preparedOrigin, strlen($this->preparedOrigin) - 1) == '#') {
             $this->parts['fragment'] = '';
         }   
@@ -96,7 +96,69 @@ class Parser {
         if (isset($this->parts['port'])) {
             $this->parts['port'] = (int)$this->parts['port'];
         }
+
+        if ($this->preparedOriginContainsEmptyUsername() && !isset($this->parts['user'])) {
+            $this->parts['user'] = '';
+        }
+
+        if ($this->preparedOriginContainsEmptyPassword() && !isset($this->parts['pass'])) {
+            $this->parts['pass'] = '';
+        }
     }
+
+    private function preparedOriginContainsEmptyUsername() {
+        $emptyUsernamePrefixes = [];
+
+        if (isset($this->parts['scheme'])) {
+            $emptyUsernamePrefixes[] = $this->parts['scheme'] . '://:@';
+
+            if (isset($this->parts['pass'])) {
+                $emptyUsernamePrefixes[] = $this->parts['scheme'] . '://:' . $this->parts['pass'] . '@';
+            }
+        } else {
+            $emptyUsernamePrefixes[] = $this->protocolRelativeDummyScheme() . '://:@';
+
+            if (isset($this->parts['pass'])) {
+                $emptyUsernamePrefixes[] = $this->protocolRelativeDummyScheme() .  '://:' . $this->parts['pass'] . '@';
+            }
+        }
+
+        foreach ($emptyUsernamePrefixes as $emptyUsernamePrefix) {
+            if ($emptyUsernamePrefix == substr($this->preparedOrigin, 0, strlen($emptyUsernamePrefix))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function preparedOriginContainsEmptyPassword() {
+        $emptyPasswordPrefixes = [];
+
+        if (isset($this->parts['scheme'])) {
+            $emptyPasswordPrefixes[] = $this->parts['scheme'] . '://:@';
+
+            if (isset($this->parts['user'])) {
+                $emptyPasswordPrefixes[] = $this->parts['scheme']  . '://' . $this->parts['user'] . ':@';
+            }
+
+        } else {
+            $emptyPasswordPrefixes[] = $this->protocolRelativeDummyScheme() . '://:@';
+
+            if (isset($this->parts['user'])) {
+                $emptyPasswordPrefixes[] = $this->protocolRelativeDummyScheme()  . '://' . $this->parts['user'] . ':@';
+            }
+        }
+
+        foreach ($emptyPasswordPrefixes as $emptyPasswordPrefix) {
+            if ($emptyPasswordPrefix == substr($this->preparedOrigin, 0, strlen($emptyPasswordPrefix))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     
     private function prepareOriginUrl() {
         $this->preparedOrigin = $this->origin;
