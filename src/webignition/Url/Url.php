@@ -464,9 +464,6 @@ class Url {
 
         $offsets = &$this->offsets();
 
-//        var_dump($this->originUrl, $offsets, $this->parts);
-//        exit();
-
         if ($partName == 'fragment' && is_null($value) && isset($offsets['fragment'])) {
             if ($this->getFragment() == '') {
                 $this->originUrl = substr($this->originUrl, 0, $offsets['fragment']);
@@ -790,6 +787,12 @@ class Url {
                         $this->offsets['user'] = 2;
                         continue;
                     }
+                }
+
+                // Special case: empty password
+                if ($partName == 'pass' && $currentPart == '') {
+                    $this->offsets['pass'] = $this->offsets['user'] + strlen($this->parts['user']) + 1;
+                    continue;
                 }
 
                 $currentPartMatch = '';
