@@ -94,7 +94,7 @@ class Url {
         
         if ($this->hasHost()) {
             $rawRootUrl .= '//';
-            
+
             if ($this->hasCredentials()) {
                 $rawRootUrl .= $this->getCredentials() . '@';
             }
@@ -428,6 +428,10 @@ class Url {
      * @param string $value 
      */
     public function setPart($partName, $value) {
+        if (!$this->hasPart($partName) && is_null($value)) {
+            return;
+        }
+
         if ($this->hasPart($partName)) {
             $this->replacePart($partName, $value);
         } else {
@@ -459,6 +463,10 @@ class Url {
         }
 
         $offsets = &$this->offsets();
+
+//        var_dump($this->originUrl, $offsets, $this->parts);
+//        exit();
+
         if ($partName == 'fragment' && is_null($value) && isset($offsets['fragment'])) {
             if ($this->getFragment() == '') {
                 $this->originUrl = substr($this->originUrl, 0, $offsets['fragment']);
@@ -469,7 +477,7 @@ class Url {
             return;
         }
         
-        $this->originUrl = substr_replace($this->originUrl, $value, $offsets[$partName], strlen($this->getPart($partName)));  
+        $this->originUrl = substr_replace($this->originUrl, $value, $offsets[$partName], strlen($this->getPart($partName)));
     }
     
     
@@ -547,9 +555,9 @@ class Url {
         }
         
         $user = trim($user);
-        if ($user == '') {
-            return true;
-        }
+//        if ($user == '') {
+//            return true;
+//        }
         
         // A user cannot be added to a URL that has no host; this results in
         // an invalid URL.
@@ -564,7 +572,7 @@ class Url {
             $preNewPart = substr($this->originUrl, 0, $offsets[$nextPartName]);            
             $postNewPart = substr($this->originUrl, $offsets[$nextPartName]);              
             
-            return $this->originUrl = $preNewPart . $user . ':@' . $postNewPart;
+            return $this->originUrl = $preNewPart . $user . '@' . $postNewPart;
         }
 
         $preNewPart = substr($this->originUrl, 0, $offsets[$nextPartName] - 1);
@@ -758,7 +766,7 @@ class Url {
                     $partNames[] = $availablePartName;
                 }
             }
-            
+
             if (count($partNames) == 1) {
                 $this->offsets = array(
                     $partNames[0] => 0
@@ -771,8 +779,20 @@ class Url {
             $index = 0;
 
             foreach ($partNames as $partName) {
-                $currentPartMatch = '';
                 $currentPart = urldecode((string)$this->parts[$partName]);
+
+                // Special case: empty user (i.e. user = '', not null or missing user)
+                if ($partName == 'user' && $currentPart == '') {
+                    if (array_slice($originUrlComparison, 0, 3) ==  [':', '/', '/']) {
+                        $this->offsets['user'] = $this->offsets['scheme'] + strlen(urldecode((string)$this->parts['scheme'])) + 3;
+                        continue;
+                    } elseif (array_slice($originUrlComparison, 0, 2) ==  ['/', '/']) {
+                        $this->offsets['user'] = 2;
+                        continue;
+                    }
+                }
+
+                $currentPartMatch = '';
                 $currentPartFirstCharacter = substr($currentPart, 0, 1);
 
                 while ($currentPartMatch != $currentPart) {
@@ -827,10 +847,9 @@ class Url {
         if ($this->hasUser()) {
             $credentials .= $this->getUser();
         }
-        
-        $credentials .= ':';
-        
+
         if ($this->hasPass()) {
+            $credentials .= ':';
             $credentials .= $this->getPass();
         }
         
