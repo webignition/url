@@ -35,6 +35,7 @@ class ParseCredentialsTest extends AbstractRegularUrlTest {
         $this->assertTrue($url->hasPass());
         $this->assertEquals('', $url->getPass());
     }
+
     public function testProtocolRelativeEmptyUsernameEmptyPassword() {
         $url = new \webignition\Url\Url('//:@example.com');
 
@@ -83,5 +84,25 @@ class ParseCredentialsTest extends AbstractRegularUrlTest {
 
         $this->assertTrue($url->hasPass());
         $this->assertEquals('', $url->getPass());
+    }
+
+
+    public function testHasUsernameNoPassword() {
+        $url = new \webignition\Url\Url('https://username@example.com');
+
+        $this->assertTrue($url->hasUser());
+        $this->assertEquals('username', $url->getUser());
+
+        $this->assertFalse($url->hasPass());
+    }
+
+
+    public function testProtocolRelativeHasUsernameNoPassword() {
+        $url = new \webignition\Url\Url('//username@example.com');
+
+        $this->assertTrue($url->hasUser());
+        $this->assertEquals('username', $url->getUser());
+
+        $this->assertFalse($url->hasPass());
     }
 }
