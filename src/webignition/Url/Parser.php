@@ -107,7 +107,7 @@ class Parser {
     }
 
     private function preparedOriginContainsEmptyUsername() {
-        $emptyUsernamePrefixes = [];
+        $emptyUsernamePrefixes = array();
 
         if (isset($this->parts['scheme'])) {
             $emptyUsernamePrefixes[] = $this->parts['scheme'] . '://:@';
@@ -133,7 +133,7 @@ class Parser {
     }
 
     private function preparedOriginContainsEmptyPassword() {
-        $emptyPasswordPrefixes = [];
+        $emptyPasswordPrefixes = array();
 
         if (isset($this->parts['scheme'])) {
             $emptyPasswordPrefixes[] = $this->parts['scheme'] . '://:@';
