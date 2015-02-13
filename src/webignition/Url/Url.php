@@ -780,10 +780,10 @@ class Url {
 
                 // Special case: empty user (i.e. user = '', not null or missing user)
                 if ($partName == 'user' && $currentPart == '') {
-                    if (array_slice($originUrlComparison, 0, 3) ==  [':', '/', '/']) {
+                    if (array_slice($originUrlComparison, 0, 3) ==  array(':', '/', '/')) {
                         $this->offsets['user'] = $this->offsets['scheme'] + strlen(urldecode((string)$this->parts['scheme'])) + 3;
                         continue;
-                    } elseif (array_slice($originUrlComparison, 0, 2) ==  ['/', '/']) {
+                    } elseif (array_slice($originUrlComparison, 0, 2) ==  array('/', '/')) {
                         $this->offsets['user'] = 2;
                         continue;
                     }
