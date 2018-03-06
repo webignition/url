@@ -2,99 +2,108 @@
 
 namespace webignition\Url;
 
-class Parser {
-    
+use webignition\Url\Path\Path;
+use webignition\Url\Query\Query;
+
+class Parser implements ParserInterface
+{
     const DEFAULT_PORT = 80;
     const MIN_PORT = 0;
     const MAX_PORT = 65535;
-    
+
     const PROTOCOL_RELATIVE_START = '//';
-   
+
     /**
      * Supplied URL, unmodified
-     * 
+     *
      * @var string
      */
-    private $origin = null; 
-    
-    
+    protected $origin = null;
+
     /**
      * Origin URL that has been prepared to compensate for some missing
      * parts that parse_url() doesn't recognise
-     * 
+     *
      * @var string
      */
-    private $preparedOrigin = null;
-    
-    
+    protected $preparedOrigin = null;
+
     /**
      * Dummy scheme temporarily added to protocol-relative URLs to
      * allow parse_url() to correctly recognise subsequent parts
-     * 
+     *
      * @var string
      */
     private $protocolRelativeDummyScheme = null;
-    
-    
+
     /**
-     *
-     * @var boolean
+     * @var bool
      */
     private $hasProtocolRelativeDummyScheme = false;
-    
-    
+
+    /**
+     * @var bool
+     */
+    private $isProtocolRelative = false;
+
     /**
      * Collection of the different parts of the URL
-     * 
+     *
      * @var array
      */
-    private $parts = array();    
-    
-    public function __construct($url) {
-        $this->origin = $url;
-        $this->parse();        
-    }
-    
+    protected $parts = [];
+
     /**
-     *
+     * @param string $url
+     */
+    public function __construct($url)
+    {
+        $this->origin = $url;
+        $this->parse();
+    }
+
+    /**
      * @return array
      */
-    public function getParts() {
-        if (is_null($this->parts)) {
-            $this->parse();
-        }
-
+    public function getParts()
+    {
         return $this->parts;
     }
-    
-        
-    private function parse() {        
+
+    private function prepareOriginUrl()
+    {
+        $this->preparedOrigin = $this->origin;
+        $this->compensateForProtocolRelativeUrl();
+    }
+
+    private function parse()
+    {
         $this->prepareOriginUrl();
-        
+
         $this->parts = parse_url($this->preparedOrigin);
 
         if (substr($this->preparedOrigin, strlen($this->preparedOrigin) - 1) == '#') {
             $this->parts['fragment'] = '';
-        }   
-        
-        if (isset($this->parts['query'])) {            
-            $this->parts['query'] = new \webignition\Url\Query\Query($this->parts['query']);
         }
-        
-        if (isset($this->parts['path'])) {
-            $this->parts['path'] = new \webignition\Url\Path\Path($this->parts['path']);                    
-        }                
-        
-        if (isset($this->parts['host'])) {
-            $this->parts['host'] = new \webignition\Url\Host\Host($this->parts['host']);                    
-        }           
-        
+
+        if (isset($this->parts[UrlInterface::PART_QUERY])) {
+            $this->parts[UrlInterface::PART_QUERY] = new Query($this->parts[UrlInterface::PART_QUERY]);
+        }
+
+        if (isset($this->parts[UrlInterface::PART_PATH])) {
+            $this->parts[UrlInterface::PART_PATH] = new Path($this->parts[UrlInterface::PART_PATH]);
+        }
+
+        if (isset($this->parts[UrlInterface::PART_HOST])) {
+            $this->parts[UrlInterface::PART_HOST] = new Host\Host($this->parts[UrlInterface::PART_HOST]);
+        }
+
         if ($this->hasProtocolRelativeDummyScheme) {
-            unset($this->parts['scheme']);
+            unset($this->parts[UrlInterface::PART_SCHEME]);
         }
-        
-        if (isset($this->parts['port'])) {
-            $this->parts['port'] = (int)$this->parts['port'];
+
+        if (isset($this->parts[UrlInterface::PART_PORT])) {
+            $this->parts[UrlInterface::PART_PORT] = (int)$this->parts[UrlInterface::PART_PORT];
         }
 
         if ($this->preparedOriginContainsEmptyUsername() && !isset($this->parts['user'])) {
@@ -106,14 +115,16 @@ class Parser {
         }
     }
 
-    private function preparedOriginContainsEmptyUsername() {
+    private function preparedOriginContainsEmptyUsername()
+    {
         $emptyUsernamePrefixes = array();
 
-        if (isset($this->parts['scheme'])) {
-            $emptyUsernamePrefixes[] = $this->parts['scheme'] . '://:@';
+        if (isset($this->parts[UrlInterface::PART_SCHEME])) {
+            $emptyUsernamePrefixes[] = $this->parts[UrlInterface::PART_SCHEME] . '://:@';
 
             if (isset($this->parts['pass'])) {
-                $emptyUsernamePrefixes[] = $this->parts['scheme'] . '://:' . $this->parts['pass'] . '@';
+                $emptyUsernamePrefixes[] =
+                    $this->parts[UrlInterface::PART_SCHEME] . '://:' . $this->parts['pass'] . '@';
             }
         } else {
             $emptyUsernamePrefixes[] = $this->protocolRelativeDummyScheme() . '://:@';
@@ -132,16 +143,17 @@ class Parser {
         return false;
     }
 
-    private function preparedOriginContainsEmptyPassword() {
+    private function preparedOriginContainsEmptyPassword()
+    {
         $emptyPasswordPrefixes = array();
 
-        if (isset($this->parts['scheme'])) {
-            $emptyPasswordPrefixes[] = $this->parts['scheme'] . '://:@';
+        if (isset($this->parts[UrlInterface::PART_SCHEME])) {
+            $emptyPasswordPrefixes[] = $this->parts[UrlInterface::PART_SCHEME] . '://:@';
 
             if (isset($this->parts['user'])) {
-                $emptyPasswordPrefixes[] = $this->parts['scheme']  . '://' . $this->parts['user'] . ':@';
+                $emptyPasswordPrefixes[] =
+                    $this->parts[UrlInterface::PART_SCHEME] . '://' . $this->parts['user'] . ':@';
             }
-
         } else {
             $emptyPasswordPrefixes[] = $this->protocolRelativeDummyScheme() . '://:@';
 
@@ -159,39 +171,31 @@ class Parser {
         return false;
     }
 
-    
-    private function prepareOriginUrl() {
-        $this->preparedOrigin = $this->origin;
-        $this->compensateForProtocolRelativeUrl();
-    }
-    
-    
     /**
      * Check for (valid) lack of protocol as found in a protocol-relative URL
      * http://tools.ietf.org/html/rfc3986#page-26
-     * 
+     *
      * Add in temporary protocol to allow parse_url() to correctly recognise
      * the supplied host and path
-     * 
      */
-    private function compensateForProtocolRelativeUrl() {
+    private function compensateForProtocolRelativeUrl()
+    {
         if (substr($this->preparedOrigin, 0, strlen(self::PROTOCOL_RELATIVE_START)) == self::PROTOCOL_RELATIVE_START) {
             $this->preparedOrigin = $this->protocolRelativeDummyScheme() . ':' . $this->preparedOrigin;
             $this->hasProtocolRelativeDummyScheme = true;
             $this->isProtocolRelative = true;
         }
     }
-    
-    
+
     /**
-     *
      * @return string
      */
-    private function protocolRelativeDummyScheme() {
+    private function protocolRelativeDummyScheme()
+    {
         if (is_null($this->protocolRelativeDummyScheme)) {
             $this->protocolRelativeDummyScheme = md5(microtime(true));
         }
-        
+
         return $this->protocolRelativeDummyScheme;
     }
 }

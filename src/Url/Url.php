@@ -1,29 +1,28 @@
 <?php
+
 namespace webignition\Url;
 
-class Url {
-    
+use Etechnika\IdnaConvert\IdnaConvert;
+
+class Url implements UrlInterface
+{
     /**
-     *
-     * @var \webignition\Url\Parser
+     * @var ParserInterface
      */
-    private $parser = null; 
-    
-    
+    protected $parser = null;
+
     /**
-     *
-     * @var \webignition\Url\Configuration
+     * @var Configuration
      */
     private $configuration = null;
-    
-    
+
     /**
      * Original unmodified source URL
-     * 
+     *
      * @var string
      */
     private $originUrl = '';
-    
+
     /**
      * Component parts of this URL, with keys:
      * -scheme
@@ -34,400 +33,354 @@ class Url {
      * -path
      * -query - after the question mark ?
      * -fragment - after the hashmark #
-     * 
+     *
      * @var array
      */
-    private $parts = null;    
-    
-    
+    private $parts = null;
+
     /**
-     *
      * @var array
      */
     private $offsets = null;
-    
+
     /**
-     *
-     * @var array
+     * @var string[]
      */
     private $availablePartNames = array(
-        'scheme',
-        'user',
-        'pass',
-        'host',
-        'port',        
-        'path',
-        'query',
-        'fragment'
+        self::PART_SCHEME,
+        self::PART_USER,
+        self::PART_PASS,
+        self::PART_HOST,
+        self::PART_PORT,
+        self::PART_PATH,
+        self::PART_QUERY,
+        self::PART_FRAGMENT,
     );
-    
-    
+
     /**
-     *
-     * @param string $originUrl 
-     */
-    public function __construct($originUrl = null) {
-        $this->init($originUrl);
-    }
-    
-    
-    /**
-     * 
      * @param string $originUrl
      */
-    public function init($originUrl) {
-        $this->originUrl = $originUrl;
-        $this->reset();
+    public function __construct($originUrl = null)
+    {
+        $this->init($originUrl);
+        $this->configuration = new Configuration();
     }
-    
-    
+
     /**
      *
-     * @return string 
+     * @param string $originUrl
      */
-    public function getRoot() {
+    public function init($originUrl)
+    {
+        $this->originUrl = $originUrl;
+        $this->parts = $this->createParser()->getParts();
+        $this->offsets = $this->createOffsets();
+    }
+
+    /**
+     * @return ParserInterface
+     */
+    protected function createParser()
+    {
+        return new Parser($this->prepareOriginUrl());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRoot()
+    {
         $rawRootUrl = '';
-        
+
         if ($this->hasScheme()) {
             $rawRootUrl .= $this->getScheme() . ':';
         }
-        
+
         if ($this->hasHost()) {
             $rawRootUrl .= '//';
 
             if ($this->hasCredentials()) {
                 $rawRootUrl .= $this->getCredentials() . '@';
             }
-            
+
             $host = (string)$this->getHost();
-            
+
             if ($this->getConfiguration()->getConvertIdnToUtf8()) {
-                $host = \Etechnika\IdnaConvert\IdnaConvert::decodeString($host);
+                $host = IdnaConvert::decodeString($host);
             }
-            
+
             $rawRootUrl .= $host;
-        }        
-        
+        }
+
         if ($this->hasPort()) {
             $rawRootUrl .= ':' . $this->getPort();
         }
 
         return $rawRootUrl;
     }
-    
-    
+
     /**
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    protected function &parts() {
-        if (is_null($this->parts)) {
-            $this->parts = $this->getParser()->getParts();
-        }
-        
-        return $this->parts;
-    }
-    
-    /**
-     *
-     * @return boolean
-     */
-    public function hasScheme() {
-        return $this->hasPart('scheme');
-    }
-    
-    
-    /**
-     *
-     * @return string
-     */
-    public function getScheme() {
-        return $this->getPart('scheme');
-    }
-    
-    
-    /**
-     *
-     * @param string $scheme 
-     */
-    public function setScheme($scheme) {
-        $this->setPart('scheme', $scheme);
+    public function hasScheme()
+    {
+        return $this->hasPart(UrlInterface::PART_SCHEME);
     }
 
-    
     /**
-     *
-     * @return boolean
-     */    
-    public function hasHost() {
-        return $this->hasPart('host');
-    }
-    
-    
-    /**
-     *
-     * @return \webignition\Url\Host\Host
+     * {@inheritdoc}
      */
-    public function getHost() {
-        return $this->getPart('host');
+    public function getScheme()
+    {
+        return $this->getPart(UrlInterface::PART_SCHEME);
     }
-    
+
     /**
-     *
-     * @param string $host 
+     * {@inheritdoc}
      */
-    public function setHost($host) {
-        $this->setPart('host', $host);
+    public function setScheme($scheme)
+    {
+        $this->setPart(UrlInterface::PART_SCHEME, $scheme);
     }
-    
-    
+
     /**
-     *
-     * @return boolean
-     */    
-    public function hasPort() {
-        return $this->hasPart('port');
-    }
-    
-    
-    /**
-     *
-     * @return int
+     * {@inheritdoc}
      */
-    public function getPort() {
-        return $this->getPart('port');
+    public function hasHost()
+    {
+        return $this->hasPart(UrlInterface::PART_HOST);
     }
-    
-    
+
     /**
-     *
-     * @param int $port 
+     * {@inheritdoc}
      */
-    public function setPort($port) {
-        $this->setPart('port', $port);
+    public function getHost()
+    {
+        return $this->getPart(UrlInterface::PART_HOST);
     }
-    
-    
+
     /**
-     *
-     * @return boolean
-     */    
-    public function hasUser() {
-        return $this->hasPart('user');
-    }
-    
-    
-    /**
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    public function getUser() {
-        return $this->getPart('user');
+    public function setHost($host)
+    {
+        $this->setPart(UrlInterface::PART_HOST, $host);
     }
-    
-    
+
     /**
-     *
-     * @param string $user 
+     * {@inheritdoc}
      */
-    public function setUser($user) {
-        $this->setPart('user', $user);
+    public function hasPort()
+    {
+        return $this->hasPart(UrlInterface::PART_PORT);
     }
-    
-    
+
     /**
-     *
-     * @return boolean
-     */    
-    public function hasPass() {
-        return $this->hasPart('pass');
-    }
-    
-    
-    /**
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    public function getPass() {
-        return $this->getPart('pass');
+    public function getPort()
+    {
+        return $this->getPart(UrlInterface::PART_PORT);
     }
-    
-    
+
     /**
-     *
-     * @param string $pass 
+     * {@inheritdoc}
      */
-    public function setPass($pass) {
-        $this->setPart('pass', $pass);
+    public function setPort($port)
+    {
+        $this->setPart(UrlInterface::PART_PORT, $port);
     }
-    
-    
+
     /**
-     *
-     * @return boolean
-     */    
-    public function hasPath() {
-        return $this->hasPart('path');
-    }
-    
-    
-    /**
-     *
-     * @return \webignition\Url\Path\Path
+     * {@inheritdoc}
      */
-    public function getPath() {        
-        return $this->getPart('path');
+    public function hasUser()
+    {
+        return $this->hasPart(UrlInterface::PART_USER);
     }
-    
-    
+
     /**
-     *
-     * @param string $path 
+     * {@inheritdoc}
      */
-    public function setPath($path) {
-        $this->setPart('path', $path);
+    public function getUser()
+    {
+        return $this->getPart(UrlInterface::PART_USER);
     }
-    
-    
+
     /**
-     *
-     * @return boolean
-     */    
-    public function hasQuery() {
-        return $this->hasPart('query');
-    }
-    
-    
-    /**
-     *
-     * @return \webignition\Url\Query\Query
+     * {@inheritdoc}
      */
-    public function getQuery() {
-        $query = $this->getPart('query');
+    public function setUser($user)
+    {
+        $this->setPart(UrlInterface::PART_USER, $user);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasPass()
+    {
+        return $this->hasPart(UrlInterface::PART_PASS);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPass()
+    {
+        return $this->getPart(UrlInterface::PART_PASS);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setPass($pass)
+    {
+        $this->setPart(UrlInterface::PART_PASS, $pass);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasPath()
+    {
+        return $this->hasPart(UrlInterface::PART_PATH);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPath()
+    {
+        return $this->getPart(UrlInterface::PART_PATH);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setPath($path)
+    {
+        $this->setPart(UrlInterface::PART_PATH, $path);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasQuery()
+    {
+        return $this->hasPart(UrlInterface::PART_QUERY);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getQuery()
+    {
+        $query = $this->getPart(UrlInterface::PART_QUERY);
         if ($query instanceof Query\Query && !$query->hasConfiguration()) {
             $query->setConfiguration($this->getConfiguration());
         }
-        
+
         return $query;
     }
-    
-    
-    /**
-     *
-     * @param string $query 
-     */
-    public function setQuery($query) {
-        $this->setPart('query', $query);
-    }
-    
-    
-    /**
-     *
-     * @return boolean
-     */    
-    public function hasFragment() {
-        return $this->hasPart('fragment');
-    }
-    
-    
-    /**
-     *
-     * @return string
-     */
-    public function getFragment() {
-        return $this->getPart('fragment');
-    }
-    
-    
-    /**
-     *
-     * @param string $fragment
-     */
-    public function setFragment($fragment) {
-        $this->setPart('fragment', $fragment);
-    }    
 
-    
     /**
-     *
-     * @return string 
+     * {@inheritdoc}
      */
-    public function __toString() {        
+    public function setQuery($query)
+    {
+        $this->setPart(UrlInterface::PART_QUERY, $query);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasFragment()
+    {
+        return $this->hasPart(UrlInterface::PART_FRAGMENT);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFragment()
+    {
+        return $this->getPart(UrlInterface::PART_FRAGMENT);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setFragment($fragment)
+    {
+        $this->setPart(UrlInterface::PART_FRAGMENT, $fragment);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __toString()
+    {
         $url = $this->getRoot();
-        
+
         $url .= $this->getPath();
-        
+
         if ($this->hasQuery()) {
             $url .= '?' . $this->getQuery();
         }
-        
+
         if ($this->hasFragment()) {
             $url .= '#' . $this->getFragment();
         }
-        
-        return $url;        
+
+        return $url;
     }
 
-
     /**
-     * Return a semantically marked-up string
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    public function __toSemanticString() {
-        return '';
-    }
-    
-    
-    /**
-     *
-     * @return boolean 
-     */
-    public function isRelative() {
+    public function isRelative()
+    {
         if ($this->hasScheme()) {
             return false;
         }
-        
+
         if ($this->hasHost()) {
             return false;
         }
-        
+
         return true;
     }
-    
-    
+
     /**
-     *
-     * @return boolean 
+     * {@inheritdoc}
      */
-    public function isProtocolRelative() {
+    public function isProtocolRelative()
+    {
         if ($this->hasScheme()) {
             return false;
         }
-        
+
         return $this->hasHost();
     }
-    
 
     /**
-     *
-     * @return boolean
+     * {@inheritdoc}
      */
-    public function isAbsolute() {
+    public function isAbsolute()
+    {
         if ($this->isRelative()) {
             return false;
         }
-        
+
         return !$this->isProtocolRelative();
     }
-    
-    
+
     /**
-     *
-     * @param string $partName
-     * @param string $value 
+     * {@inheritdoc}
      */
-    public function setPart($partName, $value) {
+    public function setPart($partName, $value)
+    {
         if (!$this->hasPart($partName) && is_null($value)) {
             return;
         }
@@ -435,244 +388,274 @@ class Url {
         if ($this->hasPart($partName)) {
             $this->replacePart($partName, $value);
         } else {
-            $this->addPart($partName, $value);            
+            $this->addPart($partName, $value);
         }
 
-        $this->reset();
+        $this->init($this->originUrl);
     }
-    
-    
+
     /**
-     * 
      * @param string $partName
-     * @param string $value 
+     * @param string $value
      */
-    private function replacePart($partName, $value) {
-        if ($partName == 'scheme' && is_null($value)) {
-            $offsets = &$this->offsets();
-            $this->originUrl = '//' . substr($this->originUrl, $offsets['host']);
+    private function replacePart($partName, $value)
+    {
+        if ($partName == UrlInterface::PART_SCHEME && is_null($value)) {
+            $this->originUrl = '//' . substr($this->originUrl, $this->offsets[UrlInterface::PART_HOST]);
             return;
         }
-         
-        if ($partName == 'query' && substr($value, 0, 1) == '?') {
-            $value = substr($value, 1);
-        }
-        
-        if ($partName == 'fragment' && substr($value, 0, 1) == '#') {
+
+        if ($partName == UrlInterface::PART_QUERY && substr($value, 0, 1) == '?') {
             $value = substr($value, 1);
         }
 
-        $offsets = &$this->offsets();
+        if ($partName == UrlInterface::PART_FRAGMENT && substr($value, 0, 1) == '#') {
+            $value = substr($value, 1);
+        }
 
-        if ($partName == 'fragment' && is_null($value) && isset($offsets['fragment'])) {
+        $isFragment = UrlInterface::PART_FRAGMENT === $partName;
+
+        if ($isFragment && is_null($value) && isset($offsets[UrlInterface::PART_FRAGMENT])) {
             if ($this->getFragment() == '') {
-                $this->originUrl = substr($this->originUrl, 0, $offsets['fragment']);
+                $this->originUrl = substr($this->originUrl, 0, $this->offsets[UrlInterface::PART_FRAGMENT]);
             } else {
-                $this->originUrl = substr($this->originUrl, 0, $offsets['fragment'] - 1);
+                $this->originUrl = substr($this->originUrl, 0, $this->offsets[UrlInterface::PART_FRAGMENT] - 1);
             }
 
             return;
         }
-        
-        $this->originUrl = substr_replace($this->originUrl, $value, $offsets[$partName], strlen($this->getPart($partName)));
+
+        $this->originUrl = substr_replace(
+            $this->originUrl,
+            $value,
+            $this->offsets[$partName],
+            strlen($this->getPart($partName))
+        );
     }
-    
-    
-    private function addPart($partName, $value) {
-        if ($partName == 'scheme') {
+
+    /**
+     * @param string $partName
+     * @param string $value
+     *
+     * @return bool
+     */
+    private function addPart($partName, $value)
+    {
+        if ($partName == UrlInterface::PART_SCHEME) {
             return $this->addScheme($value);
         }
-        
-        if ($partName == 'user') {
+
+        if ($partName == UrlInterface::PART_USER) {
             return $this->addUser($value);
         }
-        
-        if ($partName == 'host') {
+
+        if ($partName == UrlInterface::PART_HOST) {
             return $this->addHost($value);
-        }        
-        
-        if ($partName == 'pass') {
+        }
+
+        if ($partName == UrlInterface::PART_PASS) {
             return $this->addPass($value);
         }
-        
-        if ($partName == 'query') {
+
+        if ($partName == UrlInterface::PART_QUERY) {
             return $this->addQuery($value);
         }
-        
-        if ($partName == 'fragment') {
+
+        if ($partName == UrlInterface::PART_FRAGMENT) {
             return $this->addFragment($value);
         }
-        
-        if ($partName == 'path') {
+
+        if ($partName == UrlInterface::PART_PATH) {
             return $this->addPath($value);
         }
 
-        if ($partName == 'port') {
+        if ($partName == UrlInterface::PART_PORT) {
             return $this->addPort($value);
         }
+
+        return false;
     }
-    
-    
+
+
     /**
      * Add a scheme to a URL that does not already have one
-     * 
+     *
      * @param string $scheme
-     * @return boolean 
+     *
+     * @return bool
      */
-    private function addScheme($scheme) {
+    private function addScheme($scheme)
+    {
         if ($this->hasScheme()) {
             return false;
         }
-        
+
         if (!$this->isProtocolRelative()) {
             $this->originUrl = '//' . $this->originUrl;
         }
-        
+
         if (substr($this->originUrl, 0, 1) != ':') {
             $this->originUrl = ':' . $this->originUrl;
         }
-        
+
         $this->originUrl = $scheme . $this->originUrl;
+
+        return true;
     }
-    
-    
+
+
     /**
      * Add a user to a URL that does not already have one
-     * 
+     *
      * @param string $user
-     * @return boolean 
+     *
+     * @return bool
      */
-    private function addUser($user) {
+    private function addUser($user)
+    {
         if ($this->hasUser()) {
             return false;
         }
-        
+
         if (!is_string($user)) {
             $user = '';
         }
-        
+
         $user = trim($user);
-//        if ($user == '') {
-//            return true;
-//        }
-        
+
         // A user cannot be added to a URL that has no host; this results in
         // an invalid URL.
         if (!$this->hasHost()) {
             return false;
         }
-        
-        $nextPartName = $this->getNextPartName('user');
-        $offsets = &$this->offsets();
-        
-        if ($nextPartName == 'host') {
-            $preNewPart = substr($this->originUrl, 0, $offsets[$nextPartName]);            
-            $postNewPart = substr($this->originUrl, $offsets[$nextPartName]);              
-            
+
+        $nextPartName = $this->getNextPartName(UrlInterface::PART_USER);
+
+        if ($nextPartName == UrlInterface::PART_HOST) {
+            $preNewPart = substr($this->originUrl, 0, $this->offsets[$nextPartName]);
+            $postNewPart = substr($this->originUrl, $this->offsets[$nextPartName]);
+
             return $this->originUrl = $preNewPart . $user . '@' . $postNewPart;
         }
 
-        $preNewPart = substr($this->originUrl, 0, $offsets[$nextPartName] - 1);
-        $postNewPart = substr($this->originUrl, $offsets[$nextPartName] - 1);
+        $preNewPart = substr($this->originUrl, 0, $this->offsets[$nextPartName] - 1);
+        $postNewPart = substr($this->originUrl, $this->offsets[$nextPartName] - 1);
 
-        return $this->originUrl = $preNewPart . $user . $postNewPart;
+        $this->originUrl = $preNewPart . $user . $postNewPart;
+
+        return true;
     }
-    
-    
-    private function addPass($pass) {       
+
+    /**
+     * @param string $pass
+     *
+     * @return bool
+     */
+    private function addPass($pass)
+    {
         if ($this->hasPass()) {
             return false;
-        }       
-        
+        }
+
         // A pass cannot be added to a URL that has no host; this results in
         // an invalid URL.
         if (!$this->hasHost()) {
             return false;
         }
-        
-        $offsets = &$this->offsets();
-        
+
         if ($this->hasUser()) {
-            $preNewPart = substr($this->originUrl, 0, $offsets['host'] - 1);
-            $postNewPart = substr($this->originUrl, $offsets['host'] - 1);
+            $preNewPart = substr($this->originUrl, 0, $this->offsets[UrlInterface::PART_HOST] - 1);
+            $postNewPart = substr($this->originUrl, $this->offsets[UrlInterface::PART_HOST] - 1);
 
-            return $this->originUrl = $preNewPart . $pass . $postNewPart;
+            $this->originUrl = $preNewPart . $pass . $postNewPart;
+
+            return true;
         }
-        
-        $preNewPart = substr($this->originUrl, 0, $offsets['host']);
-        $postNewPart = substr($this->originUrl, $offsets['host']);
 
-        return $this->originUrl = $preNewPart . ':' . $pass . '@' . $postNewPart;        
+        $preNewPart = substr($this->originUrl, 0, $this->offsets[UrlInterface::PART_HOST]);
+        $postNewPart = substr($this->originUrl, $this->offsets[UrlInterface::PART_HOST]);
+
+        $this->originUrl = $preNewPart . ':' . $pass . '@' . $postNewPart;
+
+        return true;
     }
-    
-    
+
     /**
      * Add a host to a URL that does not already have one
-     * 
+     *
      * @param string $host
-     * @return boolean 
+     *
+     * @return bool
      */
-    private function addHost($host) {        
+    private function addHost($host)
+    {
         if ($this->hasHost()) {
             return false;
         }
- 
+
         if ($this->hasPath() && $this->getPath()->isRelative()) {
             $this->setPath('/' . $this->getPath());
         }
-        
-        return $this->originUrl = '//' . $host . $this->originUrl;        
+
+        $this->originUrl = '//' . $host . $this->originUrl;
+
+        return true;
     }
-    
-    
+
     /**
      * Add query to a URL that does not already have one
-     * 
+     *
      * @param string $query
-     * @return boolean 
+     *
+     * @return bool
      */
-    private function addQuery($query) {
+    private function addQuery($query)
+    {
         if ($this->hasQuery()) {
             return false;
         }
-        
+
         if (is_null($query)) {
             return true;
         }
-        
+
         if (substr($query, 0, 1) != '?') {
             $query = '?' . $query;
         }
-        
-        if ($this->hasFragment()) {
-            $offsets = &$this->offsets();
-            $preNewPart = substr($this->originUrl, 0, $offsets['fragment'] - 1);
-            $postNewPart = substr($this->originUrl, $offsets['fragment'] - 1);
 
-            return $this->originUrl = $preNewPart . $query . $postNewPart;          
+        if ($this->hasFragment()) {
+            $preNewPart = substr($this->originUrl, 0, $this->offsets[UrlInterface::PART_FRAGMENT] - 1);
+            $postNewPart = substr($this->originUrl, $this->offsets[UrlInterface::PART_FRAGMENT] - 1);
+
+            $this->originUrl = $preNewPart . $query . $postNewPart;
+
+            return true;
         }
-        
-        return $this->originUrl .= $query;
+
+        $this->originUrl .= $query;
+
+        return true;
     }
-    
-    
+
     /**
      * Add a fragment to a URL that does not already have one
-     * 
+     *
      * @param string $fragment
-     * @return boolean 
+     *
+     * @return bool
      */
-    public function addFragment($fragment) {
+    public function addFragment($fragment)
+    {
         if ($this->hasFragment()) {
             return false;
         }
-        
+
         if (!is_string($fragment)) {
             $fragment = '';
         }
-        
+
         $fragment = trim($fragment);
-        
+
         if ($fragment == '') {
             return true;
         }
@@ -680,173 +663,179 @@ class Url {
         if (substr($fragment, 0, 1) != '#') {
             $fragment = '#' . $fragment;
         }
-        
-        return $this->originUrl .= $fragment;
+
+        $this->originUrl .= $fragment;
+
+        return true;
     }
-    
-    
+
     /**
      *  Add a path to a URL that does not already have one
-     * 
+     *
      * @param string $path
-     * @return boolean 
+     *
+     * @return bool
      */
-    public function addPath($path) {       
+    public function addPath($path)
+    {
         if ($this->hasPath()) {
             return false;
         }
-        
-        if (!$this->hasPart('query') && !$this->hasPart('fragment')) {
-            return $this->originUrl = $this->originUrl . $path;
+
+        if (!$this->hasPart(UrlInterface::PART_QUERY) && !$this->hasPart(UrlInterface::PART_FRAGMENT)) {
+            $this->originUrl = $this->originUrl . $path;
+
+            return true;
         }
-        
-        $nextPartName = $this->getNextPartName('path');
-        $offsets = &$this->offsets();             
-        
-        $offset = $offsets[$nextPartName];
-        
-        if ($nextPartName == 'fragment' && $offset > 0) {
+
+        $nextPartName = $this->getNextPartName(UrlInterface::PART_PATH);
+
+        $offset = $this->offsets[$nextPartName];
+
+        if ($nextPartName == UrlInterface::PART_FRAGMENT && $offset > 0) {
             $offset -= 1;
         }
-        
-        return $this->originUrl = substr($this->originUrl, 0, $offset) . $path . substr($this->originUrl, $offset);        
-    }
-    
 
+        $this->originUrl = substr($this->originUrl, 0, $offset) . $path . substr($this->originUrl, $offset);
+
+        return true;
+    }
+
+    /**
+     * @param int $value
+     *
+     * @return bool
+     */
     public function addPort($value)
     {
         if (!$value or $this->hasPort()) {
             return false;
         }
 
-        $this->parts['port'] = $value;
+        $this->parts[UrlInterface::PART_PORT] = $value;
         $host = $this->getHost();
 
-        return $this->originUrl = str_replace($host, $host.':'.$value, $this->originUrl);
+        $this->originUrl = str_replace($host, $host.':'.$value, $this->originUrl);
+
+        return true;
     }
 
-    
     /**
      * Get the next url part after $partName that is present in this
      * url
-     * 
+     *
      * @param string $partName
-     * @return string
+     *
+     * @return string|null
      */
-    private function getNextPartName($partName) {        
-        $hasFoundPart = false;        
+    private function getNextPartName($partName)
+    {
+        $hasFoundPart = false;
         foreach ($this->availablePartNames as $availablePartName) {
             if ($partName == $availablePartName) {
                 $hasFoundPart = true;
             }
-            
+
             if ($hasFoundPart === false) {
                 continue;
             }
-            
+
             if ($availablePartName != $partName && $this->hasPart($availablePartName)) {
                 return $availablePartName;
             }
         }
-        
+
         return null;
     }
-    
-    
-    private function &offsets() {        
-        if (is_null($this->offsets)) {
-            $this->offsets = array();
-            
-            $partNames = array();
-            foreach ($this->availablePartNames as $availablePartName) {
-                if ($this->hasPart($availablePartName)) {
-                    $partNames[] = $availablePartName;
+
+    private function createOffsets()
+    {
+        $offsets = [];
+
+        $partNames = [];
+        foreach ($this->availablePartNames as $availablePartName) {
+            if ($this->hasPart($availablePartName)) {
+                $partNames[] = $availablePartName;
+            }
+        }
+
+        if (count($partNames) == 1) {
+            $offsets = [
+                $partNames[0] => 0
+            ];
+
+            return $offsets;
+        }
+
+        $originUrlComparison = str_split(rawurldecode($this->originUrl));
+        $index = 0;
+
+        foreach ($partNames as $partName) {
+            $currentPart = urldecode((string)$this->parts[$partName]);
+
+            // Special case: empty user (i.e. user = '', not null or missing user)
+            if ($partName == UrlInterface::PART_USER && $currentPart == '') {
+                if (array_slice($originUrlComparison, 0, 3) ==  [':', '/', '/']) {
+                    $schemeLength = strlen(urldecode((string)$this->parts[UrlInterface::PART_SCHEME]));
+
+                    $offsets[UrlInterface::PART_USER] = $offsets[UrlInterface::PART_SCHEME] + $schemeLength + 3;
+                    continue;
+                } elseif (array_slice($originUrlComparison, 0, 2) ==  ['/', '/']) {
+                    $offsets[UrlInterface::PART_USER] = 2;
+                    continue;
                 }
             }
 
-            if (count($partNames) == 1) {
-                $this->offsets = array(
-                    $partNames[0] => 0
-                );
-                
-                return $this->offsets;              
+            // Special case: empty password
+            if ($partName == UrlInterface::PART_PASS && $currentPart == '') {
+                $userLength = strlen($this->parts[UrlInterface::PART_USER]);
+
+                $offsets[UrlInterface::PART_PASS] = $offsets[UrlInterface::PART_USER] + $userLength + 1;
+                continue;
             }
 
-            $originUrlComparison = str_split(rawurldecode($this->originUrl));
-            $index = 0;
+            $currentPartMatch = '';
+            $currentPartFirstCharacter = substr($currentPart, 0, 1);
 
-            foreach ($partNames as $partName) {
-                $currentPart = urldecode((string)$this->parts[$partName]);
-
-                // Special case: empty user (i.e. user = '', not null or missing user)
-                if ($partName == 'user' && $currentPart == '') {
-                    if (array_slice($originUrlComparison, 0, 3) ==  array(':', '/', '/')) {
-                        $this->offsets['user'] = $this->offsets['scheme'] + strlen(urldecode((string)$this->parts['scheme'])) + 3;
-                        continue;
-                    } elseif (array_slice($originUrlComparison, 0, 2) ==  array('/', '/')) {
-                        $this->offsets['user'] = 2;
-                        continue;
-                    }
+            while ($currentPartMatch != $currentPart) {
+                if (!isset($originUrlComparison[0])) {
+                    break;
                 }
 
-                // Special case: empty password
-                if ($partName == 'pass' && $currentPart == '') {
-                    $this->offsets['pass'] = $this->offsets['user'] + strlen($this->parts['user']) + 1;
+                $currentCharacter = $originUrlComparison[0];
+
+                $nextCharacter = array_shift($originUrlComparison);
+                $index++;
+
+                if ($currentPartMatch == '' && $nextCharacter != $currentPartFirstCharacter) {
                     continue;
                 }
 
-                $currentPartMatch = '';
-                $currentPartFirstCharacter = substr($currentPart, 0, 1);
-
-                while ($currentPartMatch != $currentPart) {
-                    if(!isset($originUrlComparison[0])){
-                        break;
-                    }
-                    
-                    $currentCharacter = $originUrlComparison[0];
-
-                    $nextCharacter = array_shift($originUrlComparison);
-                    $index++;
-
-                    if ($currentPartMatch == '' && $nextCharacter != $currentPartFirstCharacter) {
-                        continue;
-                    }
-
-                    $currentPartMatch .= $currentCharacter;
-                }
-
-                $offset = $index - strlen($currentPartMatch);
-                $this->offsets[$partName] = $offset;
+                $currentPartMatch .= $currentCharacter;
             }
+
+            $offset = $index - strlen($currentPartMatch);
+            $offsets[$partName] = $offset;
         }
-        
-        return $this->offsets;
+
+        return $offsets;
     }
-    
-    
-    protected function reset() {
-        $this->parser = null;
-        $this->parts = $this->getParser()->getParts();
-        $this->offsets = null;
-    }
-    
-    
+
     /**
-     *
-     * @return boolean
+     * {@inheritdoc}
      */
-    public function hasCredentials() {
+    public function hasCredentials()
+    {
         return $this->hasUser() || $this->hasPass();
     }
-    
-    
+
     /**
-     *
-     * @return string 
+     * @return string
      */
-    private function getCredentials() {
+    private function getCredentials()
+    {
         $credentials = '';
-        
+
         if ($this->hasUser()) {
             $credentials .= $this->getUser();
         }
@@ -855,81 +844,57 @@ class Url {
             $credentials .= ':';
             $credentials .= $this->getPass();
         }
-        
+
         return $credentials;
-    } 
-    
-    
+    }
+
     /**
-     *
      * @param string $partName
+     *
      * @return mixed
      */
-    protected function getPart($partName) {        
-        $parts = &$this->parts();
-        
-        return (isset($parts[$partName])) ? $parts[$partName] : null;
+    protected function getPart($partName)
+    {
+        return isset($this->parts[$partName])
+            ? $this->parts[$partName]
+            : null;
     }
-    
-    
+
     /**
-     *
      * @param string $partName
-     * @return boolean
+     *
+     * @return bool
      */
-    protected function hasPart($partName) {
-        if (is_null($this->getPart($partName))) {
-            return false;
-        }
-        
+    protected function hasPart($partName)
+    {
         return isset($this->parts[$partName]);
     }
 
-    
     /**
-     *
-     * @return \webignition\Url\Parser
-     */
-    public function getParser() {
-        if (is_null($this->parser)) {
-            $this->parser = new Parser($this->prepareOriginUrl());
-        }
-        
-        return $this->parser;
-    }
-    
-    
-    /**
-     * 
      * @return string
      */
-    private function prepareOriginUrl() {
+    protected function prepareOriginUrl()
+    {
         $preparedOriginUrl = $this->originUrl;
-        
+
         // Unencoded leading or trailing whitespace is not allowed
         $preparedOriginUrl = trim($preparedOriginUrl);
-        
+
         // Whitespace that is not a regular space character is not allowed
         // and should be removed.
-        // 
+        //
         // Not clearly spec'd anywhere but is the default behaviour of Chrome
         // and FireFox
         $preparedOriginUrl = str_replace(array("\t", "\r", "\n"), '', $preparedOriginUrl);
-        
+
         return $preparedOriginUrl;
     }
-    
-    
+
     /**
-     * 
-     * @return \webignition\Url\Configuration
+     * @return Configuration
      */
-    public function getConfiguration() {
-        if (is_null($this->configuration)) {
-            $this->configuration = new Configuration();
-        }
-        
+    public function getConfiguration()
+    {
         return $this->configuration;
-    }    
-    
+    }
 }

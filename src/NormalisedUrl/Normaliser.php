@@ -2,95 +2,96 @@
 
 namespace webignition\NormalisedUrl;
 
-class Normaliser {
-    
+use Etechnika\IdnaConvert\IdnaConvert;
+use webignition\Url\Host\Host;
+use webignition\Url\Parser;
+use webignition\Url\UrlInterface;
+
+class Normaliser extends Parser
+{
     const DEFAULT_PORT = 80;
 
-    private $knownPorts = array(
+    private $knownPorts = [
         'http' => 80,
         'https' => 443
-    );
-    
+    ];
+
     /**
-     * Collection of the different parts of the URL
-     * 
-     * @var array
+     * {@inheritdoc}
      */
-    private $parts = array();
-    
-    
-    /**
-     *
-     * @param array $parts 
-     */
-    public function __construct($parts) {
-        $this->parts = $parts;
-        $this->normalise();        
-    }
-    
-    
-    /**
-     *
-     * @return array
-     */
-    public function getNormalisedParts() {        
-        return $this->parts;
-    }
-    
-    private function normalise() {
+    public function __construct($url)
+    {
+        parent::__construct($url);
+
         $this->normaliseScheme();
         $this->normaliseHost();
         $this->normalisePort();
         $this->normalisePath();
         $this->normaliseQuery();
     }
-    
-    
+
     /**
-     * Scheme is case-insensitive, normalise to lowercase 
+     * Scheme is case-insensitive, normalise to lowercase
      */
-    private function normaliseScheme() {
-        if (isset($this->parts['scheme'])) {
-            $this->parts['scheme'] = strtolower(trim($this->parts['scheme']));
+    private function normaliseScheme()
+    {
+        if (isset($this->parts[UrlInterface::PART_SCHEME])) {
+            $this->parts[UrlInterface::PART_SCHEME] = strtolower(trim($this->parts[UrlInterface::PART_SCHEME]));
         }
     }
-    
-    
+
     /**
      * Host is case-insensitive, normalise to lowercase and to ascii version of
      * IDN format
      */
-    private function normaliseHost() {
-        if (isset($this->parts['host'])) {
-            $asciiHost = trim(strtolower(\Etechnika\IdnaConvert\IdnaConvert::encodeString($this->parts['host']->get())));            
-            $this->parts['host']->set($asciiHost);
+    private function normaliseHost()
+    {
+        if (isset($this->parts[UrlInterface::PART_HOST])) {
+            /* @var Host $host */
+            $host = $this->parts[UrlInterface::PART_HOST];
+            $hostAsString = $host->get();
+
+            $asciiHost = strtolower(IdnaConvert::encodeString($hostAsString));
+
+            $host->set($asciiHost);
+
+            $this->parts[UrlInterface::PART_HOST] = $host;
         }
     }
-    
-    
+
     /**
-     * Remove default HTTP port 
+     * Remove default HTTP(S) port
      */
-    private function normalisePort() {
-        if (isset($this->parts['port']) && isset($this->parts['scheme'])) {
-            if (isset($this->knownPorts[$this->parts['scheme']]) && $this->knownPorts[$this->parts['scheme']] == $this->parts['port']) {
-                unset($this->parts['port']);
+    private function normalisePort()
+    {
+        $hasPort = isset($this->parts[UrlInterface::PART_PORT]);
+        $hasScheme = isset($this->parts[UrlInterface::PART_SCHEME]);
+
+        if ($hasPort && $hasScheme) {
+            $port = $this->parts[UrlInterface::PART_PORT];
+            $scheme = $this->parts[UrlInterface::PART_SCHEME];
+
+            $hasKnownPort = isset($this->knownPorts[$scheme]);
+
+            if ($hasKnownPort && $this->knownPorts[$scheme] == $port) {
+                unset($this->parts[UrlInterface::PART_PORT]);
             }
         }
-    }    
-    
-    private function normalisePath() {
-        if (!isset($this->parts['path'])) {
-            $this->parts['path'] = '';
+    }
+
+    private function normalisePath()
+    {
+        if (!isset($this->parts[UrlInterface::PART_PATH])) {
+            $this->parts[UrlInterface::PART_PATH] = null;
         }
-        
-        $this->parts['path'] = new \webignition\NormalisedUrl\Path\Path((string)$this->parts['path']);
-    }    
-    
-    private function normaliseQuery() {
-        if (isset($this->parts['query'])) {
-            $this->parts['query'] = new \webignition\NormalisedUrl\Query\Query((string)$this->parts['query']);
+
+        $this->parts[UrlInterface::PART_PATH] = new Path\Path((string)$this->parts[UrlInterface::PART_PATH]);
+    }
+
+    private function normaliseQuery()
+    {
+        if (isset($this->parts[UrlInterface::PART_QUERY])) {
+            $this->parts[UrlInterface::PART_QUERY] = new Query\Query((string)$this->parts[UrlInterface::PART_QUERY]);
         }
     }
-    
 }
