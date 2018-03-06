@@ -1,6 +1,6 @@
 <?php
 
-namespace webignition\Tests\NormalisedUrl;
+namespace webignition\Tests\NormalisedUrl\Path;
 
 abstract class AbstractNormalisedUrlPathTest extends \PHPUnit_Framework_TestCase
 {
