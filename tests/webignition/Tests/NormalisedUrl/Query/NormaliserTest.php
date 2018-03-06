@@ -15,9 +15,9 @@ class NormaliserTest extends \PHPUnit_Framework_TestCase
     public function testCreate($queryString, array $expectedNormalisedKeyValuePairs)
     {
         $normaliser = new Normaliser($queryString);
-        $normalisedPath = $normaliser->getKeyValuePairs();
+        $normalisedKeyValuePairs = $normaliser->getKeyValuePairs();
 
-        $this->assertEquals($expectedNormalisedKeyValuePairs, $normalisedPath);
+        $this->assertEquals($expectedNormalisedKeyValuePairs, $normalisedKeyValuePairs);
     }
 
     public function createDataProvider()
@@ -40,7 +40,7 @@ class NormaliserTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
             'key without value' => [
-                'queryString' => 'key1=value1&key2',
+                'queryString' => 'key2&key1=value1',
                 'expectedNormalisedKeyValuePairs' => [
                     'key1' => 'value1',
                     'key2' => null,
