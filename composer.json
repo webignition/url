@@ -12,7 +12,15 @@
         }
     ],
     "autoload": {
-        "psr-0": { "": "src/" }
+        "psr-4": {
+            "webignition\\Url\\": "src/Url",
+            "webignition\\NormalisedUrl\\": "src/NormalisedUrl"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "webignition\\Tests\\": "tests/"
+        }
     },
     "require": {
         "php": ">=5.6.0",
