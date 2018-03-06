@@ -2,26 +2,17 @@
 
 namespace webignition\NormalisedUrl\Query;
 
-class Query extends \webignition\Url\Query\Query {
-    
-    
+use webignition\Url\Query\Query as RegularQuery;
+
+class Query extends RegularQuery
+{
     /**
-     *
-     * @var \webignition\NormalisedUrl\Query\Normaliser
+     * {@inheritdoc}
      */
-    private $normaliser = null;
-    
-    
-    /**
-     *
-     * @return \webignition\Url\Query\Parser 
-     */
-    public function getParser() {
-        if (is_null($this->normaliser)) {
-            $this->normaliser = new \webignition\NormalisedUrl\Query\Normaliser($this->getOrigin());
-        }
-        
-        return $this->normaliser;
-    }   
-    
+    public function __construct($encodedQueryString)
+    {
+        parent::__construct($encodedQueryString);
+
+        $this->parser = new Normaliser($this->origin);
+    }
 }

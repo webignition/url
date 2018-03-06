@@ -2,58 +2,55 @@
 
 namespace webignition\Url\Query;
 
-class Parser {
-    
+class Parser implements ParserInterface
+{
     const PAIR_DELIMITER = '&';
     const KEY_VALUE_DELIMITER = '=';
-   
+
     /**
-     * Supplied URL, unmodified
-     * 
+     * Supplied query string, unmodified
+     *
      * @var string
      */
-    private $origin = null;
-    
-    
+    protected $origin = null;
+
     /**
-     *
      * @var array
      */
-    private $keyValuePairs = null;
-    
-    
+    protected $keyValuePairs = [];
+
     /**
      *
-     * @param string $queryString 
+     * @param string $queryString
      */
-    public function __construct($queryString) {
-        $this->origin = $queryString;     
+    public function __construct($queryString)
+    {
+        $this->origin = $queryString;
+        $this->parse();
     }
-    
-    
+
     /**
-     *
      * @return array
      */
-    public function getKeyValuePairs() {
-        if (is_null($this->keyValuePairs)) {            
-            $this->parse();
-        }
-        
+    public function getKeyValuePairs()
+    {
         return $this->keyValuePairs;
-    }    
-    
-        
-    private function parse() {        
+    }
+
+    protected function parse()
+    {
+        if (empty($this->origin)) {
+            return;
+        }
+
         $pairStrings = explode(self::PAIR_DELIMITER, $this->origin);
-        
-        foreach ($pairStrings as $pairString) {                        
+
+        foreach ($pairStrings as $pairString) {
             $currentPair = explode(self::KEY_VALUE_DELIMITER, $pairString);
             $key = rawurldecode($currentPair[0]);
             $value = isset($currentPair[1]) ? rawurldecode($currentPair[1]) : null;
-            
-            $this->keyValuePairs[$key] = $value;            
+
+            $this->keyValuePairs[$key] = $value;
         }
     }
-    
 }
