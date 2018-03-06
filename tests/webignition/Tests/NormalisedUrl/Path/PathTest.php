@@ -2,9 +2,9 @@
 
 namespace webignition\Tests\NormalisedUrl;
 
-use webignition\NormalisedUrl\Path\Normaliser;
+use webignition\NormalisedUrl\Path\Path;
 
-class NormaliserTest extends AbstractNormalisedUrlPathTest
+class PathTest extends AbstractNormalisedUrlPathTest
 {
     /**
      * @dataProvider createDataProvider
@@ -14,8 +14,7 @@ class NormaliserTest extends AbstractNormalisedUrlPathTest
      */
     public function testCreate($path, $expectedNormalisedPath)
     {
-        $normaliser = new Normaliser($path);
-        $normalisedPath = $normaliser->get();
+        $normalisedPath = new Path($path);
 
         $this->assertEquals($expectedNormalisedPath, $normalisedPath);
     }

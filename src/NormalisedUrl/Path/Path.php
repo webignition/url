@@ -1,37 +1,23 @@
 <?php
+
 namespace webignition\NormalisedUrl\Path;
+
+use webignition\Url\Path\Path as RegularPath;
 
 /**
  * Represents the normalised path part of a URL
- *  
  */
-class Path extends \webignition\Url\Path\Path {
-        
+class Path extends RegularPath
+{
     /**
-     *
-     * @var \webignition\NormalisedUrl\Path\Normaliser
-     */
-    private $normaliser = null;
-    
-    
-    /**
-     *
-     * @param string $path 
-     */
-    public function __construct($path) {        
-        $this->set($this->normaliser($path)->get());
-    }
-    
-    /**
-     *
      * @param string $path
-     * @return \webignition\NormalisedUrl\Path\Normaliser 
      */
-    private function normaliser($path) {
-        if (is_null($this->normaliser)) {
-            $this->normaliser = new \webignition\NormalisedUrl\Path\Normaliser($path);
-        }
-        
-        return $this->normaliser;
+    public function __construct($path)
+    {
+        parent::__construct($path);
+
+        $normaliser = new Normaliser($path);
+
+        $this->set($normaliser->get());
     }
 }
