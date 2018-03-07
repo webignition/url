@@ -3,49 +3,32 @@
 namespace webignition\Tests\NormalisedUrl\Query;
 
 use webignition\NormalisedUrl\Query\Normaliser;
+use webignition\Tests\NormalisedUrl\AbstractNormalisedUrlTest;
 
-class NormaliserTest extends \PHPUnit_Framework_TestCase
+class NormaliserTest extends AbstractNormalisedUrlTest
 {
     /**
-     * @dataProvider createDataProvider
+     * @dataProvider queryNormalisationDataProvider
      *
      * @param string $queryString
-     * @param array $expectedNormalisedKeyValuePairs
+     * @param string $expectedNormalisedQueryString
      */
-    public function testCreate($queryString, array $expectedNormalisedKeyValuePairs)
+    public function testCreate($queryString, $expectedNormalisedQueryString)
     {
         $normaliser = new Normaliser($queryString);
         $normalisedKeyValuePairs = $normaliser->getKeyValuePairs();
 
-        $this->assertEquals($expectedNormalisedKeyValuePairs, $normalisedKeyValuePairs);
-    }
+        $queryStringParts = [];
+        foreach ($normalisedKeyValuePairs as $key => $value) {
+            $queryStringPart = $key;
 
-    public function createDataProvider()
-    {
-        return [
-            'null' => [
-                'queryString' => null,
-                'expectedNormalisedKeyValuePairs' => [],
-            ],
-            'empty' => [
-                'queryString' => '',
-                'expectedNormalisedKeyValuePairs' => [],
-            ],
-            'sort alphabetically by key' => [
-                'queryString' => 'a=1&c=3&b=2',
-                'expectedNormalisedKeyValuePairs' => [
-                    'a' => 1,
-                    'b' => 2,
-                    'c' => 3,
-                ],
-            ],
-            'key without value' => [
-                'queryString' => 'key2&key1=value1',
-                'expectedNormalisedKeyValuePairs' => [
-                    'key1' => 'value1',
-                    'key2' => null,
-                ],
-            ],
-        ];
+            if ($value) {
+                $queryStringPart .= '=' . $value;
+            }
+
+            $queryStringParts[] = $queryStringPart;
+        }
+
+        $this->assertEquals($expectedNormalisedQueryString, implode('&', $queryStringParts));
     }
 }
