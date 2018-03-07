@@ -2,61 +2,57 @@
 
 namespace webignition\Url;
 
-class Configuration {
-    
-    
+class Configuration
+{
     /**
      * Whether to fully url-encode query string keys
      * Default is true
-     * 
+     *
      * When false, query string keys will be minimally encoded
      * At the very least, must encode: # &
-     * 
-     * @var boolean
+     *
+     * @var bool
      */
     private $fullyEncodeQueryStringKeys = true;
-    
-    
+
     /**
-     *
-     * @var boolean
+     * @var bool
      */
     private $convertIdnToUtf8 = false;
-    
-    
-    public function enableFullyEncodeQueryStringKeys() {
+
+    public function enableFullyEncodeQueryStringKeys()
+    {
         $this->fullyEncodeQueryStringKeys = true;
     }
-    
-    public function disableFullyEncodeQueryStringKeys() {
+
+    public function disableFullyEncodeQueryStringKeys()
+    {
         $this->fullyEncodeQueryStringKeys = false;
     }
-    
-    
-    public function enableConvertIdnToUtf8() {
+
+    public function enableConvertIdnToUtf8()
+    {
         $this->convertIdnToUtf8 = true;
     }
-    
-    
-    public function disableConvertIdnToUtf8() {
+
+    public function disableConvertIdnToUtf8()
+    {
         $this->convertIdnToUtf8 = false;
     }
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function getConvertIdnToUtf8() {
+    public function getConvertIdnToUtf8()
+    {
         return $this->convertIdnToUtf8;
     }
-    
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    public function getFullyEncodeQueryStringKeys() {
+    public function getFullyEncodeQueryStringKeys()
+    {
         return $this->fullyEncodeQueryStringKeys;
     }
-    
 }
