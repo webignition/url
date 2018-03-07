@@ -147,4 +147,23 @@ class NormaliserTest extends AbstractNormalisedUrlTest
 
         $this->assertEquals($expectedNormalisedPath, (string)$normalisedParts[UrlInterface::PART_PATH]);
     }
+
+    /**
+     * @dataProvider queryNormalisationDataProvider
+     *
+     * @param string $queryString
+     * @param string $expectedNormalisedQueryString
+     */
+    public function testNormaliseQuery($queryString, $expectedNormalisedQueryString)
+    {
+        $normaliser = new Normaliser('http://example.com/?' . $queryString);
+
+        $normalisedParts = $normaliser->getParts();
+
+        if (isset($normalisedParts[UrlInterface::PART_QUERY])) {
+            $this->assertEquals($expectedNormalisedQueryString, (string)$normalisedParts[UrlInterface::PART_QUERY]);
+        } else {
+            $this->assertArrayNotHasKey(UrlInterface::PART_QUERY, $normalisedParts);
+        }
+    }
 }
