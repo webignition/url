@@ -40,29 +40,28 @@ class Query
     }
 
     /**
-     *
      * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return str_replace(array('%7E'), array('~'), $this->buildQueryStringFromPairs());
     }
-
 
     /**
      *
      * @return string
      */
-    private function buildQueryStringFromPairs() {
+    private function buildQueryStringFromPairs()
+    {
         $encoder = new Encoder($this->pairs(), $this->configuration);
         return (string)$encoder;
     }
 
-
     /**
-     *
      * @return array
      */
-    public function pairs() {
+    public function pairs()
+    {
         if (is_null($this->pairs)) {
             $this->pairs = $this->getParser()->getKeyValuePairs();
         }
@@ -79,96 +78,90 @@ class Query
     }
 
     /**
-     *
-     * @return string
-     */
-    protected function getOrigin() {
-        return $this->origin;
-    }
-
-
-    /**
-     *
      * @param string $key
-     * @return boolean
+     *
+     * @return bool
      */
-    public function contains($key) {
+    public function contains($key)
+    {
         return array_key_exists($key, $this->pairs());
     }
 
-
     /**
-     *
      * @param string $origin
      */
-    private function setOrigin($origin) {
+    private function setOrigin($origin)
+    {
         $this->origin = $origin;
     }
 
-
-
-    protected function reset() {
+    protected function reset()
+    {
         $this->pairs = null;
-        $this->parser = null;
+        $this->parser = new Parser($this->origin);
     }
 
-
     /**
-     *
      * @param string $encodedKey
      * @param string $encodedValue
      */
-    public function add($encodedKey, $encodedValue) {
+    public function add($encodedKey, $encodedValue)
+    {
         if (!$this->contains(urldecode($encodedKey))) {
+            $addition = $encodedKey . '=' . $encodedValue;
+
+            if (!empty($this->origin)) {
+                $addition = '&' . $addition;
+            }
+
+            $this->setOrigin($this->origin . $addition);
             $this->reset();
-            $this->setOrigin($this->getOrigin() . '&' . $encodedKey . '=' . $encodedValue);
         }
     }
 
-
     /**
-     *
      * @param string $encodedKey
      */
-    public function remove($encodedKey) {
-        if ($this->contains(urldecode($encodedKey))) {
-            unset($this->pairs[urldecode($encodedKey)]);
+    public function remove($encodedKey)
+    {
+        $decodedKey = urldecode($encodedKey);
+
+        if ($this->contains($decodedKey)) {
+            unset($this->pairs[$decodedKey]);
             $this->setOrigin((string)$this);
         }
 
         $this->reset();
     }
 
-
     /**
-     *
      * @param string $encodedKey
      * @param string $encodedValue
      */
-    public function set($encodedKey, $encodedValue) {
-        if ($this->contains(urldecode($encodedKey))) {
-            $this->pairs[urldecode($encodedKey)] = urldecode($encodedValue);
+    public function set($encodedKey, $encodedValue)
+    {
+        $decodedKey = urldecode($encodedKey);
+
+        if ($this->contains($decodedKey)) {
+            $this->pairs[$decodedKey] = urldecode($encodedValue);
         } else {
             $this->add($encodedKey, $encodedValue);
         }
     }
 
-
     /**
-     *
      * @param Configuration $configuration
      */
-    public function setConfiguration(Configuration $configuration) {
+    public function setConfiguration(Configuration $configuration)
+    {
         $this->configuration = $configuration;
     }
 
-
     /**
-     *
-     * @return boolean
+     * @return bool
      */
-    public function hasConfiguration() {
+    public function hasConfiguration()
+    {
         return !is_null($this->configuration);
     }
-
 }

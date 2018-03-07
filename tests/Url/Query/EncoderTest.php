@@ -14,6 +14,21 @@ use webignition\Url\Query\Encoder;
 class EncoderTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * {@inheritdoc}
+     */
+    protected function setUp()
+    {
+        parent::setUp();
+
+        PHPMockery::mock(
+            'webignition\Url\Query',
+            'md5'
+        )->andReturnValues(
+            [1, 'foo']
+        );
+    }
+
+    /**
      * @dataProvider setHasConfigurationDataProvider
      *
      * @param Configuration|null $configuration
@@ -133,13 +148,6 @@ class EncoderTest extends \PHPUnit_Framework_TestCase
 
     public function testEncodeNullValues()
     {
-        PHPMockery::mock(
-            'webignition\Url\Query',
-            'md5'
-        )->andReturnValues(
-            [1, 'foo']
-        );
-
         $encoder = new Encoder([
             'a' => 1,
             'b' => null,
@@ -147,5 +155,15 @@ class EncoderTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $this->assertEquals('a=1&b&c=3', (string)$encoder);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        \Mockery::close();
     }
 }
