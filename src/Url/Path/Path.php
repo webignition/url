@@ -1,102 +1,100 @@
 <?php
+
 namespace webignition\Url\Path;
 
 /**
  * Represents the path part of a URL
- *  
  */
-class Path {
-    
+class Path
+{
     const PATH_PART_SEPARATOR = '/';
-    
+
     /**
-     * 
      * @var string
      */
-    private $path = '';    
-    
-    
+    private $path = '';
+
     /**
-     *
-     * @param string $path 
+     * @param string $path
      */
-    public function __construct($path) {
+    public function __construct($path)
+    {
         $this->set($path);
     }
-    
+
     /**
-     *
-     * @return boolean
+     * @return bool
      */
-    public function isRelative() {
+    public function isRelative()
+    {
         return !$this->isAbsolute();
     }
-    
+
     /**
-     *
-     * @return boolean
+     * @return bool
      */
-    public function isAbsolute() {
+    public function isAbsolute()
+    {
         return substr($this->path, 0, 1) === self::PATH_PART_SEPARATOR;
     }
-    
-    
+
     /**
-     *
      * @return string
      */
-    public function get() {
+    public function get()
+    {
         return $this->path;
     }
-    
-    
+
     /**
-     *
-     * @param string $path 
+     * @param string $path
      */
-    public function set($path) {
+    public function set($path)
+    {
         $this->path = trim($path);
     }
-    
+
     /**
-     *
-     * @return string 
+     * @return string
      */
-    public function __toString() {              
-        return $this->get();       
+    public function __toString()
+    {
+        return $this->get();
     }
-    
-    
+
     /**
-     *
-     * @return boolean
+     * @return bool
      */
-    public function hasFilename() {        
+    public function hasFilename()
+    {
         if (substr($this->path, strlen($this->path) - 1) == '/') {
             return false;
         }
-        
+
         return substr_count(basename($this->path), '.') > 0;
     }
-    
+
     /**
-     *
      * @return string
      */
-    public function getFilename() {
+    public function getFilename()
+    {
         return $this->hasFilename() ? basename($this->path) : '';
     }
-    
+
     /**
-     *
      * @return string
      */
-    public function getDirectory() {
+    public function getDirectory()
+    {
         return $this->hasFilename() ? dirname($this->path) : $this->path;
     }
-    
-    
-    public function hasTrailingSlash() {
+
+    /**
+     * @return bool
+     */
+    public function hasTrailingSlash()
+    {
         return substr($this->get(), strlen($this->get()) - 1) == '/';
     }
 }
