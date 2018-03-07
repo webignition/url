@@ -2,15 +2,17 @@
 
 namespace webignition\Url\Host;
 
+use Etechnika\IdnaConvert\IdnaConvert;
 use IpUtils\Address\IPv4;
+use IpUtils\Exception\InvalidExpressionException;
 use IpUtils\Expression\Subnet;
+use IpUtils\Factory as IpUtilsFactory;
 
 /**
  * Represents the host part of a URL
- *  
  */
-class Host {
-
+class Host
+{
     const HOST_PART_SEPARATOR = '.';
 
     const UNROUTABLE_THIS_NETWORK_RANGE = '0.0.0.0/8';
@@ -29,7 +31,7 @@ class Host {
     const UNROUTABLE_FUTURE_USE_RANGE = '240.0.0.0/4';
     const UNROUTABLE_LIMITED_BROADCAST_RANGE = '255.255.255.255/32';
 
-    private $unrouteableRanges = array(
+    private $unrouteableRanges = [
         self::UNROUTABLE_THIS_NETWORK_RANGE,
         self::UNROUTABLE_PRIVATE_USE_NETWORKS_10_RANGE,
         self::UNROUTABLE_LOOPBACK_RANGE,
@@ -45,85 +47,81 @@ class Host {
         self::UNROUTABLE_MULTICAST_RANGE,
         self::UNROUTABLE_FUTURE_USE_RANGE,
         self::UNROUTABLE_LIMITED_BROADCAST_RANGE
-    );
+    ];
 
     /**
-     * 
      * @var string
      */
     private $host = '';
 
     /**
-     *
      * @var array
      */
     private $parts = null;
 
     /**
-     *
-     * @param string $host 
+     * @param string $host
      */
-    public function __construct($host) {
+    public function __construct($host)
+    {
         $this->set($host);
     }
 
     /**
-     *
      * @return string
      */
-    public function get() {
+    public function get()
+    {
         return $this->host;
     }
 
     /**
-     *
-     * @param string $host 
+     * @param string $host
      */
-    public function set($host) {
+    public function set($host)
+    {
         $this->host = trim($host);
-        $this->parts = null;
+        $this->parts = explode(self::HOST_PART_SEPARATOR, $this->get());
     }
 
     /**
-     *
-     * @return string 
+     * @return string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return $this->get();
     }
 
     /**
-     * 
      * @return array
      */
-    public function getParts() {
-        if (is_null($this->parts)) {
-            $this->parts = explode(self::HOST_PART_SEPARATOR, $this->get());
-        }
-
+    public function getParts()
+    {
         return $this->parts;
     }
 
     /**
-     * 
-     * @param \webignition\Url\Host\Host $comparator
-     * @return boolean
+     * @param Host $comparator
+     *
+     * @return bool
      */
-    public function equals(Host $comparator) {
+    public function equals(Host $comparator)
+    {
         return $this->get() == $comparator->get();
     }
 
     /**
-     * 
-     * @param \webignition\Url\Host\Host $comparator
-     * @param array $excludeParts
-     * @return boolean
+     * @param Host $comparator
+     * @param string[] $excludeParts
+     *
+     * @return bool
      */
-    public function isEquivalentTo(Host $comparator, $excludeParts = array()) {        
-        $thisHost = new Host(\Etechnika\IdnaConvert\IdnaConvert::encodeString((string) $this));
-        $comparatorHost = new Host(\Etechnika\IdnaConvert\IdnaConvert::encodeString((string) $comparator));
+    public function isEquivalentTo(Host $comparator, array $excludeParts = [])
+    {
+        $thisHost = new Host(IdnaConvert::encodeString((string) $this));
+        $comparatorHost = new Host(IdnaConvert::encodeString((string) $comparator));
 
-        if (!is_array($excludeParts) || count($excludeParts) == 0) {
+        if (empty($excludeParts)) {
             return $thisHost->equals($comparatorHost);
         }
 
@@ -134,12 +132,13 @@ class Host {
     }
 
     /**
-     * 
      * @param array $parts
      * @param array $exclusions
+     *
      * @return array
      */
-    private function excludeParts($parts, $exclusions) {
+    private function excludeParts($parts, $exclusions)
+    {
         $filteredParts = array();
 
         foreach ($parts as $index => $part) {
@@ -151,42 +150,49 @@ class Host {
         return $filteredParts;
     }
 
-    public function isPubliclyRoutable() {
+    /**
+     * @return bool
+     *
+     * @throws InvalidExpressionException
+     */
+    public function isPubliclyRoutable()
+    {
         try {
-            $ip = \IpUtils\Factory::getAddress($this->get());
-            
+            $ip = IpUtilsFactory::getAddress($this->get());
+
             if ($ip->isPrivate()) {
                 return false;
             }
-            
+
             if ($ip->isLoopback()) {
                 return false;
             }
-            
+
             if ($ip instanceof IPv4 && $this->isIpv4InUnroutableRange($ip)) {
                 return false;
             }
-            
+
             return true;
         } catch (\UnexpectedValueException $unexpectedValueException) {
             return true;
         }
     }
-    
-    
+
     /**
-     * 
-     * @param \IpUtils\Address\IPv4 $ip
-     * @return boolean
+     * @param IPv4 $ip
+     *
+     * @return bool
+     *
+     * @throws InvalidExpressionException
      */
-    private function isIpv4InUnroutableRange(IPv4 $ip) {
+    private function isIpv4InUnroutableRange(IPv4 $ip)
+    {
         foreach ($this->unrouteableRanges as $ipRange) {
             if ($ip->matches(new Subnet($ipRange))) {
                 return true;
             }
         }
-        
+
         return false;
     }
-
 }
