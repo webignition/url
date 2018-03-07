@@ -8,7 +8,7 @@ use webignition\Url\UrlInterface;
 class NormaliserTest extends AbstractNormalisedUrlTest
 {
     /**
-     * @dataProvider normaliseSchemeDataProvider
+     * @dataProvider schemeNormalisationDataProvider
      *
      * @param string $url
      * @param string $expectedNormalisedScheme
@@ -23,40 +23,7 @@ class NormaliserTest extends AbstractNormalisedUrlTest
     }
 
     /**
-     * @return array
-     */
-    public function normaliseSchemeDataProvider()
-    {
-        return [
-            'http' => [
-                'url' => 'http://example.com/',
-                'expectedNormalisedScheme' => 'http',
-            ],
-            'HttP' => [
-                'url' => 'HttP://example.com/',
-                'expectedNormalisedScheme' => 'http',
-            ],
-            'HTTP' => [
-                'url' => 'HTTP://example.com/',
-                'expectedNormalisedScheme' => 'http',
-            ],
-            'https' => [
-                'url' => 'https://example.com/',
-                'expectedNormalisedScheme' => 'https',
-            ],
-            'HttPS' => [
-                'url' => 'HttPS://example.com/',
-                'expectedNormalisedScheme' => 'https',
-            ],
-            'HTTPS' => [
-                'url' => 'HTTPS://example.com/',
-                'expectedNormalisedScheme' => 'https',
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider normaliseHostDataProvider
+     * @dataProvider hostNormalisationDataProvider
      *
      * @param string $url
      * @param string $expectedNormalisedHost
@@ -71,28 +38,7 @@ class NormaliserTest extends AbstractNormalisedUrlTest
     }
 
     /**
-     * @return array
-     */
-    public function normaliseHostDataProvider()
-    {
-        return [
-            'is lowercased' => [
-                'url' => 'http://exAMPlE.com/',
-                'expectedNormalisedHost' => 'example.com',
-            ],
-            'punycode is unchanged' => [
-                'url' => 'http://artesan.xn--a-iga.com/',
-                'expectedNormalisedHost' => 'artesan.xn--a-iga.com',
-            ],
-            'utf8 is converted to punycode' => [
-                'url' => 'http://artesan.ía.com/',
-                'expectedNormalisedHost' => 'artesan.xn--a-iga.com',
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider normalisePortDataProvider
+     * @dataProvider portNormalisationDataProvider
      *
      * @param string $url
      * @param bool $expectedPortIsSet
@@ -109,28 +55,6 @@ class NormaliserTest extends AbstractNormalisedUrlTest
         } else {
             $this->assertArrayNotHasKey(UrlInterface::PART_PORT, $normalisedParts);
         }
-    }
-
-    /**
-     * @return array
-     */
-    public function normalisePortDataProvider()
-    {
-        return [
-            'port 80 is removed for http' => [
-                'url' => 'http://example.com:80/',
-                'expectedPortIsSet' => false,
-            ],
-            'port 443 is removed for https' => [
-                'url' => 'https://example.com:443/',
-                'expectedPortIsSet' => false,
-            ],
-            'port 8080 is not removed' => [
-                'url' => 'http://example.com:8080/',
-                'expectedPortIsSet' => true,
-                'expectedNormalisedPort' => 8080,
-            ],
-        ];
     }
 
     /**

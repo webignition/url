@@ -22,7 +22,7 @@ class NormaliserTest extends AbstractNormalisedUrlTest
         foreach ($normalisedKeyValuePairs as $key => $value) {
             $queryStringPart = $key;
 
-            if ($value) {
+            if (!is_null($value)) {
                 $queryStringPart .= '=' . $value;
             }
 

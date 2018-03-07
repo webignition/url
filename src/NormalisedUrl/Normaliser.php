@@ -43,15 +43,31 @@ class Normaliser extends Parser
     /**
      * Host is case-insensitive, normalise to lowercase and to ascii version of
      * IDN format
+     *
+     * If host has trailing dots and there is no path, trim the trailing dots
+     * e.g http://example.com. is interpreted as host=example.com. path=
+     *     and needs to be understood as host=example.com and path=
+     *
+     *     http://example.com.. is interpreted as host=example.com.. path=
+     *     and needs to be understood as host=example.com and path=
      */
     private function normaliseHost()
     {
-        if (isset($this->parts[UrlInterface::PART_HOST])) {
+        $hasHost = isset($this->parts[UrlInterface::PART_HOST]);
+
+        if ($hasHost) {
             /* @var Host $host */
             $host = $this->parts[UrlInterface::PART_HOST];
             $hostAsString = $host->get();
 
             $asciiHost = strtolower(IdnaConvert::encodeString($hostAsString));
+
+            $hostHasTrailingDots = preg_match('/\.+$/', $asciiHost) > 0;
+            $hasPath = isset($this->parts[UrlInterface::PART_PATH]);
+
+            if ($hostHasTrailingDots && !$hasPath) {
+                $asciiHost = rtrim($asciiHost, '.');
+            }
 
             $host->set($asciiHost);
 

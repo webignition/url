@@ -8,7 +8,7 @@ use webignition\Tests\NormalisedUrl\AbstractNormalisedUrlTest;
 class QueryTest extends AbstractNormalisedUrlTest
 {
     /**
-     * @dataProvider queryNormalisationDataProvider
+     * @dataProvider fooDataProvider
      *
      * @param string $queryString
      * @param string $expectedNormalisedQueryString
@@ -17,5 +17,15 @@ class QueryTest extends AbstractNormalisedUrlTest
     {
         $normalisedQuery = new Query($queryString);
         $this->assertEquals($expectedNormalisedQueryString, (string)$normalisedQuery);
+    }
+
+    public function fooDataProvider()
+    {
+        return array_merge(
+            $this->queryNormalisationDataProvider(),
+            [
+                'reserved characters are encoded and capitalised' => $this->createReservedCharactersQueryDataSet(),
+            ]
+        );
     }
 }
