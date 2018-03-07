@@ -5,7 +5,7 @@ namespace webignition\Tests\NormalisedUrl;
 use webignition\NormalisedUrl\Normaliser;
 use webignition\Url\UrlInterface;
 
-class NormaliserTest extends \PHPUnit_Framework_TestCase
+class NormaliserTest extends AbstractNormalisedUrlTest
 {
     /**
      * @dataProvider normaliseSchemeDataProvider
@@ -105,12 +105,10 @@ class NormaliserTest extends \PHPUnit_Framework_TestCase
         $normalisedParts = $normaliser->getParts();
 
         if ($expectedPortIsSet) {
-            $this->assertEquals($expectedNormalisedPort, (string)$normalisedParts[UrlInterface::PART_PORT]);
+            $this->assertEquals($expectedNormalisedPort, $normalisedParts[UrlInterface::PART_PORT]);
         } else {
             $this->assertArrayNotHasKey(UrlInterface::PART_PORT, $normalisedParts);
         }
-
-
     }
 
     /**
@@ -133,5 +131,20 @@ class NormaliserTest extends \PHPUnit_Framework_TestCase
                 'expectedNormalisedPort' => 8080,
             ],
         ];
+    }
+
+    /**
+     * @dataProvider pathNormalisationDataProvider
+     *
+     * @param string $path
+     * @param string $expectedNormalisedPath
+     */
+    public function testNormalisePath($path, $expectedNormalisedPath)
+    {
+        $normaliser = new Normaliser('http://example.com' . $path);
+
+        $normalisedParts = $normaliser->getParts();
+
+        $this->assertEquals($expectedNormalisedPath, (string)$normalisedParts[UrlInterface::PART_PATH]);
     }
 }

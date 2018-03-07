@@ -3,11 +3,12 @@
 namespace webignition\Tests\NormalisedUrl\Path;
 
 use webignition\NormalisedUrl\Path\Path;
+use webignition\Tests\NormalisedUrl\AbstractNormalisedUrlTest;
 
-class PathTest extends AbstractNormalisedUrlPathTest
+class PathTest extends AbstractNormalisedUrlTest
 {
     /**
-     * @dataProvider createDataProvider
+     * @dataProvider pathNormalisationDataProvider
      *
      * @param string $path
      * @param string $expectedNormalisedPath

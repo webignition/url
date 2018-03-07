@@ -2,7 +2,7 @@
 
 namespace webignition\Tests\NormalisedUrl;
 
-abstract class AbstractNormalisedUrlTest extends \PHPUnit_Framework_TestCase
+abstract class FooAbstractNormalisedUrlTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @return array
