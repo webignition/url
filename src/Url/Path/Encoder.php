@@ -4,7 +4,7 @@ namespace webignition\Url\Path;
 
 class Encoder
 {
-    public function encode(Path $path)
+    public static function encode(Path $path)
     {
         $parts = explode(Path::PATH_PART_SEPARATOR, $path->get());
         foreach ($parts as $partIndex => $part) {

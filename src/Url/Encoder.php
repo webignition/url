@@ -16,8 +16,9 @@ class Encoder
         $encodedUrl = clone $url;
 
         if ($encodedUrl->hasPath()) {
-            $pathEncoder = new PathEncoder();
-            $encodedUrl->setPath((string)$pathEncoder->encode($encodedUrl->getPath()));
+            $encodedUrl->setPath(
+                (string)PathEncoder::encode($encodedUrl->getPath())
+            );
         }
 
         return $encodedUrl;

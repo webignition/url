@@ -8,21 +8,6 @@ use webignition\Url\Path\Path;
 class EncoderTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Encoder
-     */
-    private $encoder;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->encoder = new Encoder();
-    }
-
-    /**
      * @dataProvider encodeDataProvider
      *
      * @param Path $path
@@ -30,7 +15,7 @@ class EncoderTest extends \PHPUnit_Framework_TestCase
      */
     public function testEncode(Path $path, $expectedEncodedPath)
     {
-        $encodedPath = $this->encoder->encode($path);
+        $encodedPath = Encoder::encode($path);
 
         $this->assertEquals($expectedEncodedPath, (string)$encodedPath);
     }
