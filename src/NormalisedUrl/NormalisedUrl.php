@@ -11,6 +11,6 @@ class NormalisedUrl extends RegularUrl
      */
     protected function createParser()
     {
-        return new Normaliser($this->prepareOriginUrl());
+        return new Normaliser($this->originUrl);
     }
 }

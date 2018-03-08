@@ -21,7 +21,7 @@ class Url implements UrlInterface
      *
      * @var string
      */
-    private $originUrl = '';
+    protected $originUrl = '';
 
     /**
      * Component parts of this URL, with keys:
@@ -72,7 +72,7 @@ class Url implements UrlInterface
      */
     public function init($originUrl)
     {
-        $this->originUrl = $originUrl;
+        $this->originUrl = PreProcessor::preProcess($originUrl);
         $this->parts = $this->createParser()->getParts();
         $this->offsets = $this->createOffsets();
     }
@@ -82,7 +82,7 @@ class Url implements UrlInterface
      */
     protected function createParser()
     {
-        return new Parser($this->prepareOriginUrl());
+        return new Parser($this->originUrl);
     }
 
     /**
@@ -868,26 +868,6 @@ class Url implements UrlInterface
     protected function hasPart($partName)
     {
         return isset($this->parts[$partName]);
-    }
-
-    /**
-     * @return string
-     */
-    protected function prepareOriginUrl()
-    {
-        $preparedOriginUrl = $this->originUrl;
-
-        // Unencoded leading or trailing whitespace is not allowed
-        $preparedOriginUrl = trim($preparedOriginUrl);
-
-        // Whitespace that is not a regular space character is not allowed
-        // and should be removed.
-        //
-        // Not clearly spec'd anywhere but is the default behaviour of Chrome
-        // and FireFox
-        $preparedOriginUrl = str_replace(array("\t", "\r", "\n"), '', $preparedOriginUrl);
-
-        return $preparedOriginUrl;
     }
 
     /**
