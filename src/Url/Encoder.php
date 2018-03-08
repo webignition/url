@@ -11,7 +11,7 @@ class Encoder
      *
      * @return Url
      */
-    public function encode(Url $url)
+    public static function encode(Url $url)
     {
         $encodedUrl = clone $url;
 
