@@ -3,9 +3,20 @@
 namespace webignition\Tests\NormalisedUrl;
 
 use webignition\NormalisedUrl\NormalisedUrl;
+use webignition\Tests\DataProvider\HostNormalisationDataProviderTrait;
+use webignition\Tests\DataProvider\PathNormalisationDataProviderTrait;
+use webignition\Tests\DataProvider\PortNormalisationDataProviderTrait;
+use webignition\Tests\DataProvider\QueryNormalisationDataProviderTrait;
+use webignition\Tests\DataProvider\SchemeNormalisationDataProviderTrait;
 
 class NormalisedUrlTest extends AbstractNormalisedUrlTest
 {
+    use SchemeNormalisationDataProviderTrait;
+    use HostNormalisationDataProviderTrait;
+    use PortNormalisationDataProviderTrait;
+    use PathNormalisationDataProviderTrait;
+    use QueryNormalisationDataProviderTrait;
+
     /**
      * @dataProvider idnHostNormalisationDataProvider
      *

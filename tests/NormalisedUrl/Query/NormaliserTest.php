@@ -3,10 +3,13 @@
 namespace webignition\Tests\NormalisedUrl\Query;
 
 use webignition\NormalisedUrl\Query\Normaliser;
+use webignition\Tests\DataProvider\QueryNormalisationDataProviderTrait;
 use webignition\Tests\NormalisedUrl\AbstractNormalisedUrlTest;
 
 class NormaliserTest extends AbstractNormalisedUrlTest
 {
+    use QueryNormalisationDataProviderTrait;
+
     /**
      * @dataProvider queryNormalisationDataProvider
      *

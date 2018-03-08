@@ -3,10 +3,13 @@
 namespace webignition\Tests\NormalisedUrl\Path;
 
 use webignition\NormalisedUrl\Path\Path;
+use webignition\Tests\DataProvider\PathNormalisationDataProviderTrait;
 use webignition\Tests\NormalisedUrl\AbstractNormalisedUrlTest;
 
 class PathTest extends AbstractNormalisedUrlTest
 {
+    use PathNormalisationDataProviderTrait;
+
     /**
      * @dataProvider pathNormalisationDataProvider
      *
