@@ -1,170 +1,185 @@
 <?php
+
 namespace webignition\Url;
 
-class ScopeComparer {
-    
-    
+class ScopeComparer
+{
     /**
-     *
      * @var Url
      */
     private $sourceUrl;
-    
+
     /**
-     *
      * @var Url
-     */    
-    private $comparatorUrl;
-    
-    private $sourceUrlString;
-    private $comparatorUrlString;
-    
-    
-    private $ignoredParts = array(
-        'port',
-        'user',
-        'pass',
-        'query',
-        'fragment'
-    );
-    
-    
-    private $equivalentSchemes = array();    
-    private $equivalentHosts = array();
-    
-    
-    /**
-     * 
-     * @param array $schemes
      */
-    public function addEquivalentSchemes($schemes) {
+    private $comparatorUrl;
+
+    /**
+     * @var string
+     */
+    private $sourceUrlString;
+
+    /**
+     * @var string
+     */
+    private $comparatorUrlString;
+
+    /**
+     * @var string[]
+     */
+    private $ignoredParts = [
+        UrlInterface::PART_PORT,
+        UrlInterface::PART_USER,
+        UrlInterface::PART_PASS,
+        UrlInterface::PART_QUERY,
+        UrlInterface::PART_FRAGMENT,
+    ];
+
+    /**
+     * @var array
+     */
+    private $equivalentSchemes = [];
+
+    /**
+     * @var array
+     */
+    private $equivalentHosts = [];
+
+    /**
+     * @param string[] $schemes
+     */
+    public function addEquivalentSchemes($schemes)
+    {
         $this->equivalentSchemes[] = $schemes;
     }
-    
-    
+
     /**
-     * 
-     * @param array $subdomains
+     * @param string[] $hosts
      */
-    public function addEquivalentHosts($hosts) {
+    public function addEquivalentHosts($hosts)
+    {
         $this->equivalentHosts[] = $hosts;
-    }    
-   
-    
+    }
+
     /**
      * Is the given comparator url in the scope
      * of this url?
-     * 
+     *
      * Comparator is in the same scope as the source if:
-     *  - scheme is the same or equivalent (e.g. http and https are equivlent)
-     *  - hostname is the same or equivalent (equivalency looks at subdomain equivalence e.g. example.com and www.example.com
+     *  - scheme is the same or equivalent (e.g. http and https are equivalent)
+     *  - hostname is the same or equivalent (equivalency looks at subdomain equivalence
+     *    e.g. example.com and www.example.com)
      *  - path is the same or greater (e.g. sourcepath = /one/two, comparatorpath = /one/two or /one/two/*
-     * 
+     *
      * Comparison ignores:
      *  - port
      *  - user
      *  - pass
      *  - query
      *  - fragment
-     * 
-     * @param \webignition\Url\Url $sourceUrl
-     * @param \webignition\Url\Url $comparatorUrl
-     * @return boolean
+     *
+     * @param Url $sourceUrl
+     * @param Url $comparatorUrl
+     *
+     * @return bool
      */
-    public function isInScope(Url $sourceUrl, Url $comparatorUrl) {
+    public function isInScope(Url $sourceUrl, Url $comparatorUrl)
+    {
         $this->sourceUrl = clone $sourceUrl;
         $this->comparatorUrl = clone $comparatorUrl;
-        
+
         foreach ($this->ignoredParts as $partName) {
             $this->sourceUrl->setPart($partName, null);
         }
-        
+
         $this->sourceUrlString = (string)$this->sourceUrl;
         $this->comparatorUrlString = (string)$this->comparatorUrl;
-        
-        if ((string)$this->sourceUrl == (string)$this->comparatorUrl) {
+
+        if ($this->sourceUrlString === $this->comparatorUrlString) {
             return true;
         }
-        
-        if ($this->isSourceUrlSubtringOfComparatorUrl()) {
+
+        if ($this->isSourceUrlSubstringOfComparatorUrl()) {
             return true;
         }
-        
+
         if (!$this->areSchemesEquivalent()) {
             return false;
         }
-        
+
         if (!$this->areHostsEquivalent()) {
             return false;
         }
-        
-        return $this->isSourcePathSubtringOfComparatorPath();        
+
+        return $this->isSourcePathSubstringOfComparatorPath();
     }
-    
-    
+
     /**
+     * @return bool
+     */
+    private function isSourceUrlSubstringOfComparatorUrl()
+    {
+        return strpos($this->comparatorUrlString, $this->sourceUrlString) === 0;
+    }
+
+    /**
+     * @return bool
+     */
+    private function areSchemesEquivalent()
+    {
+        return $this->areUrlPartsEquivalent(
+            (string)$this->sourceUrl->getScheme(),
+            (string)$this->comparatorUrl->getScheme(),
+            $this->equivalentSchemes
+        );
+    }
+
+    /**
+     * @return bool
+     */
+    private function areHostsEquivalent()
+    {
+        return $this->areUrlPartsEquivalent(
+            (string)$this->sourceUrl->getHost(),
+            (string)$this->comparatorUrl->getHost(),
+            $this->equivalentHosts
+        );
+    }
+
+    /**
+     * @param string $sourceValue
+     * @param string $comparatorValue
+     * @param array $equivalenceSets
      *
-     * @return boolean 
+     * @return bool
      */
-    private function isSourceUrlSubtringOfComparatorUrl() {
-        return substr($this->comparatorUrlString, 0, strlen($this->sourceUrlString)) == $this->sourceUrlString;
-    }    
-    
-    
-    /**
-     * 
-     * @return boolean
-     */
-    private function areSchemesEquivalent() {
-        if ($this->sourceUrl->getScheme() === $this->comparatorUrl->getScheme()) {
+    private function areUrlPartsEquivalent($sourceValue, $comparatorValue, $equivalenceSets)
+    {
+        if ($sourceValue === $comparatorValue) {
             return true;
         }
-        
-        foreach ($this->equivalentSchemes as $equivalentSchemeSet) {
-            if (in_array($this->sourceUrl->getScheme(), $equivalentSchemeSet) && in_array($this->comparatorUrl->getScheme(), $equivalentSchemeSet)) {
+
+        foreach ($equivalenceSets as $equivalenceSet) {
+            if (in_array($sourceValue, $equivalenceSet) && in_array($comparatorValue, $equivalenceSet)) {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
-    
+
     /**
-     * 
-     * @return boolean
+     * @return bool
      */
-    private function areHostsEquivalent() {        
-        if ((string)$this->sourceUrl->getHost() === (string)$this->comparatorUrl->getHost()) {
+    private function isSourcePathSubstringOfComparatorPath()
+    {
+        if (!$this->sourceUrl->hasPath()) {
             return true;
         }
-        
-        foreach ($this->equivalentHosts as $equivalentHostSet) {                        
-            if (in_array($this->sourceUrl->getHost(), $equivalentHostSet) && in_array($this->comparatorUrl->getHost(), $equivalentHostSet)) {
-                return true;
-            }
-        }
-        
-        return false;        
-    }
-    
-    
-    /**
-     *
-     * @return boolean 
-     */
-    private function isSourcePathSubtringOfComparatorPath() {        
-        if (!$this->sourceUrl->hasPath() && $this->comparatorUrl->hasPath()) {
-            return true;
-        }
-        
+
         $sourcePath = (string)$this->sourceUrl->getPath();
-        $comparatorpath = (string)$this->comparatorUrl->getPath();
-        
-        if ($sourcePath == $comparatorpath) {
-            return true;
-        }
-        
-        return substr($comparatorpath, 0, strlen($sourcePath)) == $sourcePath;
+        $comparatorPath = (string)$this->comparatorUrl->getPath();
+
+        return strpos($comparatorPath, $sourcePath) === 0;
     }
 }
