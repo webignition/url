@@ -55,13 +55,6 @@ class QueryTest extends AbstractQueryTest
         $this->assertEquals($expectedKeyValuePairs, $query->pairs());
     }
 
-    public function testGetParser()
-    {
-        $query = new Query('');
-
-        $this->assertInstanceOf(ParserInterface::class, $query->getParser());
-    }
-
     /**
      * @dataProvider containsDataProvider
      *

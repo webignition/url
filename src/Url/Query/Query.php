@@ -63,17 +63,24 @@ class Query
     public function pairs()
     {
         if (is_null($this->pairs)) {
-            $this->pairs = $this->getParser()->getKeyValuePairs();
+            $this->pairs = $this->parser->getKeyValuePairs();
         }
 
         return $this->pairs;
     }
 
     /**
+     * @deprecated Deprecated since 1.9.17, to be removed in 2.0. No alternative, no need to get the query parser.
+     *
      * @return ParserInterface
      */
     public function getParser()
     {
+        @trigger_error(
+            'getParser() is deprecated since 1.9.17, to be removed in 2.0. ' .
+            'No alternative, no need to get the query parser'
+        );
+
         return $this->parser;
     }
 
