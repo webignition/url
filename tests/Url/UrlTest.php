@@ -2,6 +2,7 @@
 
 namespace webignition\Tests\Url;
 
+use webignition\Url\Query\Query;
 use webignition\Url\Url;
 use webignition\Url\UrlInterface;
 
@@ -282,7 +283,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
         return [
             'no query' => [
                 'url' => new Url('http://example.com'),
-                'expectedHasQuery' => false,
+                'expectedHasQuery' => true,
                 'expectedQuery' => '',
             ],
             'has query' => [
@@ -1216,7 +1217,11 @@ class UrlTest extends \PHPUnit_Framework_TestCase
         $url->setQuery(null);
 
         $this->assertNull($url->getFragment());
-        $this->assertNull($url->getQuery());
+
+        $query = $url->getQuery();
+
+        $this->assertInstanceOf(Query::class, $query);
+        $this->assertTrue($query->isEmpty());
 
         $this->assertEquals('http://example.com/', (string)$url);
     }
@@ -1249,6 +1254,41 @@ class UrlTest extends \PHPUnit_Framework_TestCase
             'key only query' => [
                 'url' => new Url('?key'),
                 'expectedStringUrl' => '?key',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getQueryDataProvider
+     *
+     * @param Url $url
+     * @param string $expectedQueryString
+     * @param string $expectedUrl
+     */
+    public function testGetQuery(Url $url, $expectedQueryString, $expectedUrl)
+    {
+        $query = $url->getQuery();
+
+        $this->assertInstanceOf(Query::class, $url->getQuery());
+        $this->assertEquals($expectedQueryString, (string)$query);
+        $this->assertEquals($expectedUrl, (string)$url);
+    }
+
+    /**
+     * @return array
+     */
+    public function getQueryDataProvider()
+    {
+        return [
+            'no query' => [
+                'url' => new Url('//example.com'),
+                'expectedQueryString' => '',
+                'expectedUrl' => '//example.com',
+            ],
+            'has query' => [
+                'url' => new Url('//example.com?foo=bar'),
+                'expectedQueryString' => 'foo=bar',
+                'expectedUrl' => '//example.com?foo=bar',
             ],
         ];
     }

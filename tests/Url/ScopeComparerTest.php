@@ -47,8 +47,8 @@ class ScopeComparerTest extends \PHPUnit_Framework_TestCase
     {
         return [
             'two empty urls are in scope' => [
-                'sourceUrl' => new Url(''),
-                'comparatorUrl' => new Url(''),
+                'sourceUrl' => new Url(),
+                'comparatorUrl' => new Url(),
                 'equivalentSchemeSets' => [],
                 'equivalentHostSets' => [],
                 'expectedIsInScope' => true,

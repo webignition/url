@@ -298,4 +298,12 @@ class QueryTest extends AbstractQueryTest
             ],
         ];
     }
+
+    public function testCreateEmptyQuery()
+    {
+        $query = new Query();
+
+        $this->assertEquals([], $query->pairs());
+        $this->assertEquals('', (string)$query);
+    }
 }

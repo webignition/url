@@ -35,12 +35,14 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 'url' => null,
                 'expectedParts' => [
                     UrlInterface::PART_PATH => '',
+                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'empty' => [
                 'url' => '',
                 'expectedParts' => [
                     UrlInterface::PART_PATH => '',
+                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'complete fully qualified' => [
@@ -88,6 +90,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 'url' => '#',
                 'expectedParts' => [
                     UrlInterface::PART_FRAGMENT => '',
+                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'path and hash only' => [
@@ -95,12 +98,14 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 'expectedParts' => [
                     UrlInterface::PART_PATH => '/index.html',
                     UrlInterface::PART_FRAGMENT => '',
+                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'hash and identifier only' => [
                 'url' => '#fragment',
                 'expectedParts' => [
                     UrlInterface::PART_FRAGMENT => 'fragment',
+                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'scheme, no username, no password' => [
@@ -109,6 +114,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     UrlInterface::PART_SCHEME => 'https',
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => '',
+                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'protocol-relative, no username, no password' => [
@@ -116,6 +122,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 'expectedParts' => [
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => '',
+                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'scheme, empty username, empty password' => [
@@ -125,6 +132,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => '',
                     UrlInterface::PART_PASS => '',
+                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'protocol-relative, empty username, empty password' => [
@@ -133,6 +141,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => '',
                     UrlInterface::PART_PASS => '',
+                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'scheme, empty username, has password' => [
@@ -142,6 +151,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => '',
                     UrlInterface::PART_PASS => 'password',
+                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'protocol-relative, empty username, has password' => [
@@ -150,6 +160,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => '',
                     UrlInterface::PART_PASS => 'password',
+                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'scheme, has username, empty password' => [
@@ -159,6 +170,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => 'username',
                     UrlInterface::PART_PASS => '',
+                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'protocol-relative, has username, empty password' => [
@@ -167,6 +179,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => 'username',
                     UrlInterface::PART_PASS => '',
+                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'scheme, has username, no password' => [
@@ -175,6 +188,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     UrlInterface::PART_SCHEME => 'https',
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => 'username',
+                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'protocol-relative, has username, no password' => [
@@ -182,6 +196,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                 'expectedParts' => [
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => 'username',
+                    UrlInterface::PART_QUERY => '',
                 ],
             ],
         ];
