@@ -3,28 +3,10 @@
 namespace webignition\Tests\Url\Query;
 
 use webignition\Url\Configuration;
-use webignition\Url\Query\ParserInterface;
 use webignition\Url\Query\Query;
 
 class QueryTest extends AbstractQueryTest
 {
-    /**
-     * @dataProvider setHasConfigurationDataProvider
-     *
-     * @param Configuration|null $configuration
-     * @param bool $expectedHasConfiguration
-     */
-    public function testSetHasConfiguration($configuration, $expectedHasConfiguration)
-    {
-        $query = new Query('');
-
-        if ($configuration) {
-            $query->setConfiguration($configuration);
-        }
-
-        $this->assertEquals($expectedHasConfiguration, $query->hasConfiguration());
-    }
-
     /**
      * @return array
      */

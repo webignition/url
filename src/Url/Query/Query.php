@@ -150,21 +150,6 @@ class Query
     }
 
     /**
-     * @deprecated Deprecated since 1.9.19, to be removed in 2.0. No alternative, not needed.
-     *
-     * @return bool
-     */
-    public function hasConfiguration()
-    {
-        @trigger_error(
-            'hasConfiguration() is deprecated since 1.9.19, to be removed in 2.0. ' .
-            'No alternative, not needed.'
-        );
-
-        return !is_null($this->configuration);
-    }
-
-    /**
      * @return bool
      */
     public function isEmpty()
