@@ -40,20 +40,6 @@ class Url implements UrlInterface
     private $parts = null;
 
     /**
-     * @var string[]
-     */
-    private $availablePartNames = array(
-        UrlInterface::PART_SCHEME,
-        UrlInterface::PART_USER,
-        UrlInterface::PART_PASS,
-        UrlInterface::PART_HOST,
-        UrlInterface::PART_PORT,
-        UrlInterface::PART_PATH,
-        UrlInterface::PART_QUERY,
-        UrlInterface::PART_FRAGMENT,
-    );
-
-    /**
      * @param string $originUrl
      */
     public function __construct($originUrl = null)
