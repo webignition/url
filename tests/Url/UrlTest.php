@@ -266,12 +266,10 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @dataProvider hasQueryGetQueryDataProvider
      *
      * @param Url $url
-     * @param bool $expectedHasQuery
      * @param string $expectedQuery
      */
-    public function testHasQueryGetQuery(Url $url, $expectedHasQuery, $expectedQuery)
+    public function testHasQueryGetQuery(Url $url, $expectedQuery)
     {
-        $this->assertEquals($expectedHasQuery, $url->hasQuery());
         $this->assertEquals($expectedQuery, $url->getQuery());
     }
 
@@ -283,12 +281,10 @@ class UrlTest extends \PHPUnit_Framework_TestCase
         return [
             'no query' => [
                 'url' => new Url('http://example.com'),
-                'expectedHasQuery' => true,
                 'expectedQuery' => '',
             ],
             'has query' => [
                 'url' => new Url('http://example.com?foo=bar'),
-                'expectedHasQuery' => true,
                 'expectedQuery' => 'foo=bar',
             ],
         ];
@@ -405,53 +401,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider addFragmentDataProvider
-     *
-     * @param Url $url
-     * @param string $fragment
-     * @param bool $expectedSucceeds
-     * @param string $expectedUrl
-     */
-    public function testAddFragment(Url $url, $fragment, $expectedSucceeds, $expectedUrl)
-    {
-        $succeeds = $url->addFragment($fragment);
-
-        $this->assertEquals($expectedSucceeds, $succeeds);
-        $this->assertEquals($expectedUrl, (string)$url);
-    }
-
-    /**
-     * @return array
-     */
-    public function addFragmentDataProvider()
-    {
-        return array_merge(
-            [
-                'has existing fragment' => [
-                    'url' => new Url('http://example.com/#foo'),
-                    'fragment' => 'bar',
-                    'expectedSucceeds' => false,
-                    'expectedUrl' => 'http://example.com/#foo',
-                ],
-                'empty fragment' => [
-                    'url' => new Url('http://example.com/'),
-                    'fragment' => '',
-                    'expectedSucceeds' => true,
-                    'expectedUrl' => 'http://example.com/',
-                ],
-                'whitespace fragment' => [
-                    'url' => new Url('http://example.com/'),
-                    'fragment' => '   ',
-                    'expectedSucceeds' => true,
-                    'expectedUrl' => 'http://example.com/',
-                ],
-            ],
-            $this->modifyFragmentDataProvider()
-        );
-    }
-
-    /**
-     * @dataProvider modifyFragmentDataProvider
+     * @dataProvider setFragmentDataProvider
      *
      * @param Url $url
      * @param string $fragment
@@ -471,96 +421,50 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      */
     public function setFragmentDataProvider()
     {
-        return array_merge(
-            [
-                'has existing fragment; null fragment' => [
-                    'url' => new Url('http://example.com/#foo'),
-                    'fragment' => null,
-                    'expectedSucceeds' => true,
-                    'expectedUrl' => 'http://example.com/',
-                ],
-                'has existing fragment; empty fragment' => [
-                    'url' => new Url('http://example.com/#foo'),
-                    'fragment' => '',
-                    'expectedSucceeds' => true,
-                    'expectedUrl' => 'http://example.com/',
-                ],
-                'has existing fragment; whitespace fragment' => [
-                    'url' => new Url('http://example.com/#foo'),
-                    'fragment' => '   ',
-                    'expectedSucceeds' => false,
-                    'expectedUrl' => 'http://example.com/',
-                ],
-                'has existing fragment; valid fragment lacking hash' => [
-                    'url' => new Url('http://example.com/#foo'),
-                    'fragment' => 'bar',
-                    'expectedSucceeds' => true,
-                    'expectedUrl' => 'http://example.com/#bar',
-                ],
-                'has existing fragment; valid fragment with hash' => [
-                    'url' => new Url('http://example.com/#foo'),
-                    'fragment' => '#bar',
-                    'expectedSucceeds' => true,
-                    'expectedUrl' => 'http://example.com/#bar',
-                ],
-            ],
-            $this->modifyFragmentDataProvider()
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function modifyFragmentDataProvider()
-    {
         return [
-            'valid fragment lacking hash' => [
+            'no existing fragment; valid fragment lacking hash' => [
                 'url' => new Url('http://example.com/'),
                 'fragment' => 'foo',
                 'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/#foo',
             ],
-            'valid fragment with hash' => [
+            'no existing fragment; valid fragment with hash' => [
                 'url' => new Url('http://example.com/'),
                 'fragment' => '#foo',
                 'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/#foo',
             ],
-        ];
-    }
-
-    /**
-     * @dataProvider addPathDataProvider
-     *
-     * @param Url $url
-     * @param string $path
-     * @param bool $expectedSucceeds
-     * @param string $expectedUrl
-     */
-    public function testAddPath(Url $url, $path, $expectedSucceeds, $expectedUrl)
-    {
-        $succeeds = $url->addPath($path);
-
-        $this->assertEquals($expectedSucceeds, $succeeds);
-        $this->assertEquals($expectedUrl, (string)$url);
-    }
-
-    /**
-     * @return array
-     */
-    public function addPathDataProvider()
-    {
-        return array_merge(
-            [
-                'has existing path' => [
-                    'url' => new Url('http://example.com/foo'),
-                    'path' => '/bar',
-                    'expectedSucceeds' => false,
-                    'expectedUrl' => 'http://example.com/foo',
-                ],
+            'has existing fragment; null fragment' => [
+                'url' => new Url('http://example.com/#foo'),
+                'fragment' => null,
+                'expectedSucceeds' => true,
+                'expectedUrl' => 'http://example.com/',
             ],
-            $this->modifyPathDataProvider()
-        );
+            'has existing fragment; empty fragment' => [
+                'url' => new Url('http://example.com/#foo'),
+                'fragment' => '',
+                'expectedSucceeds' => true,
+                'expectedUrl' => 'http://example.com/',
+            ],
+            'has existing fragment; whitespace fragment' => [
+                'url' => new Url('http://example.com/#foo'),
+                'fragment' => '   ',
+                'expectedSucceeds' => true,
+                'expectedUrl' => 'http://example.com/',
+            ],
+            'has existing fragment; valid fragment lacking hash' => [
+                'url' => new Url('http://example.com/#foo'),
+                'fragment' => 'bar',
+                'expectedSucceeds' => true,
+                'expectedUrl' => 'http://example.com/#bar',
+            ],
+            'has existing fragment; valid fragment with hash' => [
+                'url' => new Url('http://example.com/#foo'),
+                'fragment' => '#bar',
+                'expectedSucceeds' => true,
+                'expectedUrl' => 'http://example.com/#bar',
+            ],
+        ];
     }
 
     /**
@@ -583,54 +487,6 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @return array
      */
     public function setPathDataProvider()
-    {
-        return array_merge(
-            [
-                'replace existing path' => [
-                    'url' => new Url('http://example.com/foo'),
-                    'path' => '/bar',
-                    'expectedSucceeds' => true,
-                    'expectedUrl' => 'http://example.com/bar',
-                ],
-                'remove existing path' => [
-                    'url' => new Url('http://example.com/foo'),
-                    'path' => null,
-                    'expectedSucceeds' => true,
-                    'expectedUrl' => 'http://example.com',
-                ],
-                'remove existing path from url that has query and fragment' => [
-                    'url' => new Url('http://example.com/foo?query#fragment'),
-                    'path' => null,
-                    'expectedSucceeds' => true,
-                    'expectedUrl' => 'http://example.com?query#fragment',
-                ],
-                'add path to hash-only url' => [
-                    'url' => new Url('#'),
-                    'path' => '/foo',
-                    'expectedSucceeds' => true,
-                    'expectedUrl' => '/foo#',
-                ],
-                'add path to hash and identifier url' => [
-                    'url' => new Url('#bar'),
-                    'path' => '/foo',
-                    'expectedSucceeds' => true,
-                    'expectedUrl' => '/foo#bar',
-                ],
-                'set path on url with plus characters in query' => [
-                    'url' => new Url('example.html?foo=++'),
-                    'path' => '/foo.html',
-                    'expectedSucceeds' => true,
-                    'expectedUrl' => '/foo.html?foo=%2B%2B',
-                ],
-            ],
-            $this->modifyPathDataProvider()
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function modifyPathDataProvider()
     {
         return [
             'add to url without query and without fragment' => [
@@ -657,41 +513,43 @@ class UrlTest extends \PHPUnit_Framework_TestCase
                 'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/foobar?foo=bar#foo',
             ],
-        ];
-    }
-
-    /**
-     * @dataProvider addPortDataProvider
-     *
-     * @param Url $url
-     * @param string $port
-     * @param bool $expectedSucceeds
-     * @param string $expectedUrl
-     */
-    public function testAddPort(Url $url, $port, $expectedSucceeds, $expectedUrl)
-    {
-        $succeeds = $url->addPort($port);
-
-        $this->assertEquals($expectedSucceeds, $succeeds);
-        $this->assertEquals($expectedUrl, (string)$url);
-    }
-
-    /**
-     * @return array
-     */
-    public function addPortDataProvider()
-    {
-        return array_merge(
-            [
-                'has existing port' => [
-                    'url' => new Url('http://example.com:8080'),
-                    'port' => 9090,
-                    'expectedSucceeds' => false,
-                    'expectedUrl' => 'http://example.com:8080',
-                ],
+            'replace existing path' => [
+                'url' => new Url('http://example.com/foo'),
+                'path' => '/bar',
+                'expectedSucceeds' => true,
+                'expectedUrl' => 'http://example.com/bar',
             ],
-            $this->modifyPortDataProvider()
-        );
+            'remove existing path' => [
+                'url' => new Url('http://example.com/foo'),
+                'path' => null,
+                'expectedSucceeds' => true,
+                'expectedUrl' => 'http://example.com',
+            ],
+            'remove existing path from url that has query and fragment' => [
+                'url' => new Url('http://example.com/foo?query#fragment'),
+                'path' => null,
+                'expectedSucceeds' => true,
+                'expectedUrl' => 'http://example.com?query#fragment',
+            ],
+            'add path to hash-only url' => [
+                'url' => new Url('#'),
+                'path' => '/foo',
+                'expectedSucceeds' => true,
+                'expectedUrl' => '/foo#',
+            ],
+            'add path to hash and identifier url' => [
+                'url' => new Url('#bar'),
+                'path' => '/foo',
+                'expectedSucceeds' => true,
+                'expectedUrl' => '/foo#bar',
+            ],
+            'set path on url with plus characters in query' => [
+                'url' => new Url('example.html?foo=++'),
+                'path' => '/foo.html',
+                'expectedSucceeds' => true,
+                'expectedUrl' => '/foo.html?foo=%2B%2B',
+            ],
+        ];
     }
 
     /**
@@ -715,25 +573,13 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      */
     public function setPortDataProvider()
     {
-        return array_merge(
-            [
-                'remove existing port' => [
-                    'url' => new Url('http://example.com:8080'),
-                    'port' => null,
-                    'expectedSucceeds' => true,
-                    'expectedUrl' => 'http://example.com',
-                ],
-            ],
-            $this->modifyPortDataProvider()
-        );
-    }
-
-    /**
-     * @return array
-     */
-    public function modifyPortDataProvider()
-    {
         return [
+            'remove existing port' => [
+                'url' => new Url('http://example.com:8080'),
+                'port' => null,
+                'expectedSucceeds' => true,
+                'expectedUrl' => 'http://example.com',
+            ],
             'remove port when not set' => [
                 'url' => new Url('http://example.com'),
                 'port' => null,
@@ -760,7 +606,6 @@ class UrlTest extends \PHPUnit_Framework_TestCase
             ],
         ];
     }
-
     /**
      * @dataProvider setHostDataProvider
      *
@@ -1162,7 +1007,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
             ];
         }
 
-        foreach ($this->modifyPortDataProvider() as $index => $testData) {
+        foreach ($this->setPortDataProvider() as $index => $testData) {
             $dataSet['port: ' . $index] = [
                 'url' => $testData['url'],
                 'partName' => UrlInterface::PART_PORT,
@@ -1192,7 +1037,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
             ];
         }
 
-        foreach ($this->modifyFragmentDataProvider() as $index => $testData) {
+        foreach ($this->setFragmentDataProvider() as $index => $testData) {
             $dataSet['fragment: ' . $index] = [
                 'url' => $testData['url'],
                 'partName' => UrlInterface::PART_FRAGMENT,

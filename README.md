@@ -41,7 +41,6 @@ $url = new \webignition\Url\Url('https://github.com/webignition/url/');
 
 $this->assertEquals('https', $url->getScheme());
 $this->assertFalse($url->hasUser());
-$this->assertFalse($url->hasQuery());
 ```
 
 ### Example of component modification

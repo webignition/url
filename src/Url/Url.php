@@ -18,13 +18,6 @@ class Url implements UrlInterface
     private $configuration = null;
 
     /**
-     * Original unmodified source URL
-     *
-     * @var string
-     */
-    protected $originUrl = '';
-
-    /**
      * Component parts of this URL, with keys:
      * -scheme
      * -host
@@ -54,8 +47,8 @@ class Url implements UrlInterface
      */
     public function init($originUrl)
     {
-        $this->originUrl = PreProcessor::preProcess($originUrl);
-        $this->parts = $this->createParser()->getParts();
+        $originUrl = PreProcessor::preProcess($originUrl);
+        $this->parts = $this->createParser($originUrl)->getParts();
 
         $query = $this->parts[UrlInterface::PART_QUERY];
         $query->setConfiguration($this->configuration);
@@ -63,11 +56,13 @@ class Url implements UrlInterface
     }
 
     /**
+     * @param string $originUrl
+     *
      * @return ParserInterface
      */
-    protected function createParser()
+    protected function createParser($originUrl)
     {
-        return new Parser($this->originUrl);
+        return new Parser($originUrl);
     }
 
     /**
@@ -317,21 +312,6 @@ class Url implements UrlInterface
     }
 
     /**
-     * @deprecated Deprecated since 1.9.15, to be removed in 2.0. Use $url->getQuery()->isEmpty() instead.
-     *
-     * {@inheritdoc}
-     */
-    public function hasQuery()
-    {
-        @trigger_error(
-            'hasQuery() is deprecated since 1.9.15, to be removed in 2.0. ' .
-            'Use $url->getQuery()->isEmpty() instead.'
-        );
-
-        return true;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getQuery()
@@ -485,29 +465,6 @@ class Url implements UrlInterface
     }
 
     /**
-     * @deprecated Deprecated since 1.9.16, to be removed in 2.0. Use setFragment() instead.
-     *
-     * Add a fragment to a URL that does not already have one
-     *
-     * @param string $fragment
-     *
-     * @return bool
-     */
-    public function addFragment($fragment)
-    {
-        @trigger_error(
-            'addFragment() is deprecated since 1.9.16, to be removed in 2.0. ' .
-            'Use setQuery() instead.'
-        );
-
-        if ($this->hasFragment()) {
-            return false;
-        }
-
-        return $this->setFragment($fragment);
-    }
-
-    /**
      * @param string $partName
      * @param mixed $value
      */
@@ -526,50 +483,6 @@ class Url implements UrlInterface
             unset($this->parts[$partName]);
             $this->init((string)$this);
         }
-    }
-
-    /**
-     * @deprecated Deprecated since 1.9.16, to be removed in 2.0. Use setPath() instead.
-     *
-     *  Add a path to a URL that does not already have one
-     *
-     * @param string $path
-     *
-     * @return bool
-     */
-    public function addPath($path)
-    {
-        @trigger_error(
-            'addPath() is deprecated since 1.9.16, to be removed in 2.0. ' .
-            'Use setPath() instead.'
-        );
-
-        if ($this->hasPath()) {
-            return false;
-        }
-
-        return $this->setPath($path);
-    }
-
-    /**
-     * @deprecated Deprecated since 1.9.16, to be removed in 2.0. Use setPath() instead.
-     *
-     * @param int $port
-     *
-     * @return bool
-     */
-    public function addPort($port)
-    {
-        @trigger_error(
-            'addPort() is deprecated since 1.9.16, to be removed in 2.0. ' .
-            'Use setPort() instead.'
-        );
-
-        if ($this->hasPort()) {
-            return false;
-        }
-
-        return $this->setPort($port);
     }
 
     /**
