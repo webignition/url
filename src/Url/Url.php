@@ -485,6 +485,8 @@ class Url implements UrlInterface
     }
 
     /**
+     * @deprecated Deprecated since 1.9.16, to be removed in 2.0. Use setFragment() instead.
+     *
      * Add a fragment to a URL that does not already have one
      *
      * @param string $fragment
@@ -493,6 +495,11 @@ class Url implements UrlInterface
      */
     public function addFragment($fragment)
     {
+        @trigger_error(
+            'addFragment() is deprecated since 1.9.16, to be removed in 2.0. ' .
+            'Use setQuery() instead.'
+        );
+
         if ($this->hasFragment()) {
             return false;
         }
@@ -522,6 +529,8 @@ class Url implements UrlInterface
     }
 
     /**
+     * @deprecated Deprecated since 1.9.16, to be removed in 2.0. Use setPath() instead.
+     *
      *  Add a path to a URL that does not already have one
      *
      * @param string $path
@@ -530,6 +539,11 @@ class Url implements UrlInterface
      */
     public function addPath($path)
     {
+        @trigger_error(
+            'addPath() is deprecated since 1.9.16, to be removed in 2.0. ' .
+            'Use setPath() instead.'
+        );
+
         if ($this->hasPath()) {
             return false;
         }
@@ -538,12 +552,19 @@ class Url implements UrlInterface
     }
 
     /**
+     * @deprecated Deprecated since 1.9.16, to be removed in 2.0. Use setPath() instead.
+     *
      * @param int $port
      *
      * @return bool
      */
     public function addPort($port)
     {
+        @trigger_error(
+            'addPort() is deprecated since 1.9.16, to be removed in 2.0. ' .
+            'Use setPort() instead.'
+        );
+
         if ($this->hasPort()) {
             return false;
         }
