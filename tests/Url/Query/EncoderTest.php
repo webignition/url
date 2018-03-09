@@ -14,21 +14,6 @@ use webignition\Url\Query\Encoder;
 class EncoderTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * {@inheritdoc}
-     */
-    protected function setUp()
-    {
-        parent::setUp();
-
-        PHPMockery::mock(
-            'webignition\Url\Query',
-            'md5'
-        )->andReturnValues(
-            [1, 'foo']
-        );
-    }
-
-    /**
      * @dataProvider setHasConfigurationDataProvider
      *
      * @param Configuration|null $configuration
@@ -107,6 +92,33 @@ class EncoderTest extends \PHPUnit_Framework_TestCase
                 'configuration' => null,
                 'expectedEncodedQueryString' => 'a=1&b&c=3',
             ],
+            'null values; first-level null value placeholder present' => [
+                'pairs' => [
+                    'a' => 1,
+                    'b' => null,
+                    'c' => 'NULL',
+                ],
+                'configuration' => null,
+                'expectedEncodedQueryString' => 'a=1&b&c=NULL',
+            ],
+            'null values; second-level null value placeholder present' => [
+                'pairs' => [
+                    'a' => 1,
+                    'b' => null,
+                    'c' => 'NULL-',
+                ],
+                'configuration' => null,
+                'expectedEncodedQueryString' => 'a=1&b&c=NULL-',
+            ],
+            'null values; third-level null value placeholder present' => [
+                'pairs' => [
+                    'a' => 1,
+                    'b' => null,
+                    'c' => 'NULL--',
+                ],
+                'configuration' => null,
+                'expectedEncodedQueryString' => 'a=1&b&c=NULL--',
+            ],
             'special characters, full encoding' => [
                 'pairs' => [
                     'a/a' => 1,
@@ -144,26 +156,5 @@ class EncoderTest extends \PHPUnit_Framework_TestCase
                 'expectedEncodedQueryString' => 'a%23a=1&b%26b=2&c!c=3',
             ],
         ];
-    }
-
-    public function testEncodeNullValues()
-    {
-        $encoder = new Encoder([
-            'a' => 1,
-            'b' => null,
-            'c' => 3,
-        ]);
-
-        $this->assertEquals('a=1&b&c=3', (string)$encoder);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function tearDown()
-    {
-        parent::tearDown();
-
-        \Mockery::close();
     }
 }

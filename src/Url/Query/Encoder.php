@@ -9,8 +9,9 @@ class Encoder
     const PAIR_DELIMITER = '&';
     const KEY_VALUE_DELIMITER = '=';
     const FRAGMENT_IDENTIFIER = '#';
-
     const ENCODED_TILDE = '%7E';
+    const DEFAULT_NULL_VALUE_PLACEHOLDER = 'NULL';
+    const NULL_VALUE_PLACEHOLDER_MODIFIER = '-';
 
     /**
      * Collection of characters that must be included if only minimally-encoding
@@ -29,11 +30,6 @@ class Encoder
      * @var Configuration
      */
     private $configuration;
-
-    /**
-     * @var string
-     */
-    private $nullValuePlaceholder = null;
 
     /**
      * @param array $pairs
@@ -59,13 +55,15 @@ class Encoder
      */
     private function buildQueryStringFromPairs()
     {
+        $nullValuePlaceholder = $this->createNullValuePlaceholder();
+
         foreach ($this->pairs as $key => $value) {
             if (is_null($value)) {
-                $this->pairs[$key] = $this->getNullValuePlaceholder();
+                $this->pairs[$key] = $nullValuePlaceholder;
             }
         }
 
-        $baseEncodedQuery = str_replace('=' . $this->getNullValuePlaceholder(), '', http_build_query($this->pairs));
+        $baseEncodedQuery = str_replace('=' . $nullValuePlaceholder, '', http_build_query($this->pairs));
 
         if ($this->hasConfiguration() && !$this->configuration->getFullyEncodeQueryStringKeys()) {
             $keyValuePairs = explode(self::PAIR_DELIMITER, $baseEncodedQuery);
@@ -91,28 +89,37 @@ class Encoder
     /**
      * @return string
      */
-    private function getNullValuePlaceholder()
+    private function createNullValuePlaceholder()
     {
-        if (is_null($this->nullValuePlaceholder)) {
-            $placeholder = $this->generateNullValuePlaceholder();
-            $values = array_values($this->pairs);
+        $nullValuePlaceholder = self::DEFAULT_NULL_VALUE_PLACEHOLDER;
+        $values = [];
 
-            while (in_array($placeholder, $values)) {
-                $placeholder = $this->generateNullValuePlaceholder();
-            }
-
-            $this->nullValuePlaceholder = $placeholder;
+        foreach ($this->pairs as $key => $value) {
+            $values[] = $value;
         }
 
-        return $this->nullValuePlaceholder;
+        while ($this->isNullValuePlaceholderPresentInQueryValues($nullValuePlaceholder, $values)) {
+            $nullValuePlaceholder .= self::NULL_VALUE_PLACEHOLDER_MODIFIER;
+        }
+
+        return $nullValuePlaceholder;
     }
 
     /**
-     * @return string
+     * @param string $nullValuePlaceholder
+     * @param array $values
+     *
+     * @return bool
      */
-    private function generateNullValuePlaceholder()
+    private function isNullValuePlaceholderPresentInQueryValues($nullValuePlaceholder, array $values)
     {
-        return md5(time());
+        foreach ($values as $value) {
+            if (substr_count($value, $nullValuePlaceholder)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
