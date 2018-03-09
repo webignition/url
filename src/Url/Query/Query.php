@@ -33,7 +33,7 @@ class Query
     /**
      * @param string $encodedQueryString
      */
-    public function __construct($encodedQueryString)
+    public function __construct($encodedQueryString = '')
     {
         $this->setOrigin($encodedQueryString);
         $this->parser = new Parser($this->origin);
@@ -163,5 +163,13 @@ class Query
     public function hasConfiguration()
     {
         return !is_null($this->configuration);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return empty($this->pairs());
     }
 }

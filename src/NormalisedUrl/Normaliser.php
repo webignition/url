@@ -106,8 +106,6 @@ class Normaliser extends Parser
 
     private function normaliseQuery()
     {
-        if (isset($this->parts[UrlInterface::PART_QUERY])) {
-            $this->parts[UrlInterface::PART_QUERY] = new Query\Query((string)$this->parts[UrlInterface::PART_QUERY]);
-        }
+        $this->parts[UrlInterface::PART_QUERY] = new Query\Query((string)$this->parts[UrlInterface::PART_QUERY]);
     }
 }

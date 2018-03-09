@@ -58,8 +58,8 @@ class Url implements UrlInterface
      */
     public function __construct($originUrl = null)
     {
-        $this->init($originUrl);
         $this->configuration = new Configuration();
+        $this->init($originUrl);
     }
 
     /**
@@ -70,6 +70,10 @@ class Url implements UrlInterface
     {
         $this->originUrl = PreProcessor::preProcess($originUrl);
         $this->parts = $this->createParser()->getParts();
+
+        $query = $this->parts[UrlInterface::PART_QUERY];
+        $query->setConfiguration($this->configuration);
+        $this->parts[UrlInterface::PART_QUERY] = $query;
     }
 
     /**
@@ -327,11 +331,18 @@ class Url implements UrlInterface
     }
 
     /**
+     * @deprecated Deprecated since 1.9.15, to be removed in 2.0. Use $url->getQuery()->isEmpty() instead.
+     *
      * {@inheritdoc}
      */
     public function hasQuery()
     {
-        return $this->hasPart(UrlInterface::PART_QUERY);
+        @trigger_error(
+            'hasQuery() is deprecated since 1.9.15, to be removed in 2.0. ' .
+            'Use $url->getQuery()->isEmpty() instead.'
+        );
+
+        return true;
     }
 
     /**
@@ -339,12 +350,7 @@ class Url implements UrlInterface
      */
     public function getQuery()
     {
-        $query = $this->getPart(UrlInterface::PART_QUERY);
-        if ($query instanceof Query && !$query->hasConfiguration()) {
-            $query->setConfiguration($this->getConfiguration());
-        }
-
-        return $query;
+        return $this->getPart(UrlInterface::PART_QUERY);
     }
 
     /**
@@ -352,12 +358,6 @@ class Url implements UrlInterface
      */
     public function setQuery($query)
     {
-        if (is_null($query)) {
-            $this->removePart(UrlInterface::PART_QUERY);
-
-            return true;
-        }
-
         $query = trim($query);
 
         if ('?' === substr($query, 0, 1)) {
@@ -412,7 +412,8 @@ class Url implements UrlInterface
 
         $url .= $this->getPath();
 
-        if ($this->hasQuery()) {
+        $query = $this->getQuery();
+        if (!$query->isEmpty()) {
             $url .= '?' . $this->getQuery();
         }
 

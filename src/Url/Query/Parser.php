@@ -23,7 +23,7 @@ class Parser implements ParserInterface
      *
      * @param string $queryString
      */
-    public function __construct($queryString)
+    public function __construct($queryString = '')
     {
         $this->origin = $queryString;
         $this->parse();
