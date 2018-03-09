@@ -131,11 +131,6 @@ interface UrlInterface
     public function setPath($path);
 
     /**
-     * @return bool
-     */
-    public function hasQuery();
-
-    /**
      * @return Query
      */
     public function getQuery();
@@ -191,33 +186,6 @@ interface UrlInterface
      * @return bool
      */
     public function setPart($partName, $value);
-
-    /**
-     * Add a fragment to a URL that does not already have one
-     *
-     * @param string $fragment
-     *
-     * @return bool
-     */
-    public function addFragment($fragment);
-
-    /**
-     *  Add a path to a URL that does not already have one
-     *
-     * @param string $path
-     *
-     * @return bool
-     */
-    public function addPath($path);
-
-    /**
-     * Add a port to a URL that does not already have one
-     *
-     * @param int $port
-     *
-     * @return bool
-     */
-    public function addPort($port);
 
     /**
      * @return bool
