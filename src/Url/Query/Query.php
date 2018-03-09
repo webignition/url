@@ -109,11 +109,18 @@ class Query
     }
 
     /**
+     * @deprecated Deprecated since 1.9.18, to be removed in 2.0. Use set() instead.
+     *
      * @param string $encodedKey
      * @param string $encodedValue
      */
     public function add($encodedKey, $encodedValue)
     {
+        @trigger_error(
+            'add() is deprecated since 1.9.18, to be removed in 2.0. ' .
+            'Use set() instead.'
+        );
+
         if (!$this->contains(urldecode($encodedKey))) {
             $addition = $encodedKey . '=' . $encodedValue;
 
@@ -127,10 +134,17 @@ class Query
     }
 
     /**
+     * @deprecated Deprecated since 1.9.18, to be removed in 2.0. Use set($encodedKey, null) instead.
+     *
      * @param string $encodedKey
      */
     public function remove($encodedKey)
     {
+        @trigger_error(
+            'remove() is deprecated since 1.9.18, to be removed in 2.0. ' .
+            'Use set($encodedKey, null) instead.'
+        );
+
         $decodedKey = urldecode($encodedKey);
 
         if ($this->contains($decodedKey)) {
