@@ -7,13 +7,6 @@ use webignition\Url\Configuration;
 class Query
 {
     /**
-     * Supplied URL, unmodified query string
-     *
-     * @var string
-     */
-    protected $origin = null;
-
-    /**
      * @var ParserInterface
      */
     protected $parser = null;
@@ -23,7 +16,7 @@ class Query
      *
      * @var array
      */
-    private $pairs = null;
+    protected $pairs = null;
 
     /**
      * @var Configuration
@@ -35,8 +28,26 @@ class Query
      */
     public function __construct($encodedQueryString = '')
     {
-        $this->setOrigin($encodedQueryString);
-        $this->parser = new Parser($this->origin);
+        $this->init($encodedQueryString);
+    }
+
+    /**
+     * @param $encodedQueryString
+     */
+    protected function init($encodedQueryString)
+    {
+        $this->parser = $this->createParser($encodedQueryString);
+        $this->pairs = $this->parser->getKeyValuePairs();
+    }
+
+    /**
+     * @param $encodedQueryString
+     *
+     * @return ParserInterface
+     */
+    protected function createParser($encodedQueryString)
+    {
+        return new Parser($encodedQueryString);
     }
 
     /**
@@ -62,10 +73,6 @@ class Query
      */
     public function pairs()
     {
-        if (is_null($this->pairs)) {
-            $this->pairs = $this->parser->getKeyValuePairs();
-        }
-
         return $this->pairs;
     }
 
@@ -95,20 +102,6 @@ class Query
     }
 
     /**
-     * @param string $origin
-     */
-    private function setOrigin($origin)
-    {
-        $this->origin = $origin;
-    }
-
-    protected function reset()
-    {
-        $this->pairs = null;
-        $this->parser = new Parser($this->origin);
-    }
-
-    /**
      * @deprecated Deprecated since 1.9.18, to be removed in 2.0. Use set() instead.
      *
      * @param string $encodedKey
@@ -122,14 +115,8 @@ class Query
         );
 
         if (!$this->contains(urldecode($encodedKey))) {
-            $addition = $encodedKey . '=' . $encodedValue;
-
-            if (!empty($this->origin)) {
-                $addition = '&' . $addition;
-            }
-
-            $this->setOrigin($this->origin . $addition);
-            $this->reset();
+            $this->pairs[$encodedKey] = $encodedValue;
+            $this->init((string)$this);
         }
     }
 
@@ -149,10 +136,9 @@ class Query
 
         if ($this->contains($decodedKey)) {
             unset($this->pairs[$decodedKey]);
-            $this->setOrigin((string)$this);
         }
 
-        $this->reset();
+        $this->init((string)$this);
     }
 
     /**
