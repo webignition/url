@@ -77,21 +77,6 @@ class Query
     }
 
     /**
-     * @deprecated Deprecated since 1.9.17, to be removed in 2.0. No alternative, no need to get the query parser.
-     *
-     * @return ParserInterface
-     */
-    public function getParser()
-    {
-        @trigger_error(
-            'getParser() is deprecated since 1.9.17, to be removed in 2.0. ' .
-            'No alternative, no need to get the query parser'
-        );
-
-        return $this->parser;
-    }
-
-    /**
      * @param string $key
      *
      * @return bool
