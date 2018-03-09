@@ -9,10 +9,8 @@ class Query extends RegularQuery
     /**
      * {@inheritdoc}
      */
-    public function __construct($encodedQueryString)
+    protected function createParser($encodedQueryString)
     {
-        parent::__construct($encodedQueryString);
-
-        $this->parser = new Normaliser($this->origin);
+        return new Normaliser($encodedQueryString);
     }
 }
