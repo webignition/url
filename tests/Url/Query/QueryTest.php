@@ -86,129 +86,6 @@ class QueryTest extends AbstractQueryTest
     }
 
     /**
-     * @dataProvider addDataProvider
-     *
-     * @param string $queryString
-     * @param string $key
-     * @param mixed $value
-     * @param array $expectedPairs
-     */
-    public function testAdd($queryString, $key, $value, $expectedPairs)
-    {
-        $query = new Query($queryString);
-        $query->add($key, $value);
-
-        $this->assertEquals($expectedPairs, $query->pairs());
-    }
-
-    /**
-     * @return array
-     */
-    public function addDataProvider()
-    {
-        return [
-            'add to empty query string' => [
-                'queryString' => '',
-                'key' => 'a',
-                'value' => 1,
-                'expectedPairs' => [
-                    'a' => 1,
-                ],
-            ],
-            'key not present' => [
-                'queryString' => 'b=2',
-                'key' => 'a',
-                'value' => 1,
-                'expectedPairs' => [
-                    'a' => 1,
-                    'b' => 2,
-                ],
-            ],
-            'key present; un-encoded' => [
-                'queryString' => 'a/a=1',
-                'key' => 'a/a',
-                'value' => 2,
-                'expectedPairs' => [
-                    'a/a' => 1,
-                ],
-            ],
-            'key present; encoded' => [
-                'queryString' => 'a%2Fa=1',
-                'key' => 'a/a',
-                'value' => 2,
-                'expectedPairs' => [
-                    'a/a' => 1,
-                ],
-            ],
-            'key present; existing key un-encoded; addition key encoded' => [
-                'queryString' => 'a/a=1',
-                'key' => 'a%2Fa',
-                'value' => 2,
-                'expectedPairs' => [
-                    'a/a' => 1,
-                ],
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider removeDataProvider
-     *
-     * @param string $queryString
-     * @param string $key
-     * @param array $expectedPairs
-     */
-    public function testRemove($queryString, $key, $expectedPairs)
-    {
-        $query = new Query($queryString);
-        $query->remove($key);
-
-        $this->assertEquals($expectedPairs, $query->pairs());
-    }
-
-    /**
-     * @return array
-     */
-    public function removeDataProvider()
-    {
-        return [
-            'remove from empty query string' => [
-                'queryString' => '',
-                'key' => 'a',
-                'expectedPairs' => [],
-            ],
-            'key not present' => [
-                'queryString' => 'a=1',
-                'key' => 'b',
-                'expectedPairs' => [
-                    'a' => 1,
-                ],
-            ],
-            'key present; un-encoded' => [
-                'queryString' => 'a/a=1&b=2',
-                'key' => 'a/a',
-                'expectedPairs' => [
-                    'b' => 2,
-                ],
-            ],
-            'key present; encoded' => [
-                'queryString' => 'a%2Fa=1&b=2',
-                'key' => 'a/a',
-                'expectedPairs' => [
-                    'b' => 2,
-                ],
-            ],
-            'key present; existing key un-encoded; addition key encoded' => [
-                'queryString' => 'a/a=1&b=2',
-                'key' => 'a%2Fa',
-                'expectedPairs' => [
-                    'b' => 2,
-                ],
-            ],
-        ];
-    }
-
-    /**
      * @dataProvider setDataProvider
      *
      * @param string $queryString
@@ -238,7 +115,7 @@ class QueryTest extends AbstractQueryTest
                     'a' => 1,
                 ],
             ],
-            'key not present' => [
+            'add: key not present' => [
                 'queryString' => 'b=2',
                 'key' => 'a',
                 'value' => 1,
@@ -247,7 +124,7 @@ class QueryTest extends AbstractQueryTest
                     'b' => 2,
                 ],
             ],
-            'key present; un-encoded' => [
+            'add: key present; un-encoded' => [
                 'queryString' => 'a/a=1',
                 'key' => 'a/a',
                 'value' => 2,
@@ -255,7 +132,7 @@ class QueryTest extends AbstractQueryTest
                     'a/a' => 2,
                 ],
             ],
-            'key present; encoded' => [
+            'add: key present; encoded' => [
                 'queryString' => 'a%2Fa=1',
                 'key' => 'a/a',
                 'value' => 2,
@@ -263,12 +140,50 @@ class QueryTest extends AbstractQueryTest
                     'a/a' => 2,
                 ],
             ],
-            'key present; existing key un-encoded; addition key encoded' => [
+            'add: key present; existing key un-encoded; addition key encoded' => [
                 'queryString' => 'a/a=1',
                 'key' => 'a%2Fa',
                 'value' => 2,
                 'expectedPairs' => [
                     'a/a' => 2,
+                ],
+            ],
+            'remove from empty query string' => [
+                'queryString' => '',
+                'key' => 'a',
+                'value'=> null,
+                'expectedPairs' => [],
+            ],
+            'remove: key not present' => [
+                'queryString' => 'a=1',
+                'key' => 'b',
+                'value'=> null,
+                'expectedPairs' => [
+                    'a' => 1,
+                ],
+            ],
+            'remove: key present; un-encoded' => [
+                'queryString' => 'a/a=1&b=2',
+                'key' => 'a/a',
+                'value'=> null,
+                'expectedPairs' => [
+                    'b' => 2,
+                ],
+            ],
+            'remove: key present; encoded' => [
+                'queryString' => 'a%2Fa=1&b=2',
+                'key' => 'a/a',
+                'value'=> null,
+                'expectedPairs' => [
+                    'b' => 2,
+                ],
+            ],
+            'remove: key present; existing key un-encoded; addition key encoded' => [
+                'queryString' => 'a/a=1&b=2',
+                'key' => 'a%2Fa',
+                'value'=> null,
+                'expectedPairs' => [
+                    'b' => 2,
                 ],
             ],
         ];
