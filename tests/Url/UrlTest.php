@@ -1246,6 +1246,10 @@ class UrlTest extends \PHPUnit_Framework_TestCase
                 'url' => new Url('#foo'),
                 'expectedStringUrl' => '#foo',
             ],
+            'key only query' => [
+                'url' => new Url('?key'),
+                'expectedStringUrl' => '?key',
+            ],
         ];
     }
 }
