@@ -40,6 +40,8 @@ interface UrlInterface
 
     /**
      * @param string $scheme
+     *
+     * @return bool
      */
     public function setScheme($scheme);
 
@@ -55,6 +57,8 @@ interface UrlInterface
 
     /**
      * @param string $host
+     *
+     * @return bool
      */
     public function setHost($host);
 
@@ -70,6 +74,8 @@ interface UrlInterface
 
     /**
      * @param int $port
+     *
+     * @return bool
      */
     public function setPort($port);
 
@@ -85,6 +91,8 @@ interface UrlInterface
 
     /**
      * @param string $user
+     *
+     * @return bool
      */
     public function setUser($user);
 
@@ -100,6 +108,8 @@ interface UrlInterface
 
     /**
      * @param string $pass
+     *
+     * @return bool
      */
     public function setPass($pass);
 
@@ -115,6 +125,8 @@ interface UrlInterface
 
     /**
      * @param string $path
+     *
+     * @return bool
      */
     public function setPath($path);
 
@@ -130,6 +142,8 @@ interface UrlInterface
 
     /**
      * @param string $query
+     *
+     * @return bool
      */
     public function setQuery($query);
 
@@ -145,6 +159,8 @@ interface UrlInterface
 
     /**
      * @param string $fragment
+     *
+     * @return bool
      */
     public function setFragment($fragment);
 
@@ -171,6 +187,8 @@ interface UrlInterface
     /**
      * @param string $partName
      * @param string $value
+     *
+     * @return bool
      */
     public function setPart($partName, $value);
 
@@ -187,6 +205,7 @@ interface UrlInterface
      *  Add a path to a URL that does not already have one
      *
      * @param string $path
+     *
      * @return bool
      */
     public function addPath($path);
@@ -194,11 +213,11 @@ interface UrlInterface
     /**
      * Add a port to a URL that does not already have one
      *
-     * @param int $value
+     * @param int $port
      *
      * @return bool
      */
-    public function addPort($value);
+    public function addPort($port);
 
     /**
      * @return bool
