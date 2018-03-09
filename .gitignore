@@ -1,5 +1,4 @@
-/nbproject
 /vendor
 /composer.lock
-/composer.phar
 /.idea
+/build

@@ -12,14 +12,35 @@
         }
     ],
     "autoload": {
-        "psr-0": { "": "src/" }
-    },    
+        "psr-4": {
+            "webignition\\Url\\": "src/Url",
+            "webignition\\NormalisedUrl\\": "src/NormalisedUrl"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "webignition\\Tests\\NormalisedUrl\\": "tests/NormalisedUrl",
+            "webignition\\Tests\\Url\\": "tests/Url",
+            "webignition\\Tests\\DataProvider\\": "tests/DataProvider"
+        }
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit --colors=always",
+        "cs": "./vendor/bin/phpcs src tests --colors --standard=PSR2",
+        "ci": [
+            "@composer cs",
+            "@composer test"
+        ]
+    },
     "require": {
-        "php": ">=5.3.0",
+        "php": ">=5.6.0",
         "etechnika/idna-convert": "1.0.*",
         "xrstf/ip-utils": "v1.0.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.0"
+        "phpunit/phpunit": "~5.0",
+        "squizlabs/php_codesniffer": "3.*",
+        "mockery/mockery": "~0.9",
+        "php-mock/php-mock-mockery": "1.1.0"
     }
 }
