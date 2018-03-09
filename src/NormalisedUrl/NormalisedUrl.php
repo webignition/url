@@ -9,8 +9,8 @@ class NormalisedUrl extends RegularUrl
     /**
      * {@inheritdoc}
      */
-    protected function createParser()
+    protected function createParser($originUrl)
     {
-        return new Normaliser($this->originUrl);
+        return new Normaliser($originUrl);
     }
 }
