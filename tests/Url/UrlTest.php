@@ -1042,7 +1042,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
                 'url' => new Url('//example.com/path'),
                 'user' => null,
                 'expectedSucceeds' => true,
-                'expectedUrl' => '//@example.com/path',
+                'expectedUrl' => '//example.com/path',
             ],
             'no existing user, empty user, no pass' => [
                 'url' => new Url('//example.com/path'),
@@ -1060,7 +1060,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
                 'url' => new Url('//user@example.com/path'),
                 'user' => null,
                 'expectedSucceeds' => true,
-                'expectedUrl' => '//@example.com/path',
+                'expectedUrl' => '//example.com/path',
             ],
             'existing user, empty user, no pass' => [
                 'url' => new Url('//user@example.com/path'),

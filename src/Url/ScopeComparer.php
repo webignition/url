@@ -90,6 +90,7 @@ class ScopeComparer
 
         foreach ($this->ignoredParts as $partName) {
             $this->sourceUrl->setPart($partName, null);
+            $this->comparatorUrl->setPart($partName, null);
         }
 
         $this->sourceUrlString = (string)$this->sourceUrl;

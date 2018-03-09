@@ -249,8 +249,10 @@ class Url implements UrlInterface
      */
     public function setUser($user)
     {
-        if (!is_string($user)) {
-            $user = '';
+        if (is_null($user)) {
+            $this->removePart(UrlInterface::PART_USER);
+
+            return true;
         }
 
         $user = trim($user);
