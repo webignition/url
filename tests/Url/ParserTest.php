@@ -199,6 +199,13 @@ class ParserTest extends \PHPUnit_Framework_TestCase
                     UrlInterface::PART_QUERY => '',
                 ],
             ],
+            'scheme-only' => [
+                'url' => 'file://',
+                'expectedParts' => [
+                    UrlInterface::PART_SCHEME  => 'file',
+                    UrlInterface::PART_QUERY => '',
+                ],
+            ],
         ];
     }
 }
