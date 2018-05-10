@@ -2,6 +2,7 @@
 
 namespace webignition\Tests\Url;
 
+use IpUtils\Exception\InvalidExpressionException;
 use webignition\Url\Query\Query;
 use webignition\Url\Url;
 use webignition\Url\UrlInterface;
@@ -1134,6 +1135,54 @@ class UrlTest extends \PHPUnit_Framework_TestCase
                 'url' => new Url('//example.com?foo=bar'),
                 'expectedQueryString' => 'foo=bar',
                 'expectedUrl' => '//example.com?foo=bar',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider isPubliclyRoutableDataProvider
+     *
+     * @param string $url
+     * @param bool $expectedIsPubliclyRoutable
+     *
+     * @throws InvalidExpressionException
+     */
+    public function testIsPubliclyRoutable($url, $expectedIsPubliclyRoutable)
+    {
+        $urlObject = new Url($url);
+
+        $this->assertEquals($expectedIsPubliclyRoutable, $urlObject->isPubliclyRoutable());
+    }
+
+    /**
+     * @return array
+     */
+    public function isPubliclyRoutableDataProvider()
+    {
+        return [
+            'no host' => [
+                'url' => 'example',
+                'expectedIsPubliclyRoutable' => false,
+            ],
+            'host not publicly routable' => [
+                'url' => 'http://127.0.0.1',
+                'expectedIsPubliclyRoutable' => false,
+            ],
+            'host lacks dots' => [
+                'url' => 'http://example',
+                'expectedIsPubliclyRoutable' => false,
+            ],
+            'host starts with dot' => [
+                'url' => 'http://.example',
+                'expectedIsPubliclyRoutable' => false,
+            ],
+            'host ends with dot' => [
+                'url' => 'http://example.',
+                'expectedIsPubliclyRoutable' => false,
+            ],
+            'valid' => [
+                'url' => 'http://example.com',
+                'expectedIsPubliclyRoutable' => true,
             ],
         ];
     }

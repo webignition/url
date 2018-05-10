@@ -191,4 +191,9 @@ interface UrlInterface
      * @return bool
      */
     public function hasCredentials();
+
+    /**
+     * @return bool
+     */
+    public function isPubliclyRoutable();
 }
