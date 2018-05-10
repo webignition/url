@@ -3,6 +3,7 @@
 namespace webignition\Url;
 
 use Etechnika\IdnaConvert\IdnaConvert;
+use IpUtils\Exception\InvalidExpressionException;
 use webignition\Url\Query\Query;
 
 class Url implements UrlInterface
@@ -540,5 +541,39 @@ class Url implements UrlInterface
     public function getConfiguration()
     {
         return $this->configuration;
+    }
+
+    /**
+     * @return bool
+     *
+     * @throws InvalidExpressionException
+     */
+    public function isPubliclyRoutable()
+    {
+        $host = $this->getHost();
+        if (empty($host)) {
+            return false;
+        }
+
+        if (!$host->isPubliclyRoutable()) {
+            return false;
+        }
+
+        $hostContainsDots = substr_count($host, '.');
+        if (!$hostContainsDots) {
+            return false;
+        }
+
+        $hostStartsWithDot = strpos($host, '.') === 0;
+        if ($hostStartsWithDot) {
+            return false;
+        }
+
+        $hostEndsWithDot = strpos($host, '.') === strlen($host) - 1;
+        if ($hostEndsWithDot) {
+            return false;
+        }
+
+        return true;
     }
 }
