@@ -16,7 +16,7 @@ class Path extends RegularPath
     {
         parent::__construct($path);
 
-        $normaliser = new Normaliser($path);
+        $normaliser = new Normaliser(parent::get());
 
         $this->set($normaliser->get());
     }
