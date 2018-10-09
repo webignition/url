@@ -82,6 +82,10 @@ trait PathNormalisationDataProviderTrait
                 'path' => '/one//two',
                 'expectedNormalisedPath' => '/one//two',
             ],
+            'percent-encode unicode characters' => [
+                'path' => '/Nattō',
+                'expectedNormalisedPath' => '/Natt%C5%8D',
+            ],
         ];
     }
 }

@@ -2,6 +2,8 @@
 
 namespace webignition\Url\Path;
 
+use webignition\Url\PercentEncoder;
+
 /**
  * Represents the path part of a URL
  */
@@ -19,6 +21,8 @@ class Path
      */
     public function __construct($path)
     {
+        $path = PercentEncoder::encodeUnreservedCharacters($path);
+
         $this->set($path);
     }
 

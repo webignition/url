@@ -2,6 +2,8 @@
 
 namespace webignition\NormalisedUrl\Path;
 
+use webignition\Url\PercentEncoder;
+
 class Normaliser
 {
     /**
@@ -14,6 +16,7 @@ class Normaliser
      */
     public function __construct($path)
     {
+        $path = PercentEncoder::encodeUnreservedCharacters($path);
         $this->path = (string)$path;
         $this->normalise();
     }

@@ -9,13 +9,14 @@ class PathTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider createDataProvider
      *
-     * @param $pathString
+     * @param string|null $path
+     * @param string $expectedPath
      */
-    public function testCreate($pathString)
+    public function testCreate($path, $expectedPath)
     {
-        $path = new Path($pathString);
+        $path = new Path($path);
 
-        $this->assertEquals($pathString, (string)$path);
+        $this->assertEquals($expectedPath, (string)$path);
     }
 
     /**
@@ -26,12 +27,19 @@ class PathTest extends \PHPUnit_Framework_TestCase
         return [
             'null' => [
                 'pathString' => null,
+                'expectedPath' => '',
             ],
             'empty' => [
                 'pathString' => '',
+                'expectedPath' => '',
             ],
             'non-empty' => [
                 'pathString' => '/foo',
+                'expectedPath' => '/foo',
+            ],
+            'percent-encode unicode characters' => [
+                'path' => '/Nattō',
+                'expectedPath' => '/Natt%C5%8D',
             ],
         ];
     }
