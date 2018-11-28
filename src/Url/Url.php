@@ -240,11 +240,9 @@ class Url implements UrlInterface
         return $this->getPart(UrlInterface::PART_PATH);
     }
 
-    public function setPath(?string $path): bool
+    public function setPath(?string $path)
     {
         $this->updatePart(UrlInterface::PART_PATH, new Path($path));
-
-        return true;
     }
 
     public function getQuery(): ?Query
@@ -356,7 +354,9 @@ class Url implements UrlInterface
                 return $this->setPort($value);
 
             case UrlInterface::PART_PATH:
-                return $this->setPath($value);
+                $this->setPath($value);
+
+                return true;
 
             case UrlInterface::PART_QUERY:
                 return $this->setQuery($value);

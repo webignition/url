@@ -428,14 +428,12 @@ class UrlTest extends \PHPUnit\Framework\TestCase
      *
      * @param Url $url
      * @param string|null $path
-     * @param bool $expectedSucceeds
      * @param string $expectedUrl
      */
-    public function testSetPath(Url $url, ?string $path, bool $expectedSucceeds, string $expectedUrl)
+    public function testSetPath(Url $url, ?string $path, string $expectedUrl)
     {
-        $succeeds = $url->setPath($path);
+        $url->setPath($path);
 
-        $this->assertEquals($expectedSucceeds, $succeeds);
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
@@ -445,61 +443,51 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             'add to url without query and without fragment' => [
                 'url' => new Url('http://example.com'),
                 'path' => '/bar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/bar',
             ],
             'add to url with query' => [
                 'url' => new Url('http://example.com?foo=bar'),
                 'path' => '/foobar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/foobar?foo=bar',
             ],
             'add to url with fragment' => [
                 'url' => new Url('http://example.com#foo'),
                 'path' => '/foobar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/foobar#foo',
             ],
             'add to url with query and fragment' => [
                 'url' => new Url('http://example.com?foo=bar#foo'),
                 'path' => '/foobar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/foobar?foo=bar#foo',
             ],
             'replace existing path' => [
                 'url' => new Url('http://example.com/foo'),
                 'path' => '/bar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/bar',
             ],
             'remove existing path' => [
                 'url' => new Url('http://example.com/foo'),
                 'path' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com',
             ],
             'remove existing path from url that has query and fragment' => [
                 'url' => new Url('http://example.com/foo?query#fragment'),
                 'path' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com?query#fragment',
             ],
             'add path to hash-only url' => [
                 'url' => new Url('#'),
                 'path' => '/foo',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '/foo#',
             ],
             'add path to hash and identifier url' => [
                 'url' => new Url('#bar'),
                 'path' => '/foo',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '/foo#bar',
             ],
             'set path on url with plus characters in query' => [
                 'url' => new Url('example.html?foo=++'),
                 'path' => '/foo.html',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '/foo.html?foo=%2B%2B',
             ],
         ];
@@ -946,7 +934,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
                 'url' => $testData['url'],
                 'partName' => UrlInterface::PART_PATH,
                 'value' => $testData['path'],
-                'expectedSucceeds' => $testData['expectedSucceeds'],
+                'expectedSucceeds' => true,
                 'expectedUrl' => $testData['expectedUrl'],
             ];
         }

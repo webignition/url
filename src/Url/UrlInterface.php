@@ -69,7 +69,7 @@ interface UrlInterface
 
     public function getPath(): ?Path;
 
-    public function setPath(?string $path): bool;
+    public function setPath(?string $path);
 
     public function getQuery(): ?Query;
 

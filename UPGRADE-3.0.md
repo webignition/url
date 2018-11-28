@@ -22,3 +22,4 @@ no longer return anything:
 
 - `UrlInterface::setFragment()`
 - `UrlInterface::setHost()`
+- `UrlInterface::setPath()`
