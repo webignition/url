@@ -19,7 +19,7 @@ class Normaliser extends Parser
     /**
      * {@inheritdoc}
      */
-    public function __construct($url)
+    public function __construct(?string $url)
     {
         parent::__construct($url);
 

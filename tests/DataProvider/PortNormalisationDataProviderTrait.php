@@ -4,10 +4,7 @@ namespace webignition\Tests\DataProvider;
 
 trait PortNormalisationDataProviderTrait
 {
-    /**
-     * @return array
-     */
-    public function portNormalisationDataProvider()
+    public function portNormalisationDataProvider(): array
     {
         return [
             'port 80 is removed for http' => [

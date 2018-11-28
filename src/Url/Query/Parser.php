@@ -19,20 +19,13 @@ class Parser implements ParserInterface
      */
     protected $keyValuePairs = [];
 
-    /**
-     *
-     * @param string $queryString
-     */
-    public function __construct($queryString = '')
+    public function __construct(?string $queryString = '')
     {
         $this->origin = $queryString;
         $this->parse();
     }
 
-    /**
-     * @return array
-     */
-    public function getKeyValuePairs()
+    public function getKeyValuePairs(): array
     {
         return $this->keyValuePairs;
     }

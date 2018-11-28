@@ -17,11 +17,7 @@ interface UrlInterface
     const PART_QUERY = 'query';
     const PART_FRAGMENT = 'fragment';
 
-    /**
-     *
-     * @param string $originUrl
-     */
-    public function init($originUrl);
+    public function init(?string $originUrl);
 
     /**
      * @return string
@@ -38,162 +34,70 @@ interface UrlInterface
      */
     public function getScheme();
 
+    public function setScheme(?string $scheme): bool;
+
+    public function hasHost(): bool;
+
+    public function getHost(): ?Host;
+
+    public function setHost(?string $host): bool;
+
+    public function hasPort(): bool;
+
+    public function getPort(): ?int;
+
     /**
-     * @param string $scheme
+     * @param int|null $port
      *
      * @return bool
      */
-    public function setScheme($scheme);
+    public function setPort($port): bool;
 
-    /**
-     * @return bool
-     */
-    public function hasHost();
+    public function hasUser(): bool;
 
-    /**
-     * @return Host
-     */
-    public function getHost();
+    public function getUser(): ?string;
 
-    /**
-     * @param string $host
-     *
-     * @return bool
-     */
-    public function setHost($host);
+    public function setUser(?string $user): bool;
 
-    /**
-     * @return bool
-     */
-    public function hasPort();
+    public function hasPass(): bool;
 
-    /**
-     * @return int
-     */
-    public function getPort();
+    public function getPass(): ?string;
 
-    /**
-     * @param int $port
-     *
-     * @return bool
-     */
-    public function setPort($port);
+    public function setPass(?string $pass): bool;
 
-    /**
-     * @return bool
-     */
-    public function hasUser();
+    public function hasPath(): bool;
 
-    /**
-     * @return string
-     */
-    public function getUser();
+    public function getPath(): ?Path;
 
-    /**
-     * @param string $user
-     *
-     * @return bool
-     */
-    public function setUser($user);
+    public function setPath(?string $path): bool;
 
-    /**
-     * @return bool
-     */
-    public function hasPass();
+    public function getQuery(): ?Query;
 
-    /**
-     * @return string
-     */
-    public function getPass();
+    public function setQuery(?string $query): bool ;
 
-    /**
-     * @param string $pass
-     *
-     * @return bool
-     */
-    public function setPass($pass);
+    public function hasFragment(): bool;
 
-    /**
-     * @return bool
-     */
-    public function hasPath();
+    public function getFragment(): ?string;
 
-    /**
-     * @return Path
-     */
-    public function getPath();
+    public function setFragment(?string $fragment): bool;
 
-    /**
-     * @param string $path
-     *
-     * @return bool
-     */
-    public function setPath($path);
+    public function __toString(): string;
 
-    /**
-     * @return Query
-     */
-    public function getQuery();
+    public function isRelative(): bool ;
 
-    /**
-     * @param string $query
-     *
-     * @return bool
-     */
-    public function setQuery($query);
+    public function isProtocolRelative(): bool ;
 
-    /**
-     * @return bool
-     */
-    public function hasFragment();
-
-    /**
-     * @return string
-     */
-    public function getFragment();
-
-    /**
-     * @param string $fragment
-     *
-     * @return bool
-     */
-    public function setFragment($fragment);
-
-    /**
-     * @return string
-     */
-    public function __toString();
-
-    /**
-     * @return bool
-     */
-    public function isRelative();
-
-    /**
-     * @return bool
-     */
-    public function isProtocolRelative();
-
-    /**
-     * @return bool
-     */
-    public function isAbsolute();
+    public function isAbsolute(): bool ;
 
     /**
      * @param string $partName
-     * @param string $value
+     * @param mixed $value
      *
      * @return bool
      */
-    public function setPart($partName, $value);
+    public function setPart(string $partName, $value): bool;
 
-    /**
-     * @return bool
-     */
-    public function hasCredentials();
+    public function hasCredentials(): bool;
 
-    /**
-     * @return bool
-     */
-    public function isPubliclyRoutable();
+    public function isPubliclyRoutable(): bool;
 }

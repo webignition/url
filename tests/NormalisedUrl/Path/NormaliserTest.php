@@ -13,10 +13,10 @@ class NormaliserTest extends AbstractNormalisedUrlTest
     /**
      * @dataProvider pathNormalisationDataProvider
      *
-     * @param string $path
+     * @param string|null $path
      * @param string $expectedNormalisedPath
      */
-    public function testCreate($path, $expectedNormalisedPath)
+    public function testCreate(?string $path, string $expectedNormalisedPath)
     {
         $normaliser = new Normaliser($path);
         $normalisedPath = $normaliser->get();

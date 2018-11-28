@@ -2,12 +2,9 @@
 
 namespace webignition\Tests\NormalisedUrl;
 
-abstract class AbstractNormalisedUrlTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractNormalisedUrlTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @return array
-     */
-    protected function createReservedCharactersQueryDataSet()
+    protected function createReservedCharactersQueryDataSet(): array
     {
         $reservedCharacters = ['!','*',"'",'(',')',';',':','@','&','=','+','$',',','/','?','#','[',']'];
 

@@ -6,10 +6,7 @@ use webignition\Url\Path\Path;
 
 trait PathEncoderDataProviderTrait
 {
-    /**
-     * @return array
-     */
-    public function pathEncoderDataProvider()
+    public function pathEncoderDataProvider(): array
     {
         return [
             'empty path' => [

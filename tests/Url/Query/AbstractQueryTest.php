@@ -2,12 +2,9 @@
 
 namespace webignition\Tests\Url\Query;
 
-abstract class AbstractQueryTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractQueryTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @return array
-     */
-    public function keyValuePairsDataProvider()
+    public function keyValuePairsDataProvider(): array
     {
         return [
             'null' => [

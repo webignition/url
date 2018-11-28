@@ -7,7 +7,7 @@ use webignition\Url\Query\Query;
 use webignition\Url\Url;
 use webignition\Url\UrlInterface;
 
-class UrlTest extends \PHPUnit_Framework_TestCase
+class UrlTest extends \PHPUnit\Framework\TestCase
 {
     public function testCreate()
     {
@@ -22,15 +22,12 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @param Url $url
      * @param string $expectedRoot
      */
-    public function testGetRoot(Url $url, $expectedRoot)
+    public function testGetRoot(Url $url, string $expectedRoot)
     {
         $this->assertEquals($expectedRoot, $url->getRoot());
     }
 
-    /**
-     * @return array
-     */
-    public function getRootDataProvider()
+    public function getRootDataProvider(): array
     {
         $punyCodeUrl = new Url('http://xn--g6h.example.com');
         $punyCodeUrl->getConfiguration()->enableConvertIdnToUtf8();
@@ -73,15 +70,12 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @param Url $url
      * @param bool $expectedHas
      */
-    public function testHasCredentials(Url $url, $expectedHas)
+    public function testHasCredentials(Url $url, bool $expectedHas)
     {
         $this->assertEquals($expectedHas, $url->hasCredentials());
     }
 
-    /**
-     * @return array
-     */
-    public function hasCredentialsDataProvider()
+    public function hasCredentialsDataProvider(): array
     {
         return [
             'no credentials' => [
@@ -110,16 +104,13 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @param bool $expectedHasFragment
      * @param string $expectedFragment
      */
-    public function testHasFragmentGetFragment(Url $url, $expectedHasFragment, $expectedFragment)
+    public function testHasFragmentGetFragment(Url $url, bool $expectedHasFragment, string $expectedFragment)
     {
         $this->assertEquals($expectedHasFragment, $url->hasFragment());
         $this->assertEquals($expectedFragment, $url->getFragment());
     }
 
-    /**
-     * @return array
-     */
-    public function hasFragmentGetFragmentDataProvider()
+    public function hasFragmentGetFragmentDataProvider(): array
     {
         return [
             'no fragment' => [
@@ -142,16 +133,13 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @param bool $expectedHasHost
      * @param string $expectedHost
      */
-    public function testHasHostGetHost(Url $url, $expectedHasHost, $expectedHost)
+    public function testHasHostGetHost(Url $url, bool $expectedHasHost, string $expectedHost)
     {
         $this->assertEquals($expectedHasHost, $url->hasHost());
         $this->assertEquals($expectedHost, $url->getHost());
     }
 
-    /**
-     * @return array
-     */
-    public function hasHostGetHostDataProvider()
+    public function hasHostGetHostDataProvider(): array
     {
         return [
             'no host' => [
@@ -174,16 +162,13 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @param bool $expectedHasPass
      * @param string $expectedPass
      */
-    public function testHasPassGetPass(Url $url, $expectedHasPass, $expectedPass)
+    public function testHasPassGetPass(Url $url, bool $expectedHasPass, string $expectedPass)
     {
         $this->assertEquals($expectedHasPass, $url->hasPass());
         $this->assertEquals($expectedPass, $url->getPass());
     }
 
-    /**
-     * @return array
-     */
-    public function hasPassGetPassDataProvider()
+    public function hasPassGetPassDataProvider(): array
     {
         return [
             'no pass' => [
@@ -206,16 +191,13 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @param bool $expectedHasPath
      * @param string $expectedPath
      */
-    public function testHasPathGetPath(Url $url, $expectedHasPath, $expectedPath)
+    public function testHasPathGetPath(Url $url, bool $expectedHasPath, string $expectedPath)
     {
         $this->assertEquals($expectedHasPath, $url->hasPath());
         $this->assertEquals($expectedPath, $url->getPath());
     }
 
-    /**
-     * @return array
-     */
-    public function hasPathGetPathDataProvider()
+    public function hasPathGetPathDataProvider(): array
     {
         return [
             'no path' => [
@@ -238,16 +220,13 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @param bool $expectedHasPort
      * @param string $expectedPort
      */
-    public function testHasPortGetPort(Url $url, $expectedHasPort, $expectedPort)
+    public function testHasPortGetPort(Url $url, bool $expectedHasPort, string $expectedPort)
     {
         $this->assertEquals($expectedHasPort, $url->hasPort());
         $this->assertEquals($expectedPort, $url->getPort());
     }
 
-    /**
-     * @return array
-     */
-    public function hasPortGetPortDataProvider()
+    public function hasPortGetPortDataProvider(): array
     {
         return [
             'no port' => [
@@ -269,15 +248,12 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @param Url $url
      * @param string $expectedQuery
      */
-    public function testHasQueryGetQuery(Url $url, $expectedQuery)
+    public function testHasQueryGetQuery(Url $url, string $expectedQuery)
     {
         $this->assertEquals($expectedQuery, $url->getQuery());
     }
 
-    /**
-     * @return array
-     */
-    public function hasQueryGetQueryDataProvider()
+    public function hasQueryGetQueryDataProvider(): array
     {
         return [
             'no query' => [
@@ -298,16 +274,13 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @param bool $expectedHasScheme
      * @param string $expectedScheme
      */
-    public function testHasSchemeGetScheme(Url $url, $expectedHasScheme, $expectedScheme)
+    public function testHasSchemeGetScheme(Url $url, bool $expectedHasScheme, string $expectedScheme)
     {
         $this->assertEquals($expectedHasScheme, $url->hasScheme());
         $this->assertEquals($expectedScheme, $url->getScheme());
     }
 
-    /**
-     * @return array
-     */
-    public function hasSchemeGetSchemeDataProvider()
+    public function hasSchemeGetSchemeDataProvider(): array
     {
         return [
             'no scheme' => [
@@ -330,16 +303,13 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @param bool $expectedHasUser
      * @param string $expectedUser
      */
-    public function testHasUserGetUser(Url $url, $expectedHasUser, $expectedUser)
+    public function testHasUserGetUser(Url $url, bool $expectedHasUser, string $expectedUser)
     {
         $this->assertEquals($expectedHasUser, $url->hasUser());
         $this->assertEquals($expectedUser, $url->getUser());
     }
 
-    /**
-     * @return array
-     */
-    public function hasUserGetUserDataProvider()
+    public function hasUserGetUserDataProvider(): array
     {
         return [
             'no user' => [
@@ -365,19 +335,16 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      */
     public function testIsAbsoluteIsProtocolRelativeIsRelative(
         Url $url,
-        $expectedIsAbsolute,
-        $expectedIsProtocolRelative,
-        $expectedIsRelative
+        bool $expectedIsAbsolute,
+        bool $expectedIsProtocolRelative,
+        bool $expectedIsRelative
     ) {
         $this->assertEquals($expectedIsAbsolute, $url->isAbsolute());
         $this->assertEquals($expectedIsProtocolRelative, $url->isProtocolRelative());
         $this->assertEquals($expectedIsRelative, $url->isRelative());
     }
 
-    /**
-     * @return array
-     */
-    public function isAbsoluteIsProtocolRelativeIsRelativeDataProvider()
+    public function isAbsoluteIsProtocolRelativeIsRelativeDataProvider(): array
     {
         return [
             'absolute' => [
@@ -405,11 +372,11 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @dataProvider setFragmentDataProvider
      *
      * @param Url $url
-     * @param string $fragment
+     * @param string|null $fragment
      * @param bool $expectedIsSet
      * @param string $expectedUrl
      */
-    public function testSetFragment(Url $url, $fragment, $expectedIsSet, $expectedUrl)
+    public function testSetFragment(Url $url, ?string $fragment, bool $expectedIsSet, string $expectedUrl)
     {
         $succeeds = $url->setFragment($fragment);
 
@@ -417,10 +384,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
-    /**
-     * @return array
-     */
-    public function setFragmentDataProvider()
+    public function setFragmentDataProvider(): array
     {
         return [
             'no existing fragment; valid fragment lacking hash' => [
@@ -472,11 +436,11 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @dataProvider setPathDataProvider
      *
      * @param Url $url
-     * @param string $path
+     * @param string|null $path
      * @param bool $expectedSucceeds
      * @param string $expectedUrl
      */
-    public function testSetPath(Url $url, $path, $expectedSucceeds, $expectedUrl)
+    public function testSetPath(Url $url, ?string $path, bool $expectedSucceeds, string $expectedUrl)
     {
         $succeeds = $url->setPath($path);
 
@@ -484,10 +448,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
-    /**
-     * @return array
-     */
-    public function setPathDataProvider()
+    public function setPathDataProvider(): array
     {
         return [
             'add to url without query and without fragment' => [
@@ -557,11 +518,11 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @dataProvider setPortDataProvider
      *
      * @param Url $url
-     * @param string $port
+     * @param string|null $port
      * @param bool $expectedSucceeds
      * @param string $expectedUrl
      */
-    public function testSetPort(Url $url, $port, $expectedSucceeds, $expectedUrl)
+    public function testSetPort(Url $url, ?string $port, bool $expectedSucceeds, string $expectedUrl)
     {
         $succeeds = $url->setPort($port);
 
@@ -569,10 +530,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
-    /**
-     * @return array
-     */
-    public function setPortDataProvider()
+    public function setPortDataProvider(): array
     {
         return [
             'remove existing port' => [
@@ -611,11 +569,11 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @dataProvider setHostDataProvider
      *
      * @param Url $url
-     * @param string $host
+     * @param string|null $host
      * @param bool $expectedSucceeds
      * @param string $expectedUrl
      */
-    public function testSetHost(Url $url, $host, $expectedSucceeds, $expectedUrl)
+    public function testSetHost(Url $url, ?string $host, bool $expectedSucceeds, string $expectedUrl)
     {
         $succeeds = $url->setHost($host);
 
@@ -623,10 +581,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
-    /**
-     * @return array
-     */
-    public function setHostDataProvider()
+    public function setHostDataProvider(): array
     {
         return [
             'no host, has relative path' => [
@@ -672,11 +627,11 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @dataProvider setPassDataProvider
      *
      * @param Url $url
-     * @param string $pass
+     * @param string|null $pass
      * @param bool $expectedSucceeds
      * @param string $expectedUrl
      */
-    public function testSetPass(Url $url, $pass, $expectedSucceeds, $expectedUrl)
+    public function testSetPass(Url $url, ?string $pass, bool $expectedSucceeds, string $expectedUrl)
     {
         $succeeds = $url->setPass($pass);
 
@@ -684,10 +639,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
-    /**
-     * @return array
-     */
-    public function setPassDataProvider()
+    public function setPassDataProvider(): array
     {
         return [
             'no host' => [
@@ -733,11 +685,11 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @dataProvider setQueryDataProvider
      *
      * @param Url $url
-     * @param string $query
+     * @param string|null $query
      * @param bool $expectedSucceeds
      * @param string $expectedUrl
      */
-    public function testSetQuery(Url $url, $query, $expectedSucceeds, $expectedUrl)
+    public function testSetQuery(Url $url, ?string $query, bool $expectedSucceeds, string $expectedUrl)
     {
         $succeeds = $url->setQuery($query);
 
@@ -745,10 +697,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
-    /**
-     * @return array
-     */
-    public function setQueryDataProvider()
+    public function setQueryDataProvider(): array
     {
         return [
             'no existing query, null query' => [
@@ -806,11 +755,11 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @dataProvider setSchemeDataProvider
      *
      * @param Url $url
-     * @param string $scheme
+     * @param string|null $scheme
      * @param bool $expectedSucceeds
      * @param string $expectedUrl
      */
-    public function testSetScheme(Url $url, $scheme, $expectedSucceeds, $expectedUrl)
+    public function testSetScheme(Url $url, ?string $scheme, bool $expectedSucceeds, string $expectedUrl)
     {
         $succeeds = $url->setScheme($scheme);
 
@@ -818,10 +767,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
-    /**
-     * @return array
-     */
-    public function setSchemeDataProvider()
+    public function setSchemeDataProvider(): array
     {
         return [
             'no existing scheme, null scheme' => [
@@ -861,11 +807,11 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @dataProvider setUserDataProvider
      *
      * @param Url $url
-     * @param string $user
+     * @param string|null $user
      * @param bool $expectedSucceeds
      * @param string $expectedUrl
      */
-    public function testSetUser(Url $url, $user, $expectedSucceeds, $expectedUrl)
+    public function testSetUser(Url $url, ?string $user, bool $expectedSucceeds, string $expectedUrl)
     {
         $succeeds = $url->setUser($user);
 
@@ -873,10 +819,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
-    /**
-     * @return array
-     */
-    public function setUserDataProvider()
+    public function setUserDataProvider(): array
     {
         return [
             'cannot set user on url with no host' => [
@@ -945,7 +888,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @param bool $expectedSucceeds
      * @param string $expectedUrl
      */
-    public function testSetPart(Url $url, $partName, $value, $expectedSucceeds, $expectedUrl)
+    public function testSetPart(Url $url, string $partName, $value, bool $expectedSucceeds, string $expectedUrl)
     {
         $succeeds = $url->setPart($partName, $value);
 
@@ -953,10 +896,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
-    /**
-     * @return array
-     */
-    public function setPartDataProvider()
+    public function setPartDataProvider(): array
     {
         $dataSet = [
             'unknown part' => [
@@ -1078,15 +1018,12 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @param Url $url
      * @param string $expectedStringUrl
      */
-    public function testToString(Url $url, $expectedStringUrl)
+    public function testToString(Url $url, string $expectedStringUrl)
     {
         $this->assertEquals($expectedStringUrl, (string)$url);
     }
 
-    /**
-     * @return array
-     */
-    public function toStringDataProvider()
+    public function toStringDataProvider(): array
     {
         return [
             'hash only' => [
@@ -1111,7 +1048,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      * @param string $expectedQueryString
      * @param string $expectedUrl
      */
-    public function testGetQuery(Url $url, $expectedQueryString, $expectedUrl)
+    public function testGetQuery(Url $url, string $expectedQueryString, string $expectedUrl)
     {
         $query = $url->getQuery();
 
@@ -1120,10 +1057,7 @@ class UrlTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
-    /**
-     * @return array
-     */
-    public function getQueryDataProvider()
+    public function getQueryDataProvider(): array
     {
         return [
             'no query' => [
@@ -1147,17 +1081,14 @@ class UrlTest extends \PHPUnit_Framework_TestCase
      *
      * @throws InvalidExpressionException
      */
-    public function testIsPubliclyRoutable($url, $expectedIsPubliclyRoutable)
+    public function testIsPubliclyRoutable(string $url, bool $expectedIsPubliclyRoutable)
     {
         $urlObject = new Url($url);
 
         $this->assertEquals($expectedIsPubliclyRoutable, $urlObject->isPubliclyRoutable());
     }
 
-    /**
-     * @return array
-     */
-    public function isPubliclyRoutableDataProvider()
+    public function isPubliclyRoutableDataProvider(): array
     {
         return [
             'no host' => [

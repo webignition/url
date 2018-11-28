@@ -9,10 +9,10 @@ class ParserTest extends AbstractQueryTest
     /**
      * @dataProvider keyValuePairsDataProvider
      *
-     * @param string $queryString
+     * @param string|null $queryString
      * @param array $expectedKeyValuePairs
      */
-    public function testGetKeyValuePairs($queryString, array $expectedKeyValuePairs)
+    public function testGetKeyValuePairs(?string $queryString, array $expectedKeyValuePairs)
     {
         $parser = new Parser($queryString);
 

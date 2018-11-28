@@ -31,29 +31,18 @@ class Encoder
      */
     private $configuration;
 
-    /**
-     * @param array $pairs
-     * @param Configuration|null $configuration
-     */
     public function __construct(array $pairs, Configuration $configuration = null)
     {
         $this->pairs = $pairs;
         $this->configuration = $configuration;
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return str_replace(self::ENCODED_TILDE, '~', $this->buildQueryStringFromPairs());
     }
 
-    /**
-     *
-     * @return string
-     */
-    private function buildQueryStringFromPairs()
+    private function buildQueryStringFromPairs(): string
     {
         $nullValuePlaceholder = $this->createNullValuePlaceholder();
 
@@ -86,10 +75,7 @@ class Encoder
         return $baseEncodedQuery;
     }
 
-    /**
-     * @return string
-     */
-    private function createNullValuePlaceholder()
+    private function createNullValuePlaceholder(): string
     {
         $nullValuePlaceholder = self::DEFAULT_NULL_VALUE_PLACEHOLDER;
         $values = [];
@@ -105,13 +91,7 @@ class Encoder
         return $nullValuePlaceholder;
     }
 
-    /**
-     * @param string $nullValuePlaceholder
-     * @param array $values
-     *
-     * @return bool
-     */
-    private function isNullValuePlaceholderPresentInQueryValues($nullValuePlaceholder, array $values)
+    private function isNullValuePlaceholderPresentInQueryValues(string $nullValuePlaceholder, array $values): bool
     {
         foreach ($values as $value) {
             if (substr_count($value, $nullValuePlaceholder)) {
@@ -122,18 +102,12 @@ class Encoder
         return false;
     }
 
-    /**
-     * @param Configuration $configuration
-     */
     public function setConfiguration(Configuration $configuration)
     {
         $this->configuration = $configuration;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasConfiguration()
+    public function hasConfiguration(): bool
     {
         return !is_null($this->configuration);
     }

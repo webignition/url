@@ -40,18 +40,12 @@ class Configuration
         $this->convertIdnToUtf8 = false;
     }
 
-    /**
-     * @return bool
-     */
-    public function getConvertIdnToUtf8()
+    public function getConvertIdnToUtf8(): bool
     {
         return $this->convertIdnToUtf8;
     }
 
-    /**
-     * @return bool
-     */
-    public function getFullyEncodeQueryStringKeys()
+    public function getFullyEncodeQueryStringKeys(): bool
     {
         return $this->fullyEncodeQueryStringKeys;
     }

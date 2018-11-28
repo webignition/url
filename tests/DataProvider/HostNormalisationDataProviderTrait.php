@@ -4,10 +4,7 @@ namespace webignition\Tests\DataProvider;
 
 trait HostNormalisationDataProviderTrait
 {
-    /**
-     * @return array
-     */
-    public function hostNormalisationDataProvider()
+    public function hostNormalisationDataProvider(): array
     {
         return [
             'is lowercased' => [

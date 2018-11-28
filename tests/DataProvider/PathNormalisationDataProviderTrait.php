@@ -4,10 +4,7 @@ namespace webignition\Tests\DataProvider;
 
 trait PathNormalisationDataProviderTrait
 {
-    /**
-     * @return array
-     */
-    public function pathNormalisationDataProvider()
+    public function pathNormalisationDataProvider(): array
     {
         return [
             'null path' => [

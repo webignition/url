@@ -11,7 +11,7 @@ use webignition\Url\Query\Encoder;
  * Arose from the need to preserve the ?, + and / characters
  * in 'http://s1.wp.com/_static/??-eJyNUdFuwyAM/KExd2vVtQ/TvoWAA7QmRmAU9e9H0kmNVjXKEz50Z+4OGJMyPAgOArGqRNWFoQCFKxa4oCRtrmpG76aUN1jQO2L3ELBzaLmK6pmIRxiDdShPosUbGUkLWpW4yD+0Jovp2K5j0jKPvhlc5U8LVU86ZChyI3ziisfYwqbagfFseCvNMHEuYLHXlWSrKgzmTlVjajHWC5oqbqODxlrArXG9zpP473zlzR/AEXea1tbev7PMRhyzzajtXPtP/P7Yn06H8+789Xn5BWIC3X4='
  */
-class EncoderTest extends \PHPUnit_Framework_TestCase
+class EncoderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider setHasConfigurationDataProvider
@@ -19,7 +19,7 @@ class EncoderTest extends \PHPUnit_Framework_TestCase
      * @param Configuration|null $configuration
      * @param bool $expectedHasConfiguration
      */
-    public function testSetHasConfiguration($configuration, $expectedHasConfiguration)
+    public function testSetHasConfiguration(?Configuration $configuration, bool $expectedHasConfiguration)
     {
         $encoder = new Encoder([]);
 
@@ -30,10 +30,7 @@ class EncoderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedHasConfiguration, $encoder->hasConfiguration());
     }
 
-    /**
-     * @return array
-     */
-    public function setHasConfigurationDataProvider()
+    public function setHasConfigurationDataProvider(): array
     {
         return [
             'not has configuration' => [
@@ -54,7 +51,7 @@ class EncoderTest extends \PHPUnit_Framework_TestCase
      * @param Configuration|null $configuration
      * @param string $expectedEncodedQueryString
      */
-    public function testEncode($pairs, $configuration, $expectedEncodedQueryString)
+    public function testEncode(array $pairs, ?Configuration $configuration, string $expectedEncodedQueryString)
     {
         $encoder = new Encoder($pairs);
 
@@ -65,10 +62,7 @@ class EncoderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedEncodedQueryString, (string)$encoder);
     }
 
-    /**
-     * @return array
-     */
-    public function encodeDataProvider()
+    public function encodeDataProvider(): array
     {
         $disableFullEncodingConfiguration = new Configuration();
         $disableFullEncodingConfiguration->disableFullyEncodeQueryStringKeys();

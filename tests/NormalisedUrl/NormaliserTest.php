@@ -24,7 +24,7 @@ class NormaliserTest extends AbstractNormalisedUrlTest
      * @param string $url
      * @param string $expectedNormalisedScheme
      */
-    public function testNormaliseScheme($url, $expectedNormalisedScheme)
+    public function testNormaliseScheme(string $url, string $expectedNormalisedScheme)
     {
         $normaliser = new Normaliser($url);
 
@@ -39,7 +39,7 @@ class NormaliserTest extends AbstractNormalisedUrlTest
      * @param string $url
      * @param string $expectedNormalisedHost
      */
-    public function testNormaliseHost($url, $expectedNormalisedHost)
+    public function testNormaliseHost(string $url, string $expectedNormalisedHost)
     {
         $normaliser = new Normaliser($url);
 
@@ -53,9 +53,9 @@ class NormaliserTest extends AbstractNormalisedUrlTest
      *
      * @param string $url
      * @param bool $expectedPortIsSet
-     * @param string $expectedNormalisedPort
+     * @param string|null $expectedNormalisedPort
      */
-    public function testNormalisePort($url, $expectedPortIsSet, $expectedNormalisedPort = null)
+    public function testNormalisePort(string $url, bool $expectedPortIsSet, ?string $expectedNormalisedPort = null)
     {
         $normaliser = new Normaliser($url);
 
@@ -71,10 +71,10 @@ class NormaliserTest extends AbstractNormalisedUrlTest
     /**
      * @dataProvider pathNormalisationDataProvider
      *
-     * @param string $path
+     * @param string|null $path
      * @param string $expectedNormalisedPath
      */
-    public function testNormalisePath($path, $expectedNormalisedPath)
+    public function testNormalisePath(?string $path, string $expectedNormalisedPath)
     {
         $normaliser = new Normaliser('http://example.com' . $path);
 
@@ -86,10 +86,10 @@ class NormaliserTest extends AbstractNormalisedUrlTest
     /**
      * @dataProvider queryNormalisationDataProvider
      *
-     * @param string $queryString
+     * @param string|null $queryString
      * @param string $expectedNormalisedQueryString
      */
-    public function testNormaliseQuery($queryString, $expectedNormalisedQueryString)
+    public function testNormaliseQuery(?string $queryString, string $expectedNormalisedQueryString)
     {
         $normaliser = new Normaliser('http://example.com/?' . $queryString);
 

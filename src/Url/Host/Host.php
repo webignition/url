@@ -59,64 +59,38 @@ class Host
      */
     private $parts = null;
 
-    /**
-     * @param string $host
-     */
-    public function __construct($host)
+    public function __construct(string $host)
     {
         $this->set($host);
     }
 
-    /**
-     * @return string
-     */
-    public function get()
+    public function get(): string
     {
         return $this->host;
     }
 
-    /**
-     * @param string $host
-     */
-    public function set($host)
+    public function set(string $host)
     {
         $this->host = trim($host);
         $this->parts = explode(self::HOST_PART_SEPARATOR, $this->get());
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->get();
     }
 
-    /**
-     * @return array
-     */
-    public function getParts()
+    public function getParts(): array
     {
         return $this->parts;
     }
 
-    /**
-     * @param Host $comparator
-     *
-     * @return bool
-     */
-    public function equals(Host $comparator)
+    public function equals(Host $comparator): bool
     {
         return $this->get() == $comparator->get();
     }
 
-    /**
-     * @param Host $comparator
-     * @param string[] $excludeParts
-     *
-     * @return bool
-     */
-    public function isEquivalentTo(Host $comparator, array $excludeParts = [])
+    public function isEquivalentTo(Host $comparator, array $excludeParts = []): bool
     {
         $thisHost = new Host(IdnaConvert::encodeString((string) $this));
         $comparatorHost = new Host(IdnaConvert::encodeString((string) $comparator));
@@ -131,13 +105,7 @@ class Host
         return $thisParts == $comparatorParts;
     }
 
-    /**
-     * @param array $parts
-     * @param array $exclusions
-     *
-     * @return array
-     */
-    private function excludeParts($parts, $exclusions)
+    private function excludeParts(array $parts, array $exclusions): array
     {
         $filteredParts = array();
 
@@ -155,7 +123,7 @@ class Host
      *
      * @throws InvalidExpressionException
      */
-    public function isPubliclyRoutable()
+    public function isPubliclyRoutable(): bool
     {
         try {
             $ip = IpUtilsFactory::getAddress($this->get());
@@ -185,7 +153,7 @@ class Host
      *
      * @throws InvalidExpressionException
      */
-    private function isIpv4InUnroutableRange(IPv4 $ip)
+    private function isIpv4InUnroutableRange(IPv4 $ip): bool
     {
         foreach ($this->unrouteableRanges as $ipRange) {
             if ($ip->matches(new Subnet($ipRange))) {

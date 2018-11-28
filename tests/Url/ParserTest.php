@@ -5,7 +5,7 @@ namespace webignition\Tests\Url;
 use webignition\Url\Parser;
 use webignition\Url\UrlInterface;
 
-class ParserTest extends \PHPUnit_Framework_TestCase
+class ParserTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider getPartsDataProvider
@@ -13,7 +13,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
      * @param string|null $url
      * @param array $expectedParts
      */
-    public function testGetParts($url, array $expectedParts)
+    public function testGetParts(?string $url, array $expectedParts)
     {
         $parser = new Parser($url);
         $parts = $parser->getParts();
@@ -25,10 +25,7 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    /**
-     * @return array
-     */
-    public function getPartsDataProvider()
+    public function getPartsDataProvider(): array
     {
         return [
             'null' => [

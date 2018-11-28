@@ -8,29 +8,12 @@ use webignition\Url\Query\Query;
 class QueryTest extends AbstractQueryTest
 {
     /**
-     * @return array
-     */
-    public function setHasConfigurationDataProvider()
-    {
-        return [
-            'not has configuration' => [
-                'configuration' => null,
-                'expectedHasConfiguration' => false,
-            ],
-            'has configuration' => [
-                'configuration' => new Configuration(),
-                'expectedHasConfiguration' => true,
-            ],
-        ];
-    }
-
-    /**
      * @dataProvider keyValuePairsDataProvider
      *
-     * @param string $queryString
+     * @param string|null $queryString
      * @param array $expectedKeyValuePairs
      */
-    public function testPairs($queryString, array $expectedKeyValuePairs)
+    public function testPairs(?string $queryString, array $expectedKeyValuePairs)
     {
         $query = new Query($queryString);
 
@@ -40,21 +23,18 @@ class QueryTest extends AbstractQueryTest
     /**
      * @dataProvider containsDataProvider
      *
-     * @param string $queryString
-     * @param string $key
+     * @param string|null $queryString
+     * @param string|null $key
      * @param bool $expectedContains
      */
-    public function testContains($queryString, $key, $expectedContains)
+    public function testContains(?string $queryString, ?string $key, bool $expectedContains)
     {
         $query = new Query($queryString);
 
         $this->assertEquals($expectedContains, $query->contains($key));
     }
 
-    /**
-     * @return array
-     */
-    public function containsDataProvider()
+    public function containsDataProvider(): array
     {
         return [
             'null query, null key' => [
@@ -93,7 +73,7 @@ class QueryTest extends AbstractQueryTest
      * @param mixed $value
      * @param array $expectedPairs
      */
-    public function testSet($queryString, $key, $value, $expectedPairs)
+    public function testSet(string $queryString, string $key, $value, array $expectedPairs)
     {
         $query = new Query($queryString);
         $query->set($key, $value);
@@ -101,10 +81,7 @@ class QueryTest extends AbstractQueryTest
         $this->assertEquals($expectedPairs, $query->pairs());
     }
 
-    /**
-     * @return array
-     */
-    public function setDataProvider()
+    public function setDataProvider(): array
     {
         return [
             'set on empty query string' => [

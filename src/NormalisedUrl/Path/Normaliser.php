@@ -14,17 +14,14 @@ class Normaliser
     /**
      * @param string $path
      */
-    public function __construct($path)
+    public function __construct(?string $path)
     {
         $path = PercentEncoder::encodeUnreservedCharacters($path);
         $this->path = (string)$path;
         $this->normalise();
     }
 
-    /**
-     * @return string
-     */
-    public function get()
+    public function get(): string
     {
         return $this->path;
     }
