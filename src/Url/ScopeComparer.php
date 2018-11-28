@@ -48,7 +48,7 @@ class ScopeComparer
     /**
      * @param string[] $schemes
      */
-    public function addEquivalentSchemes($schemes)
+    public function addEquivalentSchemes(array $schemes)
     {
         $this->equivalentSchemes[] = $schemes;
     }
@@ -56,7 +56,7 @@ class ScopeComparer
     /**
      * @param string[] $hosts
      */
-    public function addEquivalentHosts($hosts)
+    public function addEquivalentHosts(array $hosts)
     {
         $this->equivalentHosts[] = $hosts;
     }
@@ -83,7 +83,7 @@ class ScopeComparer
      *
      * @return bool
      */
-    public function isInScope(Url $sourceUrl, Url $comparatorUrl)
+    public function isInScope(Url $sourceUrl, Url $comparatorUrl): bool
     {
         $this->sourceUrl = clone $sourceUrl;
         $this->comparatorUrl = clone $comparatorUrl;
@@ -115,18 +115,12 @@ class ScopeComparer
         return $this->isSourcePathSubstringOfComparatorPath();
     }
 
-    /**
-     * @return bool
-     */
-    private function isSourceUrlSubstringOfComparatorUrl()
+    private function isSourceUrlSubstringOfComparatorUrl(): bool
     {
         return strpos($this->comparatorUrlString, $this->sourceUrlString) === 0;
     }
 
-    /**
-     * @return bool
-     */
-    private function areSchemesEquivalent()
+    private function areSchemesEquivalent(): bool
     {
         return $this->areUrlPartsEquivalent(
             (string)$this->sourceUrl->getScheme(),
@@ -135,10 +129,7 @@ class ScopeComparer
         );
     }
 
-    /**
-     * @return bool
-     */
-    private function areHostsEquivalent()
+    private function areHostsEquivalent(): bool
     {
         return $this->areUrlPartsEquivalent(
             (string)$this->sourceUrl->getHost(),
@@ -147,14 +138,7 @@ class ScopeComparer
         );
     }
 
-    /**
-     * @param string $sourceValue
-     * @param string $comparatorValue
-     * @param array $equivalenceSets
-     *
-     * @return bool
-     */
-    private function areUrlPartsEquivalent($sourceValue, $comparatorValue, $equivalenceSets)
+    private function areUrlPartsEquivalent(string $sourceValue, string $comparatorValue, array $equivalenceSets): bool
     {
         if ($sourceValue === $comparatorValue) {
             return true;
@@ -169,10 +153,7 @@ class ScopeComparer
         return false;
     }
 
-    /**
-     * @return bool
-     */
-    private function isSourcePathSubstringOfComparatorPath()
+    private function isSourcePathSubstringOfComparatorPath(): bool
     {
         if (!$this->sourceUrl->hasPath()) {
             return true;

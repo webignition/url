@@ -7,12 +7,7 @@ namespace webignition\Url;
  */
 class PreProcessor
 {
-    /**
-     * @param string $url
-     *
-     * @return string
-     */
-    public static function preProcess($url)
+    public static function preProcess(?string $url): string
     {
         // Unencoded leading or trailing whitespace is not allowed
         $url = trim($url);

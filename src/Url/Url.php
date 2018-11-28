@@ -4,6 +4,8 @@ namespace webignition\Url;
 
 use Etechnika\IdnaConvert\IdnaConvert;
 use IpUtils\Exception\InvalidExpressionException;
+use webignition\Url\Host\Host;
+use webignition\Url\Path\Path;
 use webignition\Url\Query\Query;
 
 class Url implements UrlInterface
@@ -33,20 +35,13 @@ class Url implements UrlInterface
      */
     private $parts = null;
 
-    /**
-     * @param string $originUrl
-     */
-    public function __construct($originUrl = null)
+    public function __construct(?string $originUrl = null)
     {
         $this->configuration = new Configuration();
         $this->init($originUrl);
     }
 
-    /**
-     *
-     * @param string $originUrl
-     */
-    public function init($originUrl)
+    public function init(?string $originUrl)
     {
         $originUrl = PreProcessor::preProcess($originUrl);
         $this->parts = $this->createParser($originUrl)->getParts();
@@ -56,20 +51,12 @@ class Url implements UrlInterface
         $this->parts[UrlInterface::PART_QUERY] = $query;
     }
 
-    /**
-     * @param string $originUrl
-     *
-     * @return ParserInterface
-     */
-    protected function createParser($originUrl)
+    protected function createParser(string $originUrl): ParserInterface
     {
         return new Parser($originUrl);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getRoot()
+    public function getRoot(): string
     {
         $rawRootUrl = '';
 
@@ -102,26 +89,17 @@ class Url implements UrlInterface
         return $rawRootUrl;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function hasScheme()
+    public function hasScheme(): bool
     {
         return $this->hasPart(UrlInterface::PART_SCHEME);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getScheme()
+    public function getScheme(): ?string
     {
         return $this->getPart(UrlInterface::PART_SCHEME);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setScheme($scheme)
+    public function setScheme(?string $scheme): bool
     {
         $scheme = trim($scheme);
 
@@ -136,26 +114,17 @@ class Url implements UrlInterface
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function hasHost()
+    public function hasHost(): bool
     {
         return $this->hasPart(UrlInterface::PART_HOST);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getHost()
+    public function getHost(): ?Host
     {
         return $this->getPart(UrlInterface::PART_HOST);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setHost($host)
+    public function setHost(?string $host): bool
     {
         if ($this->hasPath() && $this->getPath()->isRelative()) {
             $this->setPath('/' . $this->getPath());
@@ -171,31 +140,22 @@ class Url implements UrlInterface
             return true;
         }
 
-        $this->updatePart(UrlInterface::PART_HOST, $host);
+        $this->updatePart(UrlInterface::PART_HOST, new Host($host));
 
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function hasPort()
+    public function hasPort(): bool
     {
         return $this->hasPart(UrlInterface::PART_PORT);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getPort()
+    public function getPort(): ?int
     {
         return $this->getPart(UrlInterface::PART_PORT);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setPort($port)
+    public function setPort($port): bool
     {
         if (is_null($port)) {
             $this->removePart(UrlInterface::PART_PORT);
@@ -214,26 +174,17 @@ class Url implements UrlInterface
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function hasUser()
+    public function hasUser(): bool
     {
         return $this->hasPart(UrlInterface::PART_USER);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getUser()
+    public function getUser(): ?string
     {
         return $this->getPart(UrlInterface::PART_USER);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setUser($user)
+    public function setUser(?string $user): bool
     {
         if (is_null($user)) {
             $this->removePart(UrlInterface::PART_USER);
@@ -254,26 +205,17 @@ class Url implements UrlInterface
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function hasPass()
+    public function hasPass(): bool
     {
         return $this->hasPart(UrlInterface::PART_PASS);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getPass()
+    public function getPass(): ?string
     {
         return $this->getPart(UrlInterface::PART_PASS);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setPass($pass)
+    public function setPass(?string $pass): bool
     {
         // A pass cannot be added to a URL that has no host; this results in
         // an invalid URL.
@@ -286,44 +228,29 @@ class Url implements UrlInterface
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function hasPath()
+    public function hasPath(): bool
     {
         return $this->hasPart(UrlInterface::PART_PATH);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getPath()
+    public function getPath(): ?Path
     {
         return $this->getPart(UrlInterface::PART_PATH);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setPath($path)
+    public function setPath(?string $path): bool
     {
-        $this->updatePart(UrlInterface::PART_PATH, $path);
+        $this->updatePart(UrlInterface::PART_PATH, new Path($path));
 
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getQuery()
+    public function getQuery(): ?Query
     {
         return $this->getPart(UrlInterface::PART_QUERY);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setQuery($query)
+    public function setQuery(?string $query): bool
     {
         $query = trim($query);
 
@@ -336,26 +263,17 @@ class Url implements UrlInterface
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function hasFragment()
+    public function hasFragment(): bool
     {
         return $this->hasPart(UrlInterface::PART_FRAGMENT);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getFragment()
+    public function getFragment(): ?string
     {
         return $this->getPart(UrlInterface::PART_FRAGMENT);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setFragment($fragment)
+    public function setFragment(?string $fragment): bool
     {
         $fragment = trim($fragment);
 
@@ -370,10 +288,7 @@ class Url implements UrlInterface
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function __toString()
+    public function __toString(): string
     {
         $url = $this->getRoot();
 
@@ -391,10 +306,7 @@ class Url implements UrlInterface
         return $url;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isRelative()
+    public function isRelative(): bool
     {
         if ($this->hasScheme()) {
             return false;
@@ -407,10 +319,7 @@ class Url implements UrlInterface
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isProtocolRelative()
+    public function isProtocolRelative(): bool
     {
         if ($this->hasScheme()) {
             return false;
@@ -419,10 +328,7 @@ class Url implements UrlInterface
         return $this->hasHost();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function isAbsolute()
+    public function isAbsolute(): bool
     {
         if ($this->isRelative()) {
             return false;
@@ -431,10 +337,7 @@ class Url implements UrlInterface
         return !$this->isProtocolRelative();
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setPart($partName, $value)
+    public function setPart(string $partName, $value): bool
     {
         switch ($partName) {
             case UrlInterface::PART_SCHEME:
@@ -469,16 +372,13 @@ class Url implements UrlInterface
      * @param string $partName
      * @param mixed $value
      */
-    private function updatePart($partName, $value)
+    private function updatePart(string $partName, $value)
     {
         $this->parts[$partName] = $value;
         $this->init((string)$this);
     }
 
-    /**
-     * @param string $partName
-     */
-    private function removePart($partName)
+    private function removePart(string $partName)
     {
         if (array_key_exists($partName, $this->parts)) {
             unset($this->parts[$partName]);
@@ -486,18 +386,12 @@ class Url implements UrlInterface
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function hasCredentials()
+    public function hasCredentials(): bool
     {
         return $this->hasUser() || $this->hasPass();
     }
 
-    /**
-     * @return string
-     */
-    private function getCredentials()
+    private function getCredentials(): string
     {
         $credentials = '';
 
@@ -518,27 +412,19 @@ class Url implements UrlInterface
      *
      * @return mixed
      */
-    protected function getPart($partName)
+    protected function getPart(string $partName)
     {
         return isset($this->parts[$partName])
             ? $this->parts[$partName]
             : null;
     }
 
-    /**
-     * @param string $partName
-     *
-     * @return bool
-     */
-    protected function hasPart($partName)
+    protected function hasPart(string $partName): bool
     {
         return isset($this->parts[$partName]);
     }
 
-    /**
-     * @return Configuration
-     */
-    public function getConfiguration()
+    public function getConfiguration(): Configuration
     {
         return $this->configuration;
     }
@@ -548,7 +434,7 @@ class Url implements UrlInterface
      *
      * @throws InvalidExpressionException
      */
-    public function isPubliclyRoutable()
+    public function isPubliclyRoutable(): bool
     {
         $host = $this->getHost();
         if (empty($host)) {

@@ -34,25 +34,17 @@ class Parser implements ParserInterface
     /**
      * @param string $url
      */
-    public function __construct($url)
+    public function __construct(?string $url)
     {
         $this->parts = $this->parse($url);
     }
 
-    /**
-     * @return array
-     */
-    public function getParts()
+    public function getParts(): array
     {
         return $this->parts;
     }
 
-    /**
-     * @param string $url
-     *
-     * @return array
-     */
-    private function parse($url)
+    private function parse(?string $url): array
     {
         if (self::PROTOCOL_RELATIVE_START === substr($url, 0, strlen(self::PROTOCOL_RELATIVE_START))) {
             $url = self::PROTOCOL_RELATIVE_DUMMY_SCHEME . ':' . $url;
@@ -97,12 +89,7 @@ class Parser implements ParserInterface
         return $parts;
     }
 
-    /**
-     * @param string $url
-     *
-     * @return array
-     */
-    private function fixFailedParse($url)
+    private function fixFailedParse(?string $url): array
     {
         if (preg_match(self::PATTERN_SCHEME_ONLY_URL, $url)) {
             return [

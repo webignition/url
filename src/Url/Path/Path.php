@@ -16,60 +16,39 @@ class Path
      */
     private $path = '';
 
-    /**
-     * @param string $path
-     */
-    public function __construct($path)
+    public function __construct(?string $path)
     {
         $path = PercentEncoder::encodeUnreservedCharacters($path);
 
         $this->set($path);
     }
 
-    /**
-     * @return bool
-     */
-    public function isRelative()
+    public function isRelative(): bool
     {
         return !$this->isAbsolute();
     }
 
-    /**
-     * @return bool
-     */
-    public function isAbsolute()
+    public function isAbsolute(): bool
     {
         return substr($this->path, 0, 1) === self::PATH_PART_SEPARATOR;
     }
 
-    /**
-     * @return string
-     */
-    public function get()
+    public function get(): string
     {
         return $this->path;
     }
 
-    /**
-     * @param string $path
-     */
-    public function set($path)
+    public function set(?string $path)
     {
         $this->path = trim($path);
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->get();
     }
 
-    /**
-     * @return bool
-     */
-    public function hasFilename()
+    public function hasFilename(): bool
     {
         if (substr($this->path, strlen($this->path) - 1) == '/') {
             return false;
@@ -78,26 +57,17 @@ class Path
         return substr_count(basename($this->path), '.') > 0;
     }
 
-    /**
-     * @return string
-     */
-    public function getFilename()
+    public function getFilename(): string
     {
         return $this->hasFilename() ? basename($this->path) : '';
     }
 
-    /**
-     * @return string
-     */
-    public function getDirectory()
+    public function getDirectory(): string
     {
         return $this->hasFilename() ? dirname($this->path) : $this->path;
     }
 
-    /**
-     * @return bool
-     */
-    public function hasTrailingSlash()
+    public function hasTrailingSlash(): bool
     {
         return substr($this->get(), strlen($this->get()) - 1) == '/';
     }

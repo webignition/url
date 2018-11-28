@@ -23,74 +23,44 @@ class Query
      */
     private $configuration = null;
 
-    /**
-     * @param string $encodedQueryString
-     */
-    public function __construct($encodedQueryString = '')
+    public function __construct(?string $encodedQueryString = '')
     {
         $this->init($encodedQueryString);
     }
 
-    /**
-     * @param $encodedQueryString
-     */
-    protected function init($encodedQueryString)
+    protected function init(?string $encodedQueryString)
     {
         $this->parser = $this->createParser($encodedQueryString);
         $this->pairs = $this->parser->getKeyValuePairs();
     }
 
-    /**
-     * @param $encodedQueryString
-     *
-     * @return ParserInterface
-     */
-    protected function createParser($encodedQueryString)
+    protected function createParser(?string $encodedQueryString): ParserInterface
     {
         return new Parser($encodedQueryString);
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
         return str_replace(array('%7E'), array('~'), $this->buildQueryStringFromPairs());
     }
 
-    /**
-     *
-     * @return string
-     */
-    private function buildQueryStringFromPairs()
+    private function buildQueryStringFromPairs(): string
     {
         $encoder = new Encoder($this->pairs(), $this->configuration);
         return (string)$encoder;
     }
 
-    /**
-     * @return array
-     */
-    public function pairs()
+    public function pairs(): array
     {
         return $this->pairs;
     }
 
-    /**
-     * @param string $key
-     *
-     * @return bool
-     */
-    public function contains($key)
+    public function contains(?string $key): bool
     {
         return array_key_exists($key, $this->pairs());
     }
 
-    /**
-     * @param string $encodedKey
-     * @param string $encodedValue
-     */
-    public function set($encodedKey, $encodedValue)
+    public function set(?string $encodedKey, ?string $encodedValue)
     {
         $decodedKey = urldecode($encodedKey);
 
@@ -103,18 +73,12 @@ class Query
         $this->init((string)$this);
     }
 
-    /**
-     * @param Configuration $configuration
-     */
     public function setConfiguration(Configuration $configuration)
     {
         $this->configuration = $configuration;
     }
 
-    /**
-     * @return bool
-     */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return empty($this->pairs());
     }
