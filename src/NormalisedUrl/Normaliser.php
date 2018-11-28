@@ -2,9 +2,9 @@
 
 namespace webignition\NormalisedUrl;
 
-use Etechnika\IdnaConvert\IdnaConvert;
 use webignition\Url\Host\Host;
 use webignition\Url\Parser;
+use webignition\Url\PunycodeEncoder;
 use webignition\Url\UrlInterface;
 
 class Normaliser extends Parser
@@ -17,11 +17,18 @@ class Normaliser extends Parser
     ];
 
     /**
+     * @var PunycodeEncoder
+     */
+    private $punycodeEncoder;
+
+    /**
      * {@inheritdoc}
      */
     public function __construct(?string $url)
     {
         parent::__construct($url);
+
+        $this->punycodeEncoder = new PunycodeEncoder();
 
         $this->normaliseScheme();
         $this->normaliseHost();
@@ -60,7 +67,7 @@ class Normaliser extends Parser
             $host = $this->parts[UrlInterface::PART_HOST];
             $hostAsString = $host->get();
 
-            $asciiHost = strtolower(IdnaConvert::encodeString($hostAsString));
+            $asciiHost = strtolower($this->punycodeEncoder->encode($hostAsString));
 
             $hostHasTrailingDots = preg_match('/\.+$/', $asciiHost) > 0;
             $hasPath = isset($this->parts[UrlInterface::PART_PATH]);

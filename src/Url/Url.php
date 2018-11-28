@@ -2,7 +2,6 @@
 
 namespace webignition\Url;
 
-use Etechnika\IdnaConvert\IdnaConvert;
 use IpUtils\Exception\InvalidExpressionException;
 use webignition\Url\Host\Host;
 use webignition\Url\Path\Path;
@@ -35,8 +34,15 @@ class Url implements UrlInterface
      */
     private $parts = null;
 
+    /**
+     * @var PunycodeEncoder
+     */
+    private $punycodeEncoder;
+
     public function __construct(?string $originUrl = null)
     {
+        $this->punycodeEncoder = new PunycodeEncoder();
+
         $this->configuration = new Configuration();
         $this->init($originUrl);
     }
@@ -76,7 +82,7 @@ class Url implements UrlInterface
             $host = (string)$this->getHost();
 
             if ($this->getConfiguration()->getConvertIdnToUtf8()) {
-                $host = IdnaConvert::decodeString($host);
+                $host = $this->punycodeEncoder->decode($host);
             }
 
             $rawRootUrl .= $host;
