@@ -79,7 +79,7 @@ interface UrlInterface
 
     public function getFragment(): ?string;
 
-    public function setFragment(?string $fragment): bool;
+    public function setFragment(?string $fragment);
 
     public function __toString(): string;
 

@@ -373,14 +373,12 @@ class UrlTest extends \PHPUnit\Framework\TestCase
      *
      * @param Url $url
      * @param string|null $fragment
-     * @param bool $expectedIsSet
      * @param string $expectedUrl
      */
-    public function testSetFragment(Url $url, ?string $fragment, bool $expectedIsSet, string $expectedUrl)
+    public function testSetFragment(Url $url, ?string $fragment, string $expectedUrl)
     {
-        $succeeds = $url->setFragment($fragment);
+        $url->setFragment($fragment);
 
-        $this->assertEquals($expectedIsSet, $succeeds);
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
@@ -390,43 +388,36 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             'no existing fragment; valid fragment lacking hash' => [
                 'url' => new Url('http://example.com/'),
                 'fragment' => 'foo',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/#foo',
             ],
             'no existing fragment; valid fragment with hash' => [
                 'url' => new Url('http://example.com/'),
                 'fragment' => '#foo',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/#foo',
             ],
             'has existing fragment; null fragment' => [
                 'url' => new Url('http://example.com/#foo'),
                 'fragment' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/',
             ],
             'has existing fragment; empty fragment' => [
                 'url' => new Url('http://example.com/#foo'),
                 'fragment' => '',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/',
             ],
             'has existing fragment; whitespace fragment' => [
                 'url' => new Url('http://example.com/#foo'),
                 'fragment' => '   ',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/',
             ],
             'has existing fragment; valid fragment lacking hash' => [
                 'url' => new Url('http://example.com/#foo'),
                 'fragment' => 'bar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/#bar',
             ],
             'has existing fragment; valid fragment with hash' => [
                 'url' => new Url('http://example.com/#foo'),
                 'fragment' => '#bar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/#bar',
             ],
         ];
@@ -983,7 +974,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
                 'url' => $testData['url'],
                 'partName' => UrlInterface::PART_FRAGMENT,
                 'value' => $testData['fragment'],
-                'expectedSucceeds' => $testData['expectedSucceeds'],
+                'expectedSucceeds' => true,
                 'expectedUrl' => $testData['expectedUrl'],
             ];
         }

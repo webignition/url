@@ -279,19 +279,15 @@ class Url implements UrlInterface
         return $this->getPart(UrlInterface::PART_FRAGMENT);
     }
 
-    public function setFragment(?string $fragment): bool
+    public function setFragment(?string $fragment)
     {
         $fragment = trim($fragment);
 
         if (empty($fragment)) {
             $this->removePart(UrlInterface::PART_FRAGMENT);
-
-            return true;
+        } else {
+            $this->updatePart(UrlInterface::PART_FRAGMENT, ltrim($fragment, '#'));
         }
-
-        $this->updatePart(UrlInterface::PART_FRAGMENT, ltrim($fragment, '#'));
-
-        return true;
     }
 
     public function __toString(): string
@@ -368,7 +364,9 @@ class Url implements UrlInterface
                 return $this->setQuery($value);
 
             case UrlInterface::PART_FRAGMENT:
-                return $this->setFragment($value);
+                $this->setFragment($value);
+
+                return true;
         }
 
         return false;
