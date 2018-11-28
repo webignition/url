@@ -657,14 +657,12 @@ class UrlTest extends \PHPUnit\Framework\TestCase
      *
      * @param Url $url
      * @param string|null $query
-     * @param bool $expectedSucceeds
      * @param string $expectedUrl
      */
-    public function testSetQuery(Url $url, ?string $query, bool $expectedSucceeds, string $expectedUrl)
+    public function testSetQuery(Url $url, ?string $query, string $expectedUrl)
     {
-        $succeeds = $url->setQuery($query);
+        $url->setQuery($query);
 
-        $this->assertEquals($expectedSucceeds, $succeeds);
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
@@ -674,49 +672,41 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             'no existing query, null query' => [
                 'url' => new Url('//example.com'),
                 'query' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com',
             ],
             'no existing query, empty query' => [
                 'url' => new Url('//example.com'),
                 'query' => '',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com',
             ],
             'no existing query, whitespace query' => [
                 'url' => new Url('//example.com'),
                 'query' => '   ',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com',
             ],
             'existing query, null query' => [
                 'url' => new Url('//example.com?foo=bar'),
                 'query' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com',
             ],
             'existing query, empty query' => [
                 'url' => new Url('//example.com?foo=bar'),
                 'query' => '',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com',
             ],
             'existing query, whitespace query' => [
                 'url' => new Url('//example.com?foo=bar'),
                 'query' => '   ',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com',
             ],
             'existing query, query without question mark' => [
                 'url' => new Url('//example.com?foo=bar'),
                 'query' => 'bar=foobar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com?bar=foobar',
             ],
             'existing query, query with question mark' => [
                 'url' => new Url('//example.com?foo=bar'),
                 'query' => '?bar=foobar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com?bar=foobar',
             ],
         ];
@@ -944,7 +934,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
                 'url' => $testData['url'],
                 'partName' => UrlInterface::PART_QUERY,
                 'value' => $testData['query'],
-                'expectedSucceeds' => $testData['expectedSucceeds'],
+                'expectedSucceeds' => true,
                 'expectedUrl' => $testData['expectedUrl'],
             ];
         }

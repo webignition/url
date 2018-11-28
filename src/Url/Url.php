@@ -250,7 +250,7 @@ class Url implements UrlInterface
         return $this->getPart(UrlInterface::PART_QUERY);
     }
 
-    public function setQuery(?string $query): bool
+    public function setQuery(?string $query)
     {
         $query = trim($query);
 
@@ -259,8 +259,6 @@ class Url implements UrlInterface
         }
 
         $this->updatePart(UrlInterface::PART_QUERY, new Query($query));
-
-        return true;
     }
 
     public function hasFragment(): bool
@@ -359,7 +357,9 @@ class Url implements UrlInterface
                 return true;
 
             case UrlInterface::PART_QUERY:
-                return $this->setQuery($value);
+                $this->setQuery($value);
+
+                return true;
 
             case UrlInterface::PART_FRAGMENT:
                 $this->setFragment($value);

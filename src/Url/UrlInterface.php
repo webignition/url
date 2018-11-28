@@ -73,7 +73,7 @@ interface UrlInterface
 
     public function getQuery(): ?Query;
 
-    public function setQuery(?string $query): bool ;
+    public function setQuery(?string $query);
 
     public function hasFragment(): bool;
 
