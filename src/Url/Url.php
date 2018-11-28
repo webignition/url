@@ -105,19 +105,15 @@ class Url implements UrlInterface
         return $this->getPart(UrlInterface::PART_SCHEME);
     }
 
-    public function setScheme(?string $scheme): bool
+    public function setScheme(?string $scheme)
     {
         $scheme = trim($scheme);
 
         if (empty($scheme)) {
             $this->removePart(UrlInterface::PART_SCHEME);
-
-            return true;
+        } else {
+            $this->updatePart(UrlInterface::PART_SCHEME, $scheme);
         }
-
-        $this->updatePart(UrlInterface::PART_SCHEME, $scheme);
-
-        return true;
     }
 
     public function hasHost(): bool
@@ -130,7 +126,7 @@ class Url implements UrlInterface
         return $this->getPart(UrlInterface::PART_HOST);
     }
 
-    public function setHost(?string $host): bool
+    public function setHost(?string $host)
     {
         if ($this->hasPath() && $this->getPath()->isRelative()) {
             $this->setPath('/' . $this->getPath());
@@ -142,13 +138,9 @@ class Url implements UrlInterface
             $this->removePart(UrlInterface::PART_PASS);
             $this->removePart(UrlInterface::PART_PORT);
             $this->removePart(UrlInterface::PART_HOST);
-
-            return true;
+        } else {
+            $this->updatePart(UrlInterface::PART_HOST, new Host($host));
         }
-
-        $this->updatePart(UrlInterface::PART_HOST, new Host($host));
-
-        return true;
     }
 
     public function hasPort(): bool
@@ -244,11 +236,9 @@ class Url implements UrlInterface
         return $this->getPart(UrlInterface::PART_PATH);
     }
 
-    public function setPath(?string $path): bool
+    public function setPath(?string $path)
     {
         $this->updatePart(UrlInterface::PART_PATH, new Path($path));
-
-        return true;
     }
 
     public function getQuery(): ?Query
@@ -256,7 +246,7 @@ class Url implements UrlInterface
         return $this->getPart(UrlInterface::PART_QUERY);
     }
 
-    public function setQuery(?string $query): bool
+    public function setQuery(?string $query)
     {
         $query = trim($query);
 
@@ -265,8 +255,6 @@ class Url implements UrlInterface
         }
 
         $this->updatePart(UrlInterface::PART_QUERY, new Query($query));
-
-        return true;
     }
 
     public function hasFragment(): bool
@@ -279,19 +267,15 @@ class Url implements UrlInterface
         return $this->getPart(UrlInterface::PART_FRAGMENT);
     }
 
-    public function setFragment(?string $fragment): bool
+    public function setFragment(?string $fragment)
     {
         $fragment = trim($fragment);
 
         if (empty($fragment)) {
             $this->removePart(UrlInterface::PART_FRAGMENT);
-
-            return true;
+        } else {
+            $this->updatePart(UrlInterface::PART_FRAGMENT, ltrim($fragment, '#'));
         }
-
-        $this->updatePart(UrlInterface::PART_FRAGMENT, ltrim($fragment, '#'));
-
-        return true;
     }
 
     public function __toString(): string
@@ -347,7 +331,9 @@ class Url implements UrlInterface
     {
         switch ($partName) {
             case UrlInterface::PART_SCHEME:
-                return $this->setScheme($value);
+                $this->setScheme($value);
+
+                return true;
 
             case UrlInterface::PART_USER:
                 return $this->setUser($value);
@@ -356,19 +342,27 @@ class Url implements UrlInterface
                 return $this->setPass($value);
 
             case UrlInterface::PART_HOST:
-                return $this->setHost($value);
+                $this->setHost($value);
+
+                return true;
 
             case UrlInterface::PART_PORT:
                 return $this->setPort($value);
 
             case UrlInterface::PART_PATH:
-                return $this->setPath($value);
+                $this->setPath($value);
+
+                return true;
 
             case UrlInterface::PART_QUERY:
-                return $this->setQuery($value);
+                $this->setQuery($value);
+
+                return true;
 
             case UrlInterface::PART_FRAGMENT:
-                return $this->setFragment($value);
+                $this->setFragment($value);
+
+                return true;
         }
 
         return false;

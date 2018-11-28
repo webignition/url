@@ -373,14 +373,12 @@ class UrlTest extends \PHPUnit\Framework\TestCase
      *
      * @param Url $url
      * @param string|null $fragment
-     * @param bool $expectedIsSet
      * @param string $expectedUrl
      */
-    public function testSetFragment(Url $url, ?string $fragment, bool $expectedIsSet, string $expectedUrl)
+    public function testSetFragment(Url $url, ?string $fragment, string $expectedUrl)
     {
-        $succeeds = $url->setFragment($fragment);
+        $url->setFragment($fragment);
 
-        $this->assertEquals($expectedIsSet, $succeeds);
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
@@ -390,43 +388,36 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             'no existing fragment; valid fragment lacking hash' => [
                 'url' => new Url('http://example.com/'),
                 'fragment' => 'foo',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/#foo',
             ],
             'no existing fragment; valid fragment with hash' => [
                 'url' => new Url('http://example.com/'),
                 'fragment' => '#foo',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/#foo',
             ],
             'has existing fragment; null fragment' => [
                 'url' => new Url('http://example.com/#foo'),
                 'fragment' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/',
             ],
             'has existing fragment; empty fragment' => [
                 'url' => new Url('http://example.com/#foo'),
                 'fragment' => '',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/',
             ],
             'has existing fragment; whitespace fragment' => [
                 'url' => new Url('http://example.com/#foo'),
                 'fragment' => '   ',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/',
             ],
             'has existing fragment; valid fragment lacking hash' => [
                 'url' => new Url('http://example.com/#foo'),
                 'fragment' => 'bar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/#bar',
             ],
             'has existing fragment; valid fragment with hash' => [
                 'url' => new Url('http://example.com/#foo'),
                 'fragment' => '#bar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/#bar',
             ],
         ];
@@ -437,14 +428,12 @@ class UrlTest extends \PHPUnit\Framework\TestCase
      *
      * @param Url $url
      * @param string|null $path
-     * @param bool $expectedSucceeds
      * @param string $expectedUrl
      */
-    public function testSetPath(Url $url, ?string $path, bool $expectedSucceeds, string $expectedUrl)
+    public function testSetPath(Url $url, ?string $path, string $expectedUrl)
     {
-        $succeeds = $url->setPath($path);
+        $url->setPath($path);
 
-        $this->assertEquals($expectedSucceeds, $succeeds);
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
@@ -454,61 +443,51 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             'add to url without query and without fragment' => [
                 'url' => new Url('http://example.com'),
                 'path' => '/bar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/bar',
             ],
             'add to url with query' => [
                 'url' => new Url('http://example.com?foo=bar'),
                 'path' => '/foobar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/foobar?foo=bar',
             ],
             'add to url with fragment' => [
                 'url' => new Url('http://example.com#foo'),
                 'path' => '/foobar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/foobar#foo',
             ],
             'add to url with query and fragment' => [
                 'url' => new Url('http://example.com?foo=bar#foo'),
                 'path' => '/foobar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/foobar?foo=bar#foo',
             ],
             'replace existing path' => [
                 'url' => new Url('http://example.com/foo'),
                 'path' => '/bar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com/bar',
             ],
             'remove existing path' => [
                 'url' => new Url('http://example.com/foo'),
                 'path' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com',
             ],
             'remove existing path from url that has query and fragment' => [
                 'url' => new Url('http://example.com/foo?query#fragment'),
                 'path' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com?query#fragment',
             ],
             'add path to hash-only url' => [
                 'url' => new Url('#'),
                 'path' => '/foo',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '/foo#',
             ],
             'add path to hash and identifier url' => [
                 'url' => new Url('#bar'),
                 'path' => '/foo',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '/foo#bar',
             ],
             'set path on url with plus characters in query' => [
                 'url' => new Url('example.html?foo=++'),
                 'path' => '/foo.html',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '/foo.html?foo=%2B%2B',
             ],
         ];
@@ -570,14 +549,12 @@ class UrlTest extends \PHPUnit\Framework\TestCase
      *
      * @param Url $url
      * @param string|null $host
-     * @param bool $expectedSucceeds
      * @param string $expectedUrl
      */
-    public function testSetHost(Url $url, ?string $host, bool $expectedSucceeds, string $expectedUrl)
+    public function testSetHost(Url $url, ?string $host, string $expectedUrl)
     {
-        $succeeds = $url->setHost($host);
+        $url->setHost($host);
 
-        $this->assertEquals($expectedSucceeds, $succeeds);
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
@@ -587,37 +564,31 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             'no host, has relative path' => [
                 'url' => new Url('file.extension'),
                 'host' => 'example.com',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com/file.extension',
             ],
             'no host, has absolute path' => [
                 'url' => new Url('/file.extension'),
                 'host' => 'example.com',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com/file.extension',
             ],
             'has host' => [
                 'url' => new Url('//example.com/foo'),
                 'host' => 'bar.example.com',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//bar.example.com/foo',
             ],
             'remove host from url that has path' => [
                 'url' => new Url('//example.com/foo'),
                 'host' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => '/foo',
             ],
             'remove host from url that has scheme, path' => [
                 'url' => new Url('http://example.com/foo'),
                 'host' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => '/foo',
             ],
             'remove host from url that has scheme, user, pass, port, path' => [
                 'url' => new Url('http://user:pass@example.com:8080/foo'),
                 'host' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => '/foo',
             ],
         ];
@@ -686,14 +657,12 @@ class UrlTest extends \PHPUnit\Framework\TestCase
      *
      * @param Url $url
      * @param string|null $query
-     * @param bool $expectedSucceeds
      * @param string $expectedUrl
      */
-    public function testSetQuery(Url $url, ?string $query, bool $expectedSucceeds, string $expectedUrl)
+    public function testSetQuery(Url $url, ?string $query, string $expectedUrl)
     {
-        $succeeds = $url->setQuery($query);
+        $url->setQuery($query);
 
-        $this->assertEquals($expectedSucceeds, $succeeds);
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
@@ -703,49 +672,41 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             'no existing query, null query' => [
                 'url' => new Url('//example.com'),
                 'query' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com',
             ],
             'no existing query, empty query' => [
                 'url' => new Url('//example.com'),
                 'query' => '',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com',
             ],
             'no existing query, whitespace query' => [
                 'url' => new Url('//example.com'),
                 'query' => '   ',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com',
             ],
             'existing query, null query' => [
                 'url' => new Url('//example.com?foo=bar'),
                 'query' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com',
             ],
             'existing query, empty query' => [
                 'url' => new Url('//example.com?foo=bar'),
                 'query' => '',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com',
             ],
             'existing query, whitespace query' => [
                 'url' => new Url('//example.com?foo=bar'),
                 'query' => '   ',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com',
             ],
             'existing query, query without question mark' => [
                 'url' => new Url('//example.com?foo=bar'),
                 'query' => 'bar=foobar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com?bar=foobar',
             ],
             'existing query, query with question mark' => [
                 'url' => new Url('//example.com?foo=bar'),
                 'query' => '?bar=foobar',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com?bar=foobar',
             ],
         ];
@@ -756,14 +717,12 @@ class UrlTest extends \PHPUnit\Framework\TestCase
      *
      * @param Url $url
      * @param string|null $scheme
-     * @param bool $expectedSucceeds
      * @param string $expectedUrl
      */
-    public function testSetScheme(Url $url, ?string $scheme, bool $expectedSucceeds, string $expectedUrl)
+    public function testSetScheme(Url $url, ?string $scheme, string $expectedUrl)
     {
-        $succeeds = $url->setScheme($scheme);
+        $url->setScheme($scheme);
 
-        $this->assertEquals($expectedSucceeds, $succeeds);
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
@@ -773,31 +732,26 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             'no existing scheme, null scheme' => [
                 'url' => new Url('//example.com'),
                 'scheme' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com',
             ],
             'existing scheme, null scheme' => [
                 'url' => new Url('http://example.com'),
                 'scheme' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com',
             ],
             'schemeless url' => [
                 'url' => new Url('example.com'),
                 'scheme' => 'http',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com',
             ],
             'protocol-relative url' => [
                 'url' => new Url('//example.com'),
                 'scheme' => 'http',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com',
             ],
             'absolute url' => [
                 'url' => new Url('https://example.com'),
                 'scheme' => 'http',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com',
             ],
         ];
@@ -913,7 +867,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
                 'url' => $testData['url'],
                 'partName' => UrlInterface::PART_SCHEME,
                 'value' => $testData['scheme'],
-                'expectedSucceeds' => $testData['expectedSucceeds'],
+                'expectedSucceeds' => true,
                 'expectedUrl' => $testData['expectedUrl'],
             ];
         }
@@ -943,7 +897,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
                 'url' => $testData['url'],
                 'partName' => UrlInterface::PART_HOST,
                 'value' => $testData['host'],
-                'expectedSucceeds' => $testData['expectedSucceeds'],
+                'expectedSucceeds' => true,
                 'expectedUrl' => $testData['expectedUrl'],
             ];
         }
@@ -963,7 +917,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
                 'url' => $testData['url'],
                 'partName' => UrlInterface::PART_PATH,
                 'value' => $testData['path'],
-                'expectedSucceeds' => $testData['expectedSucceeds'],
+                'expectedSucceeds' => true,
                 'expectedUrl' => $testData['expectedUrl'],
             ];
         }
@@ -973,7 +927,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
                 'url' => $testData['url'],
                 'partName' => UrlInterface::PART_QUERY,
                 'value' => $testData['query'],
-                'expectedSucceeds' => $testData['expectedSucceeds'],
+                'expectedSucceeds' => true,
                 'expectedUrl' => $testData['expectedUrl'],
             ];
         }
@@ -983,7 +937,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
                 'url' => $testData['url'],
                 'partName' => UrlInterface::PART_FRAGMENT,
                 'value' => $testData['fragment'],
-                'expectedSucceeds' => $testData['expectedSucceeds'],
+                'expectedSucceeds' => true,
                 'expectedUrl' => $testData['expectedUrl'],
             ];
         }

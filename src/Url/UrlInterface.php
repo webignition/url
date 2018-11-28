@@ -34,13 +34,13 @@ interface UrlInterface
      */
     public function getScheme();
 
-    public function setScheme(?string $scheme): bool;
+    public function setScheme(?string $scheme);
 
     public function hasHost(): bool;
 
     public function getHost(): ?Host;
 
-    public function setHost(?string $host): bool;
+    public function setHost(?string $host);
 
     public function hasPort(): bool;
 
@@ -69,17 +69,17 @@ interface UrlInterface
 
     public function getPath(): ?Path;
 
-    public function setPath(?string $path): bool;
+    public function setPath(?string $path);
 
     public function getQuery(): ?Query;
 
-    public function setQuery(?string $query): bool ;
+    public function setQuery(?string $query);
 
     public function hasFragment(): bool;
 
     public function getFragment(): ?string;
 
-    public function setFragment(?string $fragment): bool;
+    public function setFragment(?string $fragment);
 
     public function __toString(): string;
 
