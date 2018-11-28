@@ -4,10 +4,7 @@ namespace webignition\Tests\DataProvider;
 
 trait SchemeNormalisationDataProviderTrait
 {
-    /**
-     * @return array
-     */
-    public function schemeNormalisationDataProvider()
+    public function schemeNormalisationDataProvider(): array
     {
         return [
             'http' => [

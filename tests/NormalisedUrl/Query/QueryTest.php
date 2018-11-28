@@ -11,18 +11,18 @@ class QueryTest extends AbstractNormalisedUrlTest
     use QueryNormalisationDataProviderTrait;
 
     /**
-     * @dataProvider fooDataProvider
+     * @dataProvider createDataProvider
      *
-     * @param string $queryString
+     * @param string|null $queryString
      * @param string $expectedNormalisedQueryString
      */
-    public function testCreate($queryString, $expectedNormalisedQueryString)
+    public function testCreate(?string $queryString, string $expectedNormalisedQueryString)
     {
         $normalisedQuery = new Query($queryString);
         $this->assertEquals($expectedNormalisedQueryString, (string)$normalisedQuery);
     }
 
-    public function fooDataProvider()
+    public function createDataProvider(): array
     {
         return array_merge(
             $this->queryNormalisationDataProvider(),

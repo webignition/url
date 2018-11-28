@@ -12,15 +12,12 @@ class PreProcessorTest extends \PHPUnit_Framework_TestCase
      * @param string|null $url
      * @param string $expectedPreProcessedUrl
      */
-    public function testPreProcess($url, $expectedPreProcessedUrl)
+    public function testPreProcess(?string $url, string $expectedPreProcessedUrl)
     {
         $this->assertEquals($expectedPreProcessedUrl, PreProcessor::preProcess($url));
     }
 
-    /**
-     * @return array
-     */
-    public function preProcessDataProvider()
+    public function preProcessDataProvider(): array
     {
         return [
             'null' => [

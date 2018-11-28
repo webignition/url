@@ -24,7 +24,7 @@ class NormalisedUrlTest extends AbstractNormalisedUrlTest
      * @param bool $enableConvertIdnToUtf8
      * @param string $expectedNormalisedUrl
      */
-    public function testIdnHostNormalisation($url, $enableConvertIdnToUtf8, $expectedNormalisedUrl)
+    public function testIdnHostNormalisation(string $url, bool $enableConvertIdnToUtf8, string $expectedNormalisedUrl)
     {
         $normalisedUrl = new NormalisedUrl($url);
 
@@ -35,10 +35,7 @@ class NormalisedUrlTest extends AbstractNormalisedUrlTest
         $this->assertEquals($expectedNormalisedUrl, (string)$normalisedUrl);
     }
 
-    /**
-     * @return array
-     */
-    public function idnHostNormalisationDataProvider()
+    public function idnHostNormalisationDataProvider(): array
     {
         $punyCodeUrl = 'http://artesan.xn--a-iga.com/';
         $utf8Url = 'http://artesan.ía.com/';
@@ -73,17 +70,14 @@ class NormalisedUrlTest extends AbstractNormalisedUrlTest
      * @param string $url
      * @param string $expectedNormalisedUrl
      */
-    public function testNormalisation($url, $expectedNormalisedUrl)
+    public function testNormalisation(string $url, string $expectedNormalisedUrl)
     {
         $normalisedUrl = new NormalisedUrl($url);
 
         $this->assertEquals($expectedNormalisedUrl, (string)$normalisedUrl);
     }
 
-    /**
-     * @return array
-     */
-    public function normalisationDataProvider()
+    public function normalisationDataProvider(): array
     {
         return array_merge(
             $this->createSchemeNormalisationDataSet(),
@@ -104,11 +98,11 @@ class NormalisedUrlTest extends AbstractNormalisedUrlTest
      * @dataProvider setSchemeDataProvider
      *
      * @param string $url
-     * @param string $scheme
-     * @param string $expectedScheme
+     * @param string|null $scheme
+     * @param string|null $expectedScheme
      * @param string $expectedNormalisedUrl
      */
-    public function testSetScheme($url, $scheme, $expectedScheme, $expectedNormalisedUrl)
+    public function testSetScheme(string $url, ?string $scheme, ?string $expectedScheme, string $expectedNormalisedUrl)
     {
         $normalisedUrl = new NormalisedUrl($url);
         $normalisedUrl->setScheme($scheme);
@@ -117,10 +111,7 @@ class NormalisedUrlTest extends AbstractNormalisedUrlTest
         $this->assertEquals($expectedNormalisedUrl, (string)$normalisedUrl);
     }
 
-    /**
-     * @return array
-     */
-    public function setSchemeDataProvider()
+    public function setSchemeDataProvider(): array
     {
         return [
             'fully qualified url' => [
@@ -152,7 +143,7 @@ class NormalisedUrlTest extends AbstractNormalisedUrlTest
      * @param string $expectedHost
      * @param string $expectedNormalisedUrl
      */
-    public function testSetHost($url, $host, $expectedHost, $expectedNormalisedUrl)
+    public function testSetHost(string $url, string $host, string $expectedHost, string $expectedNormalisedUrl)
     {
         $normalisedUrl = new NormalisedUrl($url);
         $normalisedUrl->setHost($host);
@@ -161,10 +152,7 @@ class NormalisedUrlTest extends AbstractNormalisedUrlTest
         $this->assertEquals($expectedNormalisedUrl, (string)$normalisedUrl);
     }
 
-    /**
-     * @return array
-     */
-    public function setHostDataProvider()
+    public function setHostDataProvider(): array
     {
         return [
             'fully qualified url' => [
@@ -196,7 +184,7 @@ class NormalisedUrlTest extends AbstractNormalisedUrlTest
      * @param string $expectedPath
      * @param string $expectedNormalisedUrl
      */
-    public function testSetPath($url, $path, $expectedPath, $expectedNormalisedUrl)
+    public function testSetPath(string $url, string $path, string $expectedPath, string $expectedNormalisedUrl)
     {
         $normalisedUrl = new NormalisedUrl($url);
         $normalisedUrl->setPath($path);
@@ -205,10 +193,7 @@ class NormalisedUrlTest extends AbstractNormalisedUrlTest
         $this->assertEquals($expectedNormalisedUrl, (string)$normalisedUrl);
     }
 
-    /**
-     * @return array
-     */
-    public function setPathDataProvider()
+    public function setPathDataProvider(): array
     {
         return [
             'fully qualified url' => [
@@ -246,7 +231,7 @@ class NormalisedUrlTest extends AbstractNormalisedUrlTest
      * @param string $expectedQuery
      * @param string $expectedNormalisedUrl
      */
-    public function testSetQuery($url, $query, $expectedQuery, $expectedNormalisedUrl)
+    public function testSetQuery(string $url, string $query, string $expectedQuery, string $expectedNormalisedUrl)
     {
         $normalisedUrl = new NormalisedUrl($url);
         $normalisedUrl->setQuery($query);
@@ -255,10 +240,7 @@ class NormalisedUrlTest extends AbstractNormalisedUrlTest
         $this->assertEquals($expectedNormalisedUrl, (string)$normalisedUrl);
     }
 
-    /**
-     * @return array
-     */
-    public function setQueryDataProvider()
+    public function setQueryDataProvider(): array
     {
         return [
             'no existing query, no fragment, no leading question mark' => [
@@ -288,10 +270,7 @@ class NormalisedUrlTest extends AbstractNormalisedUrlTest
         ];
     }
 
-    /**
-     * @return array
-     */
-    private function createSchemeNormalisationDataSet()
+    private function createSchemeNormalisationDataSet(): array
     {
         $dataSet = [];
         $dataProvider = $this->schemeNormalisationDataProvider();
@@ -306,10 +285,7 @@ class NormalisedUrlTest extends AbstractNormalisedUrlTest
         return $dataSet;
     }
 
-    /**
-     * @return array
-     */
-    private function createHostNormalisationDataSet()
+    private function createHostNormalisationDataSet(): array
     {
         $dataSet = [];
         $dataProvider = $this->hostNormalisationDataProvider();
@@ -324,10 +300,7 @@ class NormalisedUrlTest extends AbstractNormalisedUrlTest
         return $dataSet;
     }
 
-    /**
-     * @return array
-     */
-    private function createPortNormalisationDataSet()
+    private function createPortNormalisationDataSet(): array
     {
         $dataSet = [];
         $dataProvider = $this->portNormalisationDataProvider();
@@ -342,10 +315,7 @@ class NormalisedUrlTest extends AbstractNormalisedUrlTest
         return $dataSet;
     }
 
-    /**
-     * @return array
-     */
-    private function createPathNormalisationDataSet()
+    private function createPathNormalisationDataSet(): array
     {
         $baseUrl = 'http://example.com';
 
@@ -362,10 +332,7 @@ class NormalisedUrlTest extends AbstractNormalisedUrlTest
         return $dataSet;
     }
 
-    /**
-     * @return array
-     */
-    private function createQueryNormalisationDataSet()
+    private function createQueryNormalisationDataSet(): array
     {
         $baseUrl = 'http://example.com/';
 

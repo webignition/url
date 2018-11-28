@@ -4,10 +4,7 @@ namespace webignition\Tests\DataProvider;
 
 trait QueryNormalisationDataProviderTrait
 {
-    /**
-     * @return array
-     */
-    public function queryNormalisationDataProvider()
+    public function queryNormalisationDataProvider(): array
     {
         return [
             'null' => [
@@ -30,10 +27,7 @@ trait QueryNormalisationDataProviderTrait
         ];
     }
 
-    /**
-     * @return array
-     */
-    private function createUnreservedCharactersQueryDataSet()
+    private function createUnreservedCharactersQueryDataSet(): array
     {
         $alpha = 'abcdefghijklmnopqrstuvwxyz';
         $uppercaseAlpha = strtoupper($alpha);

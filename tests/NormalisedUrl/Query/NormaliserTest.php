@@ -13,10 +13,10 @@ class NormaliserTest extends AbstractNormalisedUrlTest
     /**
      * @dataProvider queryNormalisationDataProvider
      *
-     * @param string $queryString
+     * @param string|null $queryString
      * @param string $expectedNormalisedQueryString
      */
-    public function testCreate($queryString, $expectedNormalisedQueryString)
+    public function testCreate(?string $queryString, string $expectedNormalisedQueryString)
     {
         $normaliser = new Normaliser($queryString);
         $normalisedKeyValuePairs = $normaliser->getKeyValuePairs();

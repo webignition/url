@@ -13,10 +13,10 @@ class PathTest extends AbstractNormalisedUrlTest
     /**
      * @dataProvider pathNormalisationDataProvider
      *
-     * @param string $path
+     * @param string|null $path
      * @param string $expectedNormalisedPath
      */
-    public function testCreate($path, $expectedNormalisedPath)
+    public function testCreate(?string $path, string $expectedNormalisedPath)
     {
         $normalisedPath = new Path($path);
 

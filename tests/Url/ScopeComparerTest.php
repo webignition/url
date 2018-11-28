@@ -21,7 +21,7 @@ class ScopeComparerTest extends \PHPUnit_Framework_TestCase
         Url $comparatorUrl,
         array $equivalentSchemeSets,
         array $equivalentHostSets,
-        $expectedIsInScope
+        bool $expectedIsInScope
     ) {
         $scopeComparer = new ScopeComparer();
 
@@ -40,10 +40,7 @@ class ScopeComparerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedIsInScope, $scopeComparer->isInScope($sourceUrl, $comparatorUrl));
     }
 
-    /**
-     * @return array
-     */
-    public function isInScopeDataProvider()
+    public function isInScopeDataProvider(): array
     {
         return [
             'two empty urls are in scope' => [

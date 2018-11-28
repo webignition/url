@@ -19,7 +19,7 @@ class EncoderTest extends \PHPUnit_Framework_TestCase
      * @param Configuration|null $configuration
      * @param bool $expectedHasConfiguration
      */
-    public function testSetHasConfiguration($configuration, $expectedHasConfiguration)
+    public function testSetHasConfiguration(?Configuration $configuration, bool $expectedHasConfiguration)
     {
         $encoder = new Encoder([]);
 
@@ -30,10 +30,7 @@ class EncoderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedHasConfiguration, $encoder->hasConfiguration());
     }
 
-    /**
-     * @return array
-     */
-    public function setHasConfigurationDataProvider()
+    public function setHasConfigurationDataProvider(): array
     {
         return [
             'not has configuration' => [
@@ -54,7 +51,7 @@ class EncoderTest extends \PHPUnit_Framework_TestCase
      * @param Configuration|null $configuration
      * @param string $expectedEncodedQueryString
      */
-    public function testEncode($pairs, $configuration, $expectedEncodedQueryString)
+    public function testEncode(array $pairs, ?Configuration $configuration, string $expectedEncodedQueryString)
     {
         $encoder = new Encoder($pairs);
 
@@ -65,10 +62,7 @@ class EncoderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedEncodedQueryString, (string)$encoder);
     }
 
-    /**
-     * @return array
-     */
-    public function encodeDataProvider()
+    public function encodeDataProvider(): array
     {
         $disableFullEncodingConfiguration = new Configuration();
         $disableFullEncodingConfiguration->disableFullyEncodeQueryStringKeys();

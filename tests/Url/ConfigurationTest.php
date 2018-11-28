@@ -24,16 +24,16 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider configurationDataProvider
      *
-     * @param bool $fullyEncodeQueryStringKeys
-     * @param bool $convertIdnToUtf8
+     * @param bool|null $fullyEncodeQueryStringKeys
+     * @param bool|null $convertIdnToUtf8
      * @param bool $expectedFullyEncodeQueryStringKeys
      * @param bool $expectedConvertIdnToUtf8
      */
     public function testConfiguration(
-        $fullyEncodeQueryStringKeys,
-        $convertIdnToUtf8,
-        $expectedFullyEncodeQueryStringKeys,
-        $expectedConvertIdnToUtf8
+        ?bool $fullyEncodeQueryStringKeys,
+        ?bool $convertIdnToUtf8,
+        bool $expectedFullyEncodeQueryStringKeys,
+        bool $expectedConvertIdnToUtf8
     ) {
         if (!is_null($fullyEncodeQueryStringKeys)) {
             if ($fullyEncodeQueryStringKeys) {
@@ -55,10 +55,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedConvertIdnToUtf8, $this->configuration->getConvertIdnToUtf8());
     }
 
-    /**
-     * @return array
-     */
-    public function configurationDataProvider()
+    public function configurationDataProvider(): array
     {
         return [
             'default' => [
