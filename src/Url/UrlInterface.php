@@ -34,7 +34,7 @@ interface UrlInterface
      */
     public function getScheme();
 
-    public function setScheme(?string $scheme): bool;
+    public function setScheme(?string $scheme);
 
     public function hasHost(): bool;
 

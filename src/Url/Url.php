@@ -105,19 +105,15 @@ class Url implements UrlInterface
         return $this->getPart(UrlInterface::PART_SCHEME);
     }
 
-    public function setScheme(?string $scheme): bool
+    public function setScheme(?string $scheme)
     {
         $scheme = trim($scheme);
 
         if (empty($scheme)) {
             $this->removePart(UrlInterface::PART_SCHEME);
-
-            return true;
+        } else {
+            $this->updatePart(UrlInterface::PART_SCHEME, $scheme);
         }
-
-        $this->updatePart(UrlInterface::PART_SCHEME, $scheme);
-
-        return true;
     }
 
     public function hasHost(): bool
@@ -335,7 +331,9 @@ class Url implements UrlInterface
     {
         switch ($partName) {
             case UrlInterface::PART_SCHEME:
-                return $this->setScheme($value);
+                $this->setScheme($value);
+
+                return true;
 
             case UrlInterface::PART_USER:
                 return $this->setUser($value);

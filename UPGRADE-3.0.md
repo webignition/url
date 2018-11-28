@@ -24,3 +24,4 @@ no longer return anything:
 - `UrlInterface::setHost()`
 - `UrlInterface::setPath()`
 - `UrlInterface::setQuery()`
+- `UrlInterface::setScheme()`

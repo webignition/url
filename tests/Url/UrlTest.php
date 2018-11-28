@@ -717,14 +717,12 @@ class UrlTest extends \PHPUnit\Framework\TestCase
      *
      * @param Url $url
      * @param string|null $scheme
-     * @param bool $expectedSucceeds
      * @param string $expectedUrl
      */
-    public function testSetScheme(Url $url, ?string $scheme, bool $expectedSucceeds, string $expectedUrl)
+    public function testSetScheme(Url $url, ?string $scheme, string $expectedUrl)
     {
-        $succeeds = $url->setScheme($scheme);
+        $url->setScheme($scheme);
 
-        $this->assertEquals($expectedSucceeds, $succeeds);
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
@@ -734,31 +732,26 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             'no existing scheme, null scheme' => [
                 'url' => new Url('//example.com'),
                 'scheme' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com',
             ],
             'existing scheme, null scheme' => [
                 'url' => new Url('http://example.com'),
                 'scheme' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com',
             ],
             'schemeless url' => [
                 'url' => new Url('example.com'),
                 'scheme' => 'http',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com',
             ],
             'protocol-relative url' => [
                 'url' => new Url('//example.com'),
                 'scheme' => 'http',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com',
             ],
             'absolute url' => [
                 'url' => new Url('https://example.com'),
                 'scheme' => 'http',
-                'expectedSucceeds' => true,
                 'expectedUrl' => 'http://example.com',
             ],
         ];
@@ -874,7 +867,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
                 'url' => $testData['url'],
                 'partName' => UrlInterface::PART_SCHEME,
                 'value' => $testData['scheme'],
-                'expectedSucceeds' => $testData['expectedSucceeds'],
+                'expectedSucceeds' => true,
                 'expectedUrl' => $testData['expectedUrl'],
             ];
         }
