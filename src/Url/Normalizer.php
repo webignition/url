@@ -12,6 +12,14 @@ class Normalizer
 
         $this->normalizeScheme($normalizedUrl, $optionsObject);
 
+        if ($optionsObject->getForceHttp()) {
+            $normalizedUrl->setScheme(NormalizerOptions::SCHEME_HTTP);
+        }
+
+        if ($optionsObject->getForceHttps()) {
+            $normalizedUrl->setScheme(NormalizerOptions::SCHEME_HTTPS);
+        }
+
         return $normalizedUrl;
     }
 

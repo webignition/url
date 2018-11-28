@@ -69,6 +69,50 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 'options' => [],
                 'expectedUrl' => new Url('http://example.com/foo/bar'),
             ],
+            'forceHttp: http url' => [
+                'url' => new Url('http://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_FORCE_HTTP => true,
+                ],
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'forceHttp: https url' => [
+                'url' => new Url('https://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_FORCE_HTTP => true,
+                ],
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'forceHttps: http url' => [
+                'url' => new Url('http://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_FORCE_HTTPS => true,
+                ],
+                'expectedUrl' => new Url('https://example.com'),
+            ],
+            'forceHttps: https url' => [
+                'url' => new Url('https://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_FORCE_HTTPS => true,
+                ],
+                'expectedUrl' => new Url('https://example.com'),
+            ],
+            'forceHttp and forceHttps: http url' => [
+                'url' => new Url('http://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_FORCE_HTTP => true,
+                    NormalizerOptions::OPTION_FORCE_HTTPS => true,
+                ],
+                'expectedUrl' => new Url('https://example.com'),
+            ],
+            'forceHttp and forceHttps: https url' => [
+                'url' => new Url('https://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_FORCE_HTTP => true,
+                    NormalizerOptions::OPTION_FORCE_HTTPS => true,
+                ],
+                'expectedUrl' => new Url('https://example.com'),
+            ],
         ];
     }
 }
