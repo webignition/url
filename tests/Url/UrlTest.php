@@ -561,14 +561,12 @@ class UrlTest extends \PHPUnit\Framework\TestCase
      *
      * @param Url $url
      * @param string|null $host
-     * @param bool $expectedSucceeds
      * @param string $expectedUrl
      */
-    public function testSetHost(Url $url, ?string $host, bool $expectedSucceeds, string $expectedUrl)
+    public function testSetHost(Url $url, ?string $host, string $expectedUrl)
     {
-        $succeeds = $url->setHost($host);
+        $url->setHost($host);
 
-        $this->assertEquals($expectedSucceeds, $succeeds);
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
@@ -578,37 +576,31 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             'no host, has relative path' => [
                 'url' => new Url('file.extension'),
                 'host' => 'example.com',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com/file.extension',
             ],
             'no host, has absolute path' => [
                 'url' => new Url('/file.extension'),
                 'host' => 'example.com',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//example.com/file.extension',
             ],
             'has host' => [
                 'url' => new Url('//example.com/foo'),
                 'host' => 'bar.example.com',
-                'expectedSucceeds' => true,
                 'expectedUrl' => '//bar.example.com/foo',
             ],
             'remove host from url that has path' => [
                 'url' => new Url('//example.com/foo'),
                 'host' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => '/foo',
             ],
             'remove host from url that has scheme, path' => [
                 'url' => new Url('http://example.com/foo'),
                 'host' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => '/foo',
             ],
             'remove host from url that has scheme, user, pass, port, path' => [
                 'url' => new Url('http://user:pass@example.com:8080/foo'),
                 'host' => null,
-                'expectedSucceeds' => true,
                 'expectedUrl' => '/foo',
             ],
         ];
@@ -934,7 +926,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
                 'url' => $testData['url'],
                 'partName' => UrlInterface::PART_HOST,
                 'value' => $testData['host'],
-                'expectedSucceeds' => $testData['expectedSucceeds'],
+                'expectedSucceeds' => true,
                 'expectedUrl' => $testData['expectedUrl'],
             ];
         }

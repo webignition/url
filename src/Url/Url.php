@@ -130,7 +130,7 @@ class Url implements UrlInterface
         return $this->getPart(UrlInterface::PART_HOST);
     }
 
-    public function setHost(?string $host): bool
+    public function setHost(?string $host)
     {
         if ($this->hasPath() && $this->getPath()->isRelative()) {
             $this->setPath('/' . $this->getPath());
@@ -142,13 +142,9 @@ class Url implements UrlInterface
             $this->removePart(UrlInterface::PART_PASS);
             $this->removePart(UrlInterface::PART_PORT);
             $this->removePart(UrlInterface::PART_HOST);
-
-            return true;
+        } else {
+            $this->updatePart(UrlInterface::PART_HOST, new Host($host));
         }
-
-        $this->updatePart(UrlInterface::PART_HOST, new Host($host));
-
-        return true;
     }
 
     public function hasPort(): bool
@@ -352,7 +348,9 @@ class Url implements UrlInterface
                 return $this->setPass($value);
 
             case UrlInterface::PART_HOST:
-                return $this->setHost($value);
+                $this->setHost($value);
+
+                return true;
 
             case UrlInterface::PART_PORT:
                 return $this->setPort($value);

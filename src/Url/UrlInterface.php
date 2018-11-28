@@ -40,7 +40,7 @@ interface UrlInterface
 
     public function getHost(): ?Host;
 
-    public function setHost(?string $host): bool;
+    public function setHost(?string $host);
 
     public function hasPort(): bool;
 

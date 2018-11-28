@@ -21,3 +21,4 @@ The following methods previously always returned `true`. This was unnecessary. T
 no longer return anything:
 
 - `UrlInterface::setFragment()`
+- `UrlInterface::setHost()`
