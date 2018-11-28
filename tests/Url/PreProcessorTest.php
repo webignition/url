@@ -4,7 +4,7 @@ namespace webignition\Tests\Url;
 
 use webignition\Url\PreProcessor;
 
-class PreProcessorTest extends \PHPUnit_Framework_TestCase
+class PreProcessorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider preProcessDataProvider

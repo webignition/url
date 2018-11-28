@@ -5,7 +5,7 @@ namespace webignition\Tests\Url\Host;
 use IpUtils\Exception\InvalidExpressionException;
 use webignition\Url\Host\Host;
 
-class HostTest extends \PHPUnit_Framework_TestCase
+class HostTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider createDataProvider

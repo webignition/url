@@ -7,7 +7,7 @@ use webignition\Url\Query\Query;
 use webignition\Url\Url;
 use webignition\Url\UrlInterface;
 
-class UrlTest extends \PHPUnit_Framework_TestCase
+class UrlTest extends \PHPUnit\Framework\TestCase
 {
     public function testCreate()
     {

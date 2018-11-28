@@ -5,7 +5,7 @@ namespace webignition\Tests\Url;
 use webignition\Url\Parser;
 use webignition\Url\UrlInterface;
 
-class ParserTest extends \PHPUnit_Framework_TestCase
+class ParserTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider getPartsDataProvider

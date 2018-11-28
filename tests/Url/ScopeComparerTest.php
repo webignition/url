@@ -5,7 +5,7 @@ namespace webignition\Tests\Url;
 use webignition\Url\ScopeComparer;
 use webignition\Url\Url;
 
-class ScopeComparerTest extends \PHPUnit_Framework_TestCase
+class ScopeComparerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider isInScopeDataProvider

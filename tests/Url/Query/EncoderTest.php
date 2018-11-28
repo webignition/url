@@ -11,7 +11,7 @@ use webignition\Url\Query\Encoder;
  * Arose from the need to preserve the ?, + and / characters
  * in 'http://s1.wp.com/_static/??-eJyNUdFuwyAM/KExd2vVtQ/TvoWAA7QmRmAU9e9H0kmNVjXKEz50Z+4OGJMyPAgOArGqRNWFoQCFKxa4oCRtrmpG76aUN1jQO2L3ELBzaLmK6pmIRxiDdShPosUbGUkLWpW4yD+0Jovp2K5j0jKPvhlc5U8LVU86ZChyI3ziisfYwqbagfFseCvNMHEuYLHXlWSrKgzmTlVjajHWC5oqbqODxlrArXG9zpP473zlzR/AEXea1tbev7PMRhyzzajtXPtP/P7Yn06H8+789Xn5BWIC3X4='
  */
-class EncoderTest extends \PHPUnit_Framework_TestCase
+class EncoderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider setHasConfigurationDataProvider

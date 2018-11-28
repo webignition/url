@@ -4,7 +4,7 @@ namespace webignition\Tests\Url\Path;
 
 use webignition\Url\Path\Path;
 
-class PathTest extends \PHPUnit_Framework_TestCase
+class PathTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider createDataProvider
