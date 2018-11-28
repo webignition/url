@@ -2,11 +2,11 @@
 
 namespace webignition\Url\Host;
 
-use Etechnika\IdnaConvert\IdnaConvert;
 use IpUtils\Address\IPv4;
 use IpUtils\Exception\InvalidExpressionException;
 use IpUtils\Expression\Subnet;
 use IpUtils\Factory as IpUtilsFactory;
+use webignition\Url\PunycodeEncoder;
 
 /**
  * Represents the host part of a URL
@@ -59,8 +59,15 @@ class Host
      */
     private $parts = null;
 
+    /**
+     * @var PunycodeEncoder
+     */
+    private $punycodeEncoder;
+
     public function __construct(string $host)
     {
+        $this->punycodeEncoder = new PunycodeEncoder();
+
         $this->set($host);
     }
 
@@ -92,8 +99,8 @@ class Host
 
     public function isEquivalentTo(Host $comparator, array $excludeParts = []): bool
     {
-        $thisHost = new Host(IdnaConvert::encodeString((string) $this));
-        $comparatorHost = new Host(IdnaConvert::encodeString((string) $comparator));
+        $thisHost = new Host($this->punycodeEncoder->encode((string) $this));
+        $comparatorHost = new Host($this->punycodeEncoder->encode((string) $comparator));
 
         if (empty($excludeParts)) {
             return $thisHost->equals($comparatorHost);

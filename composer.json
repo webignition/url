@@ -34,7 +34,7 @@
     },
     "require": {
         "php": ">=7.2",
-        "etechnika/idna-convert": "1.0.*",
+        "mso/idna-convert": "^1",
         "xrstf/ip-utils": "v1.0.0"
     },
     "require-dev": {
