@@ -7,10 +7,6 @@ use webignition\Url\Query\Query;
 
 class Parser implements ParserInterface
 {
-    const DEFAULT_PORT = 80;
-    const MIN_PORT = 0;
-    const MAX_PORT = 65535;
-
     const FRAGMENT_SEPARATOR = '#';
 
     const PROTOCOL_RELATIVE_START = '//';
