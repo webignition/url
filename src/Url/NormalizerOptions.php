@@ -11,6 +11,13 @@ class NormalizerOptions
     const OPTION_NORMALIZE_SCHEME = 'normalize-scheme';
     const OPTION_FORCE_HTTP = 'force-http';
     const OPTION_FORCE_HTTPS = 'force-https';
+    const OPTION_REMOVE_USER_INFO = 'remove-user-info';
+
+    const DEFAULT_SCHEME = self::SCHEME_HTTP;
+    const DEFAULT_NORMALIZE_SCHEME = true;
+    const DEFAULT_FORCE_HTTP = null;
+    const DEFAULT_FORCE_HTTPS = null;
+    const DEFAULT_REMOVE_USER_INFO = false;
 
     /**
      * @var string
@@ -32,12 +39,17 @@ class NormalizerOptions
      */
     private $forceHttps;
 
+    /**
+     * @var bool
+     */
+    private $removeUserInfo;
+
     public function __construct(array $options)
     {
-        $this->defaultScheme = $options[self::OPTION_DEFAULT_SCHEME] ?? self::SCHEME_HTTP;
+        $this->defaultScheme = $options[self::OPTION_DEFAULT_SCHEME] ?? self::DEFAULT_SCHEME;
         $this->defaultScheme = trim($this->defaultScheme);
 
-        $this->normalizeScheme = $options[self::OPTION_NORMALIZE_SCHEME] ?? true;
+        $this->normalizeScheme = $options[self::OPTION_NORMALIZE_SCHEME] ?? self::DEFAULT_NORMALIZE_SCHEME;
         $this->normalizeScheme = (bool) $this->normalizeScheme;
 
         $this->forceHttp = $options[self::OPTION_FORCE_HTTP] ?? null;
@@ -49,6 +61,9 @@ class NormalizerOptions
         if (null !== $this->forceHttps) {
             $this->forceHttps = (bool) $this->forceHttps;
         }
+
+        $this->removeUserInfo = $options[self::OPTION_REMOVE_USER_INFO] ?? self::DEFAULT_REMOVE_USER_INFO;
+        $this->removeUserInfo = (bool) $this->removeUserInfo;
     }
 
     public function getDefaultScheme(): string
@@ -69,5 +84,10 @@ class NormalizerOptions
     public function getForceHttps(): ?bool
     {
         return $this->forceHttps;
+    }
+
+    public function getRemoveUserInfo(): bool
+    {
+        return $this->removeUserInfo;
     }
 }

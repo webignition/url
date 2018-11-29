@@ -2,10 +2,8 @@
 
 namespace webignition\Tests\Url;
 
-use IpUtils\Exception\InvalidExpressionException;
 use webignition\Url\Normalizer;
 use webignition\Url\NormalizerOptions;
-use webignition\Url\Query\Query;
 use webignition\Url\Url;
 use webignition\Url\UrlInterface;
 
@@ -110,6 +108,34 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 'options' => [
                     NormalizerOptions::OPTION_FORCE_HTTP => true,
                     NormalizerOptions::OPTION_FORCE_HTTPS => true,
+                ],
+                'expectedUrl' => new Url('https://example.com'),
+            ],
+            'removeUserInfo=false: no user info' => [
+                'url' => new Url('https://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_USER_INFO => false,
+                ],
+                'expectedUrl' => new Url('https://example.com'),
+            ],
+            'removeUserInfo=false: has user info' => [
+                'url' => new Url('https://user:password@example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_USER_INFO => false,
+                ],
+                'expectedUrl' => new Url('https://user:password@example.com'),
+            ],
+            'removeUserInfo=true: no user info' => [
+                'url' => new Url('https://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_USER_INFO => true,
+                ],
+                'expectedUrl' => new Url('https://example.com'),
+            ],
+            'removeUserInfo=true: has user info' => [
+                'url' => new Url('https://user:password@example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_USER_INFO => true,
                 ],
                 'expectedUrl' => new Url('https://example.com'),
             ],

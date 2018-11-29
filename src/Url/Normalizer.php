@@ -20,6 +20,11 @@ class Normalizer
             $normalizedUrl->setScheme(NormalizerOptions::SCHEME_HTTPS);
         }
 
+        if ($optionsObject->getRemoveUserInfo()) {
+            $normalizedUrl->setUser(null);
+            $normalizedUrl->setPass(null);
+        }
+
         return $normalizedUrl;
     }
 
