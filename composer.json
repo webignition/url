@@ -31,6 +31,7 @@
     },
     "require": {
         "php": ">=7.2",
+        "psr/http-message": "^1",
         "mso/idna-convert": "^1",
         "xrstf/ip-utils": "v1.0.0"
     },
