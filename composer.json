@@ -13,15 +13,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "webignition\\Url\\": "src/Url",
-            "webignition\\NormalisedUrl\\": "src/NormalisedUrl"
+            "webignition\\Url\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "webignition\\Tests\\NormalisedUrl\\": "tests/NormalisedUrl",
-            "webignition\\Tests\\Url\\": "tests/Url",
-            "webignition\\Tests\\DataProvider\\": "tests/DataProvider"
+            "webignition\\Tests\\Url\\": "tests/Url"
         }
     },
     "scripts": {
