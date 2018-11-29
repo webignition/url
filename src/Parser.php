@@ -27,10 +27,7 @@ class Parser implements ParserInterface
      */
     protected $parts = [];
 
-    /**
-     * @param string $url
-     */
-    public function __construct(?string $url)
+    public function __construct(string $url)
     {
         $this->parts = $this->parse($url);
     }

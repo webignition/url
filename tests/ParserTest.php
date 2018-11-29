@@ -28,13 +28,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
     public function getPartsDataProvider(): array
     {
         return [
-            'null' => [
-                'url' => null,
-                'expectedParts' => [
-                    UrlInterface::PART_PATH => '',
-                    UrlInterface::PART_QUERY => '',
-                ],
-            ],
             'empty' => [
                 'url' => '',
                 'expectedParts' => [
