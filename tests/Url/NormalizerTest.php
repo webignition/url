@@ -30,6 +30,9 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
      * @dataProvider removeWwwDataProvider
      * @dataProvider removeKnownPortsDataProvider
      * @dataProvider removeDefaultFilesPatternsDataProvider
+     * @dataProvider reduceMultipleTrailingSlashesDataProvider
+     * @dataProvider removeDotPathSegmentsDataProvider
+     * @dataProvider addTrailingSlashDataProvider
      *
      * @param UrlInterface $url
      * @param array $options
@@ -471,6 +474,148 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                     NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
                 ],
                 'expectedUrl' => new Url('http://example.com'),
+            ],
+        ];
+    }
+
+    public function reduceMultipleTrailingSlashesDataProvider(): array
+    {
+        return [
+            'removeMultipleTrailingSlashes: no trailing slash' => [
+                'url' => new Url('http://example.com'),
+                'options' => [],
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'removeMultipleTrailingSlashes: empty path, double trailing slash' => [
+                'url' => new Url('http://example.com//'),
+                'options' => [],
+                'expectedUrl' => new Url('http://example.com/'),
+            ],
+            'removeMultipleTrailingSlashes: empty path, triple trailing slash' => [
+                'url' => new Url('http://example.com///'),
+                'options' => [],
+                'expectedUrl' => new Url('http://example.com/'),
+            ],
+            'removeMultipleTrailingSlashes: double trailing slash' => [
+                'url' => new Url('http://example.com/one/two//'),
+                'options' => [],
+                'expectedUrl' => new Url('http://example.com/one/two/'),
+            ],
+            'removeMultipleTrailingSlashes: triple trailing slash' => [
+                'url' => new Url('http://example.com/one/two///'),
+                'options' => [],
+                'expectedUrl' => new Url('http://example.com/one/two/'),
+            ],
+            'removeMultipleTrailingSlashes: leading double slash, mid double slash, trailing double slash' => [
+                'url' => new Url('http://example.com//one//two//'),
+                'options' => [],
+                'expectedUrl' => new Url('http://example.com//one//two/'),
+            ],
+            'removeMultipleTrailingSlashes: leading triple slash, mid triple slash, trailing triple slash' => [
+                'url' => new Url('http://example.com///one///two///'),
+                'options' => [],
+                'expectedUrl' => new Url('http://example.com///one///two/'),
+            ],
+            'removeMultipleTrailingSlashes: double mid slash, no trailing slash' => [
+                'url' => new Url('http://example.com/one//two'),
+                'options' => [],
+                'expectedUrl' => new Url('http://example.com/one//two'),
+            ],
+        ];
+    }
+
+    public function removeDotPathSegmentsDataProvider(): array
+    {
+        return [
+            'removeDotPathSegments=true, single dot' => [
+                'url' => new Url('http://example.com/.'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
+                ],
+                'expectedUrl' => new Url('http://example.com/'),
+            ],
+            'removeDotPathSegments=true, double dot' => [
+                'url' => new Url('http://example.com/..'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
+                ],
+                'expectedUrl' => new Url('http://example.com/'),
+            ],
+            'removeDotPathSegments=true, rfc3986 5.2.4 example 1' => [
+                'url' => new Url('http://example.com/a/b/c/./../../g'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
+                ],
+                'expectedUrl' => new Url('http://example.com/a/g'),
+            ],
+            'removeDotPathSegments=true, rfc3986 5.2.4 example 2' => [
+                'url' => new Url('http://example.com/mid/content=5/../6'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
+                ],
+                'expectedUrl' => new Url('http://example.com/mid/6'),
+            ],
+            'removeDotPathSegments=true, many single dot' => [
+                'url' => new Url('http://example.com/././././././././././././././.'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
+                ],
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'removeDotPathSegments=true, many single dot, trailing slash' => [
+                'url' => new Url('http://example.com/./././././././././././././././'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
+                ],
+                'expectedUrl' => new Url('http://example.com/'),
+            ],
+            'removeDotPathSegments=true, many double dot' => [
+                'url' => new Url('http://example.com/../../../../../..'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
+                ],
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'removeDotPathSegments=true, many double dot, trailing slash' => [
+                'url' => new Url('http://example.com/../../../../../../'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
+                ],
+                'expectedUrl' => new Url('http://example.com/'),
+            ],
+        ];
+    }
+
+    public function addTrailingSlashDataProvider(): array
+    {
+        return [
+            'addTrailingSlash: no path, no trailing slash' => [
+                'url' => new Url('http://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
+                ],
+                'expectedUrl' => new Url('http://example.com/'),
+            ],
+            'addTrailingSlash: has path, no trailing slash' => [
+                'url' => new Url('http://example.com/foo'),
+                'options' => [
+                    NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
+                ],
+                'expectedUrl' => new Url('http://example.com/foo/'),
+            ],
+            'addTrailingSlash: empty path, has trailing slash' => [
+                'url' => new Url('http://example.com/'),
+                'options' => [
+                    NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
+                ],
+                'expectedUrl' => new Url('http://example.com/'),
+            ],
+            'addTrailingSlash: has path, has trailing slash' => [
+                'url' => new Url('http://example.com/foo/'),
+                'options' => [
+                    NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
+                ],
+                'expectedUrl' => new Url('http://example.com/foo/'),
             ],
         ];
     }

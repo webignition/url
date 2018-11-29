@@ -68,6 +68,8 @@ class Normalizer
             $this->removeDefaultFiles($normalizedUrl, $optionsObject);
         }
 
+        $this->normalizePath($normalizedUrl, $optionsObject);
+
         return $normalizedUrl;
     }
 
@@ -174,6 +176,96 @@ class Normalizer
             $updatedPath = implode(self::PATH_SEPARATOR, $pathParts);
 
             $url->setPath($updatedPath);
+        }
+    }
+
+    private function normalizePath(UrlInterface $url, NormalizerOptions $options)
+    {
+        $this->reducePathTrailingSlashes($url);
+
+        if ($options->getRemovePathDotSegments()) {
+            $this->removePathDotSegments($url);
+        }
+
+        if ($options->getAddPathTrailingSlash()) {
+            $this->addPathTrailingSlash($url);
+        }
+    }
+
+    private function reducePathTrailingSlashes(UrlInterface $url)
+    {
+        if (!$url->hasPath()) {
+            return;
+        }
+
+        $path = (string) $url->getPath();
+
+        $lastCharacter = $path[-1];
+        if ('/' !== $lastCharacter) {
+            return;
+        }
+
+        $path = rtrim($path, '/') . '/';
+
+        $url->setPath($path);
+    }
+
+    private function removePathDotSegments(UrlInterface $url)
+    {
+        $path = (string) $url->getPath();
+
+        if ('/' === $path) {
+            return;
+        }
+
+        $dotOnlyPaths = ['/..', '/.'];
+        foreach ($dotOnlyPaths as $dotOnlyPath) {
+            if ($dotOnlyPath === $path) {
+                $url->setPath('/');
+
+                return;
+            }
+        }
+
+        $lastCharacter = $path[-1];
+        $pathParts = explode('/', $path);
+        $normalisedPathParts = [];
+
+        foreach ($pathParts as $pathPart) {
+            if ('.' === $pathPart) {
+                continue;
+            }
+
+            if ('..' === $pathPart) {
+                array_pop($normalisedPathParts);
+            } else {
+                $normalisedPathParts[] = $pathPart;
+            }
+        }
+
+        $updatedPath = implode('/', $normalisedPathParts);
+
+        if (empty($updatedPath) && '/' === $lastCharacter) {
+            $updatedPath = '/';
+        }
+
+        $url->setPath($updatedPath);
+    }
+
+    private function addPathTrailingSlash(UrlInterface $url)
+    {
+        if ($url->hasPath()) {
+            $pathObject = $url->getPath();
+
+            if ($pathObject->hasFilename()) {
+                return;
+            }
+
+            if (!$pathObject->hasTrailingSlash()) {
+                $url->setPath((string) $pathObject . '/');
+            }
+        } else {
+            $url->setPath('/');
         }
     }
 }
