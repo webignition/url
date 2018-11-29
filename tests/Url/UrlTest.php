@@ -1071,4 +1071,40 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider removeUserRemovePassDataProvider
+     *
+     * @param UrlInterface $url
+     * @param UrlInterface $expectedUrl
+     */
+    public function testRemoveUserRemovePass(UrlInterface $url, UrlInterface $expectedUrl)
+    {
+        $url->setUser(null);
+        $url->setPass(null);
+
+        $this->assertEquals((string) $expectedUrl, (string) $url);
+    }
+
+    public function removeUserRemovePassDataProvider(): array
+    {
+        return [
+            'no user info' => [
+                'url' => new Url('http://example.com'),
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'has user' => [
+                'url' => new Url('http://user@example.com'),
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'has pass' => [
+                'url' => new Url('http://:pass@example.com'),
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'has user, has pass' => [
+                'url' => new Url('http://user:pass@example.com'),
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+        ];
+    }
 }
