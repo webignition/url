@@ -4,6 +4,16 @@ namespace webignition\Url;
 
 class Normalizer
 {
+    /**
+     * @var PunycodeEncoder
+     */
+    private $punycodeEncoder;
+
+    public function __construct()
+    {
+        $this->punycodeEncoder = new PunycodeEncoder();
+    }
+
     public function normalize(UrlInterface $url, array $options): UrlInterface
     {
         $optionsObject = new NormalizerOptions($options);
@@ -25,6 +35,8 @@ class Normalizer
             $normalizedUrl->setPass(null);
         }
 
+        $this->normalizeHost($normalizedUrl, $optionsObject);
+
         return $normalizedUrl;
     }
 
@@ -35,5 +47,41 @@ class Normalizer
         }
 
         $url->setScheme(strtolower($url->getScheme()));
+    }
+
+    /**
+     * Host normalization
+     * - convert to lowercase
+     * - ascii version of IDN format
+     * - trailing dot removal
+     *
+     * If host has trailing dots and there is no path, trim the trailing dots
+     * e.g http://example.com. is interpreted as host=example.com. path=
+     *     and needs to be understood as host=example.com and path=
+     *
+     *     http://example.com.. is interpreted as host=example.com.. path=
+     *     and needs to be understood as host=example.com and path=
+     *
+     * @param UrlInterface $url
+     * @param NormalizerOptions $options
+     */
+    private function normalizeHost(UrlInterface $url, NormalizerOptions $options)
+    {
+        $hostObject = $url->getHost();
+
+        $host = (string) $hostObject;
+
+        if ($options->getConvertUnicodeToPunycode()) {
+            $host = $this->punycodeEncoder->encode($host);
+        }
+
+        $host = strtolower($host);
+
+        $hostHasTrailingDots = preg_match('/\.+$/', $host) > 0;
+        if ($hostHasTrailingDots) {
+            $host = rtrim($host, '.');
+        }
+
+        $url->setHost($host);
     }
 }

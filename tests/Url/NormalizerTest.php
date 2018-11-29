@@ -139,6 +139,83 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 ],
                 'expectedUrl' => new Url('https://example.com'),
             ],
+            'host to lowercase: is lowercase' => [
+                'url' => new Url('https://example.com'),
+                'options' => [],
+                'expectedUrl' => new Url('https://example.com'),
+            ],
+            'host to lowercase: is uppercase' => [
+                'url' => new Url('https://EXAMPLE.com'),
+                'options' => [],
+                'expectedUrl' => new Url('https://example.com'),
+            ],
+            'host to lowercase: is mixed-case' => [
+                'url' => new Url('https://eXampLE.com'),
+                'options' => [],
+                'expectedUrl' => new Url('https://example.com'),
+            ],
+            'host dot removal, single dot, no path' => [
+                'url' => new Url('https://example.com.'),
+                'options' => [],
+                'expectedUrl' => new Url('https://example.com'),
+            ],
+            'host dot removal, double dot, no path' => [
+                'url' => new Url('https://example.com..'),
+                'options' => [],
+                'expectedUrl' => new Url('https://example.com'),
+            ],
+            'host dot removal, single dot, has path' => [
+                'url' => new Url('https://example.com./foo'),
+                'options' => [],
+                'expectedUrl' => new Url('https://example.com/foo'),
+            ],
+            'host dot removal, double dot, has path' => [
+                'url' => new Url('https://example.com../foo'),
+                'options' => [],
+                'expectedUrl' => new Url('https://example.com/foo'),
+            ],
+            'host convertUnicodeToPunycode=false: is normal host' => [
+                'url' => new Url('https://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_CONVERT_UNICODE_TO_PUNYCODE => false,
+                ],
+                'expectedUrl' => new Url('https://example.com'),
+            ],
+            'host convertUnicodeToPunycode=false: is punycode host' => [
+                'url' => new Url('https://artesan.xn--a-iga.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_CONVERT_UNICODE_TO_PUNYCODE => false,
+                ],
+                'expectedUrl' => new Url('https://artesan.xn--a-iga.com'),
+            ],
+            'host convertUnicodeToPunycode=false: is unicode host' => [
+                'url' => new Url('https://artesan.ía.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_CONVERT_UNICODE_TO_PUNYCODE => false,
+                ],
+                'expectedUrl' => new Url('https://artesan.ía.com'),
+            ],
+            'host convertUnicodeToPunycode=true: is normal host' => [
+                'url' => new Url('https://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_CONVERT_UNICODE_TO_PUNYCODE => true,
+                ],
+                'expectedUrl' => new Url('https://example.com'),
+            ],
+            'host convertUnicodeToPunycode=true: is punycode host' => [
+                'url' => new Url('https://artesan.xn--a-iga.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_CONVERT_UNICODE_TO_PUNYCODE => true,
+                ],
+                'expectedUrl' => new Url('https://artesan.xn--a-iga.com'),
+            ],
+            'host convertUnicodeToPunycode=true: is unicode host' => [
+                'url' => new Url('https://artesan.ía.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_CONVERT_UNICODE_TO_PUNYCODE => true,
+                ],
+                'expectedUrl' => new Url('https://artesan.xn--a-iga.com'),
+            ],
         ];
     }
 }
