@@ -23,7 +23,7 @@ class NormalizerOptions
     const DEFAULT_CONVERT_UNICODE_TO_PUNYCODE = true;
     const DEFAULT_REMOVE_FRAGMENT = false;
     const DEFAULT_REMOVE_WWW = false;
-    const DEFAULT_REMOVE_KNOWN_PORTS = true;
+    const DEFAULT_REMOVE_KNOWN_PORTS = false;
 
     const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
     const REMOVE_DEFAULT_FILE_PATTERN = '/^default\.[a-z]+$/i';
