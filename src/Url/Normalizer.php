@@ -10,6 +10,8 @@ class Normalizer
     const PORT_HTTP = 80;
     const PORT_HTTPS = 443;
 
+    const PATH_SEPARATOR = '/';
+
     private $schemeToPortMap = [
         self::SCHEME_HTTP => self::PORT_HTTP,
         self::SCHEME_HTTPS => self::PORT_HTTPS,
@@ -60,6 +62,10 @@ class Normalizer
 
         if ($optionsObject->getRemoveKnownPorts()) {
             $this->removeKnownPorts($normalizedUrl);
+        }
+
+        if (!empty($optionsObject->getRemoveDefaultFilesPatterns())) {
+            $this->removeDefaultFiles($normalizedUrl, $optionsObject);
         }
 
         return $normalizedUrl;
@@ -136,19 +142,38 @@ class Normalizer
                 $url->setPort(null);
             }
         }
+    }
 
-//        $hasPort = isset($this->parts[UrlInterface::PART_PORT]);
-//        $hasScheme = isset($this->parts[UrlInterface::PART_SCHEME]);
-//
-//        if ($hasPort && $hasScheme) {
-//            $port = $this->parts[UrlInterface::PART_PORT];
-//            $scheme = $this->parts[UrlInterface::PART_SCHEME];
-//
-//            $hasKnownPort = isset($this->knownPorts[$scheme]);
-//
-//            if ($hasKnownPort && $this->knownPorts[$scheme] == $port) {
-//                unset($this->parts[UrlInterface::PART_PORT]);
-//            }
-//        }
+    private function removeDefaultFiles(UrlInterface $url, NormalizerOptions $options)
+    {
+        if (!$url->hasPath()) {
+            return;
+        }
+
+        $pathObject = $url->getPath();
+        if (!$pathObject->hasFilename()) {
+            return;
+        }
+
+        $filename = $pathObject->getFilename();
+        $filePatterns = $options->getRemoveDefaultFilesPatterns();
+
+        $hasFilenameToRemove = false;
+        foreach ($filePatterns as $filePattern) {
+            if (preg_match($filePattern, $filename) > 0) {
+                $hasFilenameToRemove = true;
+            }
+        }
+
+        if ($hasFilenameToRemove) {
+            $path = (string) $pathObject;
+            $pathParts = explode(self::PATH_SEPARATOR, $path);
+
+            array_pop($pathParts);
+
+            $updatedPath = implode(self::PATH_SEPARATOR, $pathParts);
+
+            $url->setPath($updatedPath);
+        }
     }
 }

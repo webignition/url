@@ -13,6 +13,7 @@ class NormalizerOptions
     const OPTION_REMOVE_FRAGMENT = 'remove-fragment';
     const OPTION_REMOVE_WWW = 'remove-www';
     const OPTION_REMOVE_KNOWN_PORTS = 'remove-known-ports';
+    const OPTION_REMOVE_DEFAULT_FILES_PATTERNS = 'remove-default-files-patterns';
 
     const DEFAULT_SCHEME = Normalizer::SCHEME_HTTP;
     const DEFAULT_SET_SCHEME_IF_NO_SCHEME = false;
@@ -23,6 +24,9 @@ class NormalizerOptions
     const DEFAULT_REMOVE_FRAGMENT = false;
     const DEFAULT_REMOVE_WWW = false;
     const DEFAULT_REMOVE_KNOWN_PORTS = true;
+
+    const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
+    const REMOVE_DEFAULT_FILE_PATTERN = '/^default\.[a-z]+$/i';
 
     /**
      * @var string
@@ -69,6 +73,11 @@ class NormalizerOptions
      */
     private $removeKnownPorts;
 
+    /**
+     * @var string[]
+     */
+    private $removeDefaultFilesPatterns = [];
+
     public function __construct(array $options)
     {
         $this->defaultScheme = $options[self::OPTION_DEFAULT_SCHEME] ?? self::DEFAULT_SCHEME;
@@ -103,6 +112,12 @@ class NormalizerOptions
 
         $this->removeKnownPorts = $options[self::OPTION_REMOVE_KNOWN_PORTS] ?? self::DEFAULT_REMOVE_KNOWN_PORTS;
         $this->removeKnownPorts = (bool) $this->removeKnownPorts;
+
+        $removeDefaultFilesPatterns = $options[self::OPTION_REMOVE_DEFAULT_FILES_PATTERNS] ?? null;
+
+        if (is_array($removeDefaultFilesPatterns)) {
+            $this->removeDefaultFilesPatterns = $removeDefaultFilesPatterns;
+        }
     }
 
     public function getDefaultScheme(): string
@@ -148,5 +163,13 @@ class NormalizerOptions
     public function getRemoveKnownPorts(): bool
     {
         return $this->removeKnownPorts;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRemoveDefaultFilesPatterns(): array
+    {
+        return $this->removeDefaultFilesPatterns;
     }
 }
