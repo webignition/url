@@ -39,7 +39,7 @@ class Url implements UrlInterface
      */
     private $punycodeEncoder;
 
-    public function __construct(?string $originUrl = null)
+    public function __construct(string $originUrl)
     {
         $this->parser = new Parser();
         $this->punycodeEncoder = new PunycodeEncoder();
@@ -48,7 +48,7 @@ class Url implements UrlInterface
         $this->init($originUrl);
     }
 
-    public function init(?string $originUrl)
+    public function init(string $originUrl)
     {
         $originUrl = PreProcessor::preProcess($originUrl);
         $this->parts = $this->parser->parse($originUrl);
