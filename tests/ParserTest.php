@@ -8,15 +8,26 @@ use webignition\Url\UrlInterface;
 class ParserTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @dataProvider getPartsDataProvider
+     * @var Parser
+     */
+    private $parser;
+
+    protected function setUp()
+    {
+        parent::setUp();
+
+        $this->parser = new Parser();
+    }
+
+    /**
+     * @dataProvider parseDataProvider
      *
-     * @param string|null $url
+     * @param string $url
      * @param array $expectedParts
      */
-    public function testGetParts(?string $url, array $expectedParts)
+    public function testParse(string $url, array $expectedParts)
     {
-        $parser = new Parser($url);
-        $parts = $parser->getParts();
+        $parts = $this->parser->parse($url);
 
         $this->assertEquals(array_keys($expectedParts), array_keys($parts));
 
@@ -25,7 +36,7 @@ class ParserTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    public function getPartsDataProvider(): array
+    public function parseDataProvider(): array
     {
         return [
             'empty' => [

@@ -10,9 +10,9 @@ use webignition\Url\Query\Query;
 class Url implements UrlInterface
 {
     /**
-     * @var ParserInterface
+     * @var Parser
      */
-    protected $parser = null;
+    private $parser;
 
     /**
      * @var Configuration
@@ -41,6 +41,7 @@ class Url implements UrlInterface
 
     public function __construct(?string $originUrl = null)
     {
+        $this->parser = new Parser();
         $this->punycodeEncoder = new PunycodeEncoder();
 
         $this->configuration = new Configuration();
@@ -50,16 +51,11 @@ class Url implements UrlInterface
     public function init(?string $originUrl)
     {
         $originUrl = PreProcessor::preProcess($originUrl);
-        $this->parts = $this->createParser($originUrl)->getParts();
+        $this->parts = $this->parser->parse($originUrl);
 
         $query = $this->parts[UrlInterface::PART_QUERY];
         $query->setConfiguration($this->configuration);
         $this->parts[UrlInterface::PART_QUERY] = $query;
-    }
-
-    protected function createParser(string $originUrl): ParserInterface
-    {
-        return new Parser($originUrl);
     }
 
     public function getRoot(): string

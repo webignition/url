@@ -5,7 +5,7 @@ namespace webignition\Url;
 use webignition\Url\Path\Path;
 use webignition\Url\Query\Query;
 
-class Parser implements ParserInterface
+class Parser
 {
     const FRAGMENT_SEPARATOR = '#';
 
@@ -20,24 +20,7 @@ class Parser implements ParserInterface
      */
     const PATTERN_SCHEME_ONLY_URL = '/^[a-z][a-z0-9+\.-]+:\/\/$/i';
 
-    /**
-     * Collection of the different parts of the URL
-     *
-     * @var array
-     */
-    protected $parts = [];
-
-    public function __construct(string $url)
-    {
-        $this->parts = $this->parse($url);
-    }
-
-    public function getParts(): array
-    {
-        return $this->parts;
-    }
-
-    private function parse(?string $url): array
+    public function parse(string $url): array
     {
         if (self::PROTOCOL_RELATIVE_START === substr($url, 0, strlen(self::PROTOCOL_RELATIVE_START))) {
             $url = self::PROTOCOL_RELATIVE_DUMMY_SCHEME . ':' . $url;
