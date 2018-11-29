@@ -4,9 +4,6 @@ namespace webignition\Url;
 
 class NormalizerOptions
 {
-    const SCHEME_HTTP = 'http';
-    const SCHEME_HTTPS = 'https';
-
     const OPTION_DEFAULT_SCHEME = 'default-scheme';
     const OPTION_SET_DEFAULT_SCHEME_IF_NO_SCHEME = 'set-default-scheme-if-no-scheme';
     const OPTION_FORCE_HTTP = 'force-http';
@@ -15,8 +12,9 @@ class NormalizerOptions
     const OPTION_CONVERT_UNICODE_TO_PUNYCODE = 'convert-unicode-to-punycode';
     const OPTION_REMOVE_FRAGMENT = 'remove-fragment';
     const OPTION_REMOVE_WWW = 'remove-www';
+    const OPTION_REMOVE_KNOWN_PORTS = 'remove-known-ports';
 
-    const DEFAULT_SCHEME = self::SCHEME_HTTP;
+    const DEFAULT_SCHEME = Normalizer::SCHEME_HTTP;
     const DEFAULT_SET_SCHEME_IF_NO_SCHEME = false;
     const DEFAULT_FORCE_HTTP = null;
     const DEFAULT_FORCE_HTTPS = null;
@@ -24,6 +22,7 @@ class NormalizerOptions
     const DEFAULT_CONVERT_UNICODE_TO_PUNYCODE = true;
     const DEFAULT_REMOVE_FRAGMENT = false;
     const DEFAULT_REMOVE_WWW = false;
+    const DEFAULT_REMOVE_KNOWN_PORTS = true;
 
     /**
      * @var string
@@ -65,6 +64,11 @@ class NormalizerOptions
      */
     private $removeWww;
 
+    /**
+     * @var bool
+     */
+    private $removeKnownPorts;
+
     public function __construct(array $options)
     {
         $this->defaultScheme = $options[self::OPTION_DEFAULT_SCHEME] ?? self::DEFAULT_SCHEME;
@@ -96,6 +100,9 @@ class NormalizerOptions
 
         $this->removeWww = $options[self::OPTION_REMOVE_WWW] ?? self::DEFAULT_REMOVE_WWW;
         $this->removeWww = (bool) $this->removeWww;
+
+        $this->removeKnownPorts = $options[self::OPTION_REMOVE_KNOWN_PORTS] ?? self::DEFAULT_REMOVE_KNOWN_PORTS;
+        $this->removeKnownPorts = (bool) $this->removeKnownPorts;
     }
 
     public function getDefaultScheme(): string
@@ -136,5 +143,10 @@ class NormalizerOptions
     public function getRemoveWww(): bool
     {
         return $this->removeWww;
+    }
+
+    public function getRemoveKnownPorts(): bool
+    {
+        return $this->removeKnownPorts;
     }
 }

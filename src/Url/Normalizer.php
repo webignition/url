@@ -4,6 +4,17 @@ namespace webignition\Url;
 
 class Normalizer
 {
+    const SCHEME_HTTP = 'http';
+    const SCHEME_HTTPS = 'https';
+
+    const PORT_HTTP = 80;
+    const PORT_HTTPS = 443;
+
+    private $schemeToPortMap = [
+        self::SCHEME_HTTP => self::PORT_HTTP,
+        self::SCHEME_HTTPS => self::PORT_HTTPS,
+    ];
+
     /**
      * @var PunycodeEncoder
      */
@@ -23,11 +34,11 @@ class Normalizer
         $this->normalizeScheme($normalizedUrl, $optionsObject);
 
         if ($optionsObject->getForceHttp()) {
-            $normalizedUrl->setScheme(NormalizerOptions::SCHEME_HTTP);
+            $normalizedUrl->setScheme(Normalizer::SCHEME_HTTP);
         }
 
         if ($optionsObject->getForceHttps()) {
-            $normalizedUrl->setScheme(NormalizerOptions::SCHEME_HTTPS);
+            $normalizedUrl->setScheme(Normalizer::SCHEME_HTTPS);
         }
 
         if ($optionsObject->getRemoveUserInfo()) {
@@ -45,6 +56,10 @@ class Normalizer
             if ($optionsObject->getRemoveWww()) {
                 $this->removeWww($normalizedUrl);
             }
+        }
+
+        if ($optionsObject->getRemoveKnownPorts()) {
+            $this->removeKnownPorts($normalizedUrl);
         }
 
         return $normalizedUrl;
@@ -107,5 +122,33 @@ class Normalizer
 
             $url->setHost($host);
         }
+    }
+
+    private function removeKnownPorts(UrlInterface $url)
+    {
+        if ($url->hasPort() && $url->hasScheme()) {
+            $port = $url->getPort();
+            $scheme = $url->getScheme();
+
+            $knownPort = $this->schemeToPortMap[$scheme] ?? null;
+
+            if ($knownPort && $knownPort == $port) {
+                $url->setPort(null);
+            }
+        }
+
+//        $hasPort = isset($this->parts[UrlInterface::PART_PORT]);
+//        $hasScheme = isset($this->parts[UrlInterface::PART_SCHEME]);
+//
+//        if ($hasPort && $hasScheme) {
+//            $port = $this->parts[UrlInterface::PART_PORT];
+//            $scheme = $this->parts[UrlInterface::PART_SCHEME];
+//
+//            $hasKnownPort = isset($this->knownPorts[$scheme]);
+//
+//            if ($hasKnownPort && $this->knownPorts[$scheme] == $port) {
+//                unset($this->parts[UrlInterface::PART_PORT]);
+//            }
+//        }
     }
 }

@@ -28,6 +28,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
      * @dataProvider hostNormalizationDataProvider
      * @dataProvider removeFragmentDataProvider
      * @dataProvider removeWwwDataProvider
+     * @dataProvider removeKnownPortsDataProvider
      *
      * @param UrlInterface $url
      * @param array $options
@@ -305,6 +306,96 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                     NormalizerOptions::OPTION_REMOVE_WWW => true,
                 ],
                 'expectedUrl' => new Url('http://example.com'),
+            ],
+        ];
+    }
+
+    public function removeKnownPortsDataProvider(): array
+    {
+        return [
+            'removeKnownPorts=false, no port, http' => [
+                'url' => new Url('http://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_KNOWN_PORTS => false,
+                ],
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'removeKnownPorts=false, no port, https' => [
+                'url' => new Url('https://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_KNOWN_PORTS => false,
+                ],
+                'expectedUrl' => new Url('https://example.com'),
+            ],
+            'removeKnownPorts=false, non-known port, http' => [
+                'url' => new Url('http://example.com:8080'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_KNOWN_PORTS => false,
+                ],
+                'expectedUrl' => new Url('http://example.com:8080'),
+            ],
+            'removeKnownPorts=false, non-known port, https' => [
+                'url' => new Url('https://example.com:4433'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_KNOWN_PORTS => false,
+                ],
+                'expectedUrl' => new Url('https://example.com:4433'),
+            ],
+            'removeKnownPorts=false, known port, http' => [
+                'url' => new Url('http://example.com:80'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_KNOWN_PORTS => false,
+                ],
+                'expectedUrl' => new Url('http://example.com:80'),
+            ],
+            'removeKnownPorts=false, known port, https' => [
+                'url' => new Url('https://example.com:443'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_KNOWN_PORTS => false,
+                ],
+                'expectedUrl' => new Url('https://example.com:443'),
+            ],
+            'removeKnownPorts=true, no port, http' => [
+                'url' => new Url('http://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_KNOWN_PORTS => true,
+                ],
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'removeKnownPorts=true, no port, https' => [
+                'url' => new Url('https://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_KNOWN_PORTS => true,
+                ],
+                'expectedUrl' => new Url('https://example.com'),
+            ],
+            'removeKnownPorts=true, non-known port, http' => [
+                'url' => new Url('http://example.com:8080'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_KNOWN_PORTS => true,
+                ],
+                'expectedUrl' => new Url('http://example.com:8080'),
+            ],
+            'removeKnownPorts=true, non-known port, https' => [
+                'url' => new Url('https://example.com:4433'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_KNOWN_PORTS => true,
+                ],
+                'expectedUrl' => new Url('https://example.com:4433'),
+            ],
+            'removeKnownPorts=true, known port, http' => [
+                'url' => new Url('http://example.com:80'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_KNOWN_PORTS => true,
+                ],
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'removeKnownPorts=true, known port, https' => [
+                'url' => new Url('https://example.com:443'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_KNOWN_PORTS => true,
+                ],
+                'expectedUrl' => new Url('https://example.com'),
             ],
         ];
     }
