@@ -78,8 +78,12 @@ class NormalizerOptions
      */
     private $removeDefaultFilesPatterns = [];
 
-    public function __construct(array $options)
+    public function __construct(?array $options)
     {
+        if (!is_array($options)) {
+            $options = [];
+        }
+
         $this->defaultScheme = $options[self::OPTION_DEFAULT_SCHEME] ?? self::DEFAULT_SCHEME;
         $this->defaultScheme = trim($this->defaultScheme);
 
