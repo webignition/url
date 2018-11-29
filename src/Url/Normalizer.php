@@ -41,6 +41,10 @@ class Normalizer
 
         if ($normalizedUrl->hasHost()) {
             $this->normalizeHost($normalizedUrl, $optionsObject);
+
+            if ($optionsObject->getRemoveWww()) {
+                $this->removeWww($normalizedUrl);
+            }
         }
 
         return $normalizedUrl;
@@ -89,5 +93,19 @@ class Normalizer
         }
 
         $url->setHost($host);
+    }
+
+    private function removeWww(UrlInterface $url)
+    {
+        $wwwPattern = '/^www\./';
+        $hostObject = $url->getHost();
+
+        $host = (string) $hostObject;
+
+        if (preg_match($wwwPattern, $host) > 0) {
+            $host = preg_replace($wwwPattern, '', $host);
+
+            $url->setHost($host);
+        }
     }
 }

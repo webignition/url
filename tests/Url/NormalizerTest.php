@@ -26,6 +26,8 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
      * @dataProvider forceHttpForceHttpsDataProvider
      * @dataProvider removeUserInfoDataProvider
      * @dataProvider hostNormalizationDataProvider
+     * @dataProvider removeFragmentDataProvider
+     * @dataProvider removeWwwDataProvider
      *
      * @param UrlInterface $url
      * @param array $options
@@ -267,6 +269,40 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 'url' => new Url('http://example.com#foo'),
                 'options' => [
                     NormalizerOptions::OPTION_REMOVE_FRAGMENT => true,
+                ],
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+        ];
+    }
+
+    public function removeWwwDataProvider(): array
+    {
+        return [
+            'removeWww=false, no www' => [
+                'url' => new Url('http://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_WWW => false,
+                ],
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'removeWww=false, has www' => [
+                'url' => new Url('http://www.example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_WWW => false,
+                ],
+                'expectedUrl' => new Url('http://www.example.com'),
+            ],
+            'removeWww=true, no www' => [
+                'url' => new Url('http://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_WWW => true,
+                ],
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'removeWww=true, has www' => [
+                'url' => new Url('http://www.example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_WWW => true,
                 ],
                 'expectedUrl' => new Url('http://example.com'),
             ],

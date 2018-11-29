@@ -14,6 +14,7 @@ class NormalizerOptions
     const OPTION_REMOVE_USER_INFO = 'remove-user-info';
     const OPTION_CONVERT_UNICODE_TO_PUNYCODE = 'convert-unicode-to-punycode';
     const OPTION_REMOVE_FRAGMENT = 'remove-fragment';
+    const OPTION_REMOVE_WWW = 'remove-www';
 
     const DEFAULT_SCHEME = self::SCHEME_HTTP;
     const DEFAULT_SET_SCHEME_IF_NO_SCHEME = false;
@@ -22,6 +23,7 @@ class NormalizerOptions
     const DEFAULT_REMOVE_USER_INFO = false;
     const DEFAULT_CONVERT_UNICODE_TO_PUNYCODE = true;
     const DEFAULT_REMOVE_FRAGMENT = false;
+    const DEFAULT_REMOVE_WWW = false;
 
     /**
      * @var string
@@ -58,6 +60,11 @@ class NormalizerOptions
      */
     private $removeFragment;
 
+    /**
+     * @var bool
+     */
+    private $removeWww;
+
     public function __construct(array $options)
     {
         $this->defaultScheme = $options[self::OPTION_DEFAULT_SCHEME] ?? self::DEFAULT_SCHEME;
@@ -86,6 +93,9 @@ class NormalizerOptions
 
         $this->removeFragment = $options[self::OPTION_REMOVE_FRAGMENT] ?? self::DEFAULT_REMOVE_FRAGMENT;
         $this->removeFragment = (bool) $this->removeFragment;
+
+        $this->removeWww = $options[self::OPTION_REMOVE_WWW] ?? self::DEFAULT_REMOVE_WWW;
+        $this->removeWww = (bool) $this->removeWww;
     }
 
     public function getDefaultScheme(): string
@@ -121,5 +131,10 @@ class NormalizerOptions
     public function getRemoveFragment(): bool
     {
         return $this->removeFragment;
+    }
+
+    public function getRemoveWww(): bool
+    {
+        return $this->removeWww;
     }
 }
