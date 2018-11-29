@@ -239,4 +239,38 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
             ],
         ];
     }
+
+    public function removeFragmentDataProvider(): array
+    {
+        return [
+            'removeFragment=false, no fragment' => [
+                'url' => new Url('http://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_FRAGMENT => false,
+                ],
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'removeFragment=false, has fragment' => [
+                'url' => new Url('http://example.com#foo'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_FRAGMENT => false,
+                ],
+                'expectedUrl' => new Url('http://example.com#foo'),
+            ],
+            'removeFragment=true, no fragment' => [
+                'url' => new Url('http://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_FRAGMENT => true,
+                ],
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'removeFragment=true, has fragment' => [
+                'url' => new Url('http://example.com#foo'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_FRAGMENT => true,
+                ],
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+        ];
+    }
 }

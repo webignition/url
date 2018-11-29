@@ -35,6 +35,10 @@ class Normalizer
             $normalizedUrl->setPass(null);
         }
 
+        if ($optionsObject->getRemoveFragment()) {
+            $normalizedUrl->setFragment(null);
+        }
+
         $this->normalizeHost($normalizedUrl, $optionsObject);
 
         return $normalizedUrl;

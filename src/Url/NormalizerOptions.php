@@ -13,6 +13,7 @@ class NormalizerOptions
     const OPTION_FORCE_HTTPS = 'force-https';
     const OPTION_REMOVE_USER_INFO = 'remove-user-info';
     const OPTION_CONVERT_UNICODE_TO_PUNYCODE = 'convert-unicode-to-punycode';
+    const OPTION_REMOVE_FRAGMENT = 'remove-fragment';
 
     const DEFAULT_SCHEME = self::SCHEME_HTTP;
     const DEFAULT_NORMALIZE_SCHEME = true;
@@ -20,6 +21,7 @@ class NormalizerOptions
     const DEFAULT_FORCE_HTTPS = null;
     const DEFAULT_REMOVE_USER_INFO = false;
     const DEFAULT_CONVERT_UNICODE_TO_PUNYCODE = true;
+    const DEFAULT_REMOVE_FRAGMENT = false;
 
     /**
      * @var string
@@ -51,6 +53,11 @@ class NormalizerOptions
      */
     private $convertUnicodeToPunycode;
 
+    /**
+     * @var bool
+     */
+    private $removeFragment;
+
     public function __construct(array $options)
     {
         $this->defaultScheme = $options[self::OPTION_DEFAULT_SCHEME] ?? self::DEFAULT_SCHEME;
@@ -75,6 +82,9 @@ class NormalizerOptions
         $this->convertUnicodeToPunycode = $options[self::OPTION_CONVERT_UNICODE_TO_PUNYCODE]
             ?? self::DEFAULT_CONVERT_UNICODE_TO_PUNYCODE;
         $this->convertUnicodeToPunycode = (bool) $this->convertUnicodeToPunycode;
+
+        $this->removeFragment = $options[self::OPTION_REMOVE_FRAGMENT] ?? self::DEFAULT_REMOVE_FRAGMENT;
+        $this->removeFragment = (bool) $this->removeFragment;
     }
 
     public function getDefaultScheme(): string
@@ -105,5 +115,10 @@ class NormalizerOptions
     public function getConvertUnicodeToPunycode(): bool
     {
         return $this->convertUnicodeToPunycode;
+    }
+
+    public function getRemoveFragment(): bool
+    {
+        return $this->removeFragment;
     }
 }
