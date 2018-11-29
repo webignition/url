@@ -1,6 +1,6 @@
 <?php
 
-namespace webignition\Tests\Url;
+namespace webignition\Url\Tests;
 
 use IpUtils\Exception\InvalidExpressionException;
 use webignition\Url\Query\Query;

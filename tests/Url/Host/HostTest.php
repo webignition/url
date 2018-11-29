@@ -1,6 +1,6 @@
 <?php
 
-namespace webignition\Tests\Url\Host;
+namespace webignition\Url\Tests\Host;
 
 use IpUtils\Exception\InvalidExpressionException;
 use webignition\Url\Host\Host;

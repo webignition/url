@@ -1,6 +1,6 @@
 <?php
 
-namespace webignition\Tests\Url;
+namespace webignition\Url\Tests;
 
 use webignition\Url\Normalizer;
 use webignition\Url\NormalizerOptions;

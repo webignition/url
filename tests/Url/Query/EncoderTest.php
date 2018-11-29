@@ -1,6 +1,6 @@
 <?php
 
-namespace webignition\Tests\Url\Query;
+namespace webignition\Url\Tests\Query;
 
 use phpmock\mockery\PHPMockery;
 use webignition\Url\Configuration;

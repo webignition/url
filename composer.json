@@ -18,7 +18,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "webignition\\Tests\\Url\\": "tests/Url"
+            "webignition\\Url\\Tests\\": "tests/Url"
         }
     },
     "scripts": {
