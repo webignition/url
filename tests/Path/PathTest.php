@@ -1,6 +1,6 @@
 <?php
 
-namespace webignition\Tests\Url\Path;
+namespace webignition\Url\Tests\Path;
 
 use webignition\Url\Path\Path;
 

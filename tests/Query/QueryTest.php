@@ -1,8 +1,7 @@
 <?php
 
-namespace webignition\Tests\Url\Query;
+namespace webignition\Url\Tests\Query;
 
-use webignition\Url\Configuration;
 use webignition\Url\Query\Query;
 
 class QueryTest extends AbstractQueryTest
@@ -172,5 +171,104 @@ class QueryTest extends AbstractQueryTest
 
         $this->assertEquals([], $query->pairs());
         $this->assertEquals('', (string)$query);
+    }
+
+    /**
+     * @dataProvider toStringDataProvider
+     *
+     * @param string $queryString
+     * @param string $expectedQueryString
+     */
+    public function testToString(string $queryString, string $expectedQueryString)
+    {
+        $query = new Query($queryString);
+
+        $this->assertEquals((string) $query, $expectedQueryString);
+    }
+
+    public function toStringDataProvider(): array
+    {
+        return [
+            'default' => [
+                'queryString' => 'foo=bar',
+                'expectedQueryString' => 'foo=bar',
+            ],
+            'reserved characters are encoded and capitalised' => $this->createReservedCharactersQueryDataSet(),
+            'encoded unreserved characters are decoded' => $this->createUnreservedCharactersQueryDataSet(),
+        ];
+    }
+
+    private function createReservedCharactersQueryDataSet(): array
+    {
+        $reservedCharacters = ['!','*',"'",'(',')',';',':','@','&','=','+','$',',','/','?','#','[',']'];
+
+        $encodedKeyValuePairs = [];
+        $lowercaseEncodedKeyValuePairs = [];
+
+        $keyIndex = 0;
+
+        foreach ($reservedCharacters as $reservedCharacter) {
+            $key = 'key' . $keyIndex;
+
+            $encodedKeyValuePairs[$key] = urlencode($reservedCharacter);
+            $lowercaseEncodedKeyValuePairs[$key] = strtolower(urlencode($reservedCharacter));
+
+            $keyIndex++;
+        }
+
+        ksort($encodedKeyValuePairs);
+        ksort($lowercaseEncodedKeyValuePairs);
+
+        $percentEncodedQueryString = '';
+        $lowercasePercentEncodedQueryString = '';
+
+        foreach ($encodedKeyValuePairs as $key => $value) {
+            $percentEncodedQueryString .= '&' . urlencode($key).'='.$value;
+        }
+
+        foreach ($lowercaseEncodedKeyValuePairs as $key => $value) {
+            $lowercasePercentEncodedQueryString .= '&' . urlencode($key).'='.$value;
+        }
+
+        $percentEncodedQueryString = substr($percentEncodedQueryString, 1);
+        $lowercasePercentEncodedQueryString = substr($lowercasePercentEncodedQueryString, 1);
+
+        return [
+            'queryString' => $lowercasePercentEncodedQueryString,
+            'expectedQueryString' => $percentEncodedQueryString,
+        ];
+    }
+
+    private function createUnreservedCharactersQueryDataSet(): array
+    {
+        $alpha = 'abcdefghijklmnopqrstuvwxyz';
+        $uppercaseAlpha = strtoupper($alpha);
+        $digit = '0123456789';
+        $otherUnreservedCharacters = '-._~';
+
+        $unreservedCharacters = str_split($alpha.$uppercaseAlpha.$digit.$otherUnreservedCharacters);
+
+        $keyValues = [];
+
+        $keyIndex = 0;
+        foreach ($unreservedCharacters as $unreservedCharacter) {
+            $keyValues['key' . $unreservedCharacter] = $unreservedCharacter;
+            $keyIndex++;
+        }
+
+        ksort($keyValues);
+
+        $encodedKeyValuePairs = [];
+        $decodedKeyValuePairs = [];
+
+        foreach ($keyValues as $key => $value) {
+            $encodedKeyValuePairs[] = $key.'=%' . dechex(ord($value));
+            $decodedKeyValuePairs[] = $key.'=' . (string)$value;
+        }
+
+        return [
+            'queryString' => implode('&', $encodedKeyValuePairs),
+            'expectedQueryString' => implode('&', $decodedKeyValuePairs),
+        ];
     }
 }
