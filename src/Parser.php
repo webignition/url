@@ -5,12 +5,8 @@ namespace webignition\Url;
 use webignition\Url\Path\Path;
 use webignition\Url\Query\Query;
 
-class Parser implements ParserInterface
+class Parser
 {
-    const DEFAULT_PORT = 80;
-    const MIN_PORT = 0;
-    const MAX_PORT = 65535;
-
     const FRAGMENT_SEPARATOR = '#';
 
     const PROTOCOL_RELATIVE_START = '//';
@@ -24,28 +20,10 @@ class Parser implements ParserInterface
      */
     const PATTERN_SCHEME_ONLY_URL = '/^[a-z][a-z0-9+\.-]+:\/\/$/i';
 
-    /**
-     * Collection of the different parts of the URL
-     *
-     * @var array
-     */
-    protected $parts = [];
-
-    /**
-     * @param string $url
-     */
-    public function __construct(?string $url)
+    public function parse(string $url): array
     {
-        $this->parts = $this->parse($url);
-    }
+        $url = $this->normalizeWhitespace($url);
 
-    public function getParts(): array
-    {
-        return $this->parts;
-    }
-
-    private function parse(?string $url): array
-    {
         if (self::PROTOCOL_RELATIVE_START === substr($url, 0, strlen(self::PROTOCOL_RELATIVE_START))) {
             $url = self::PROTOCOL_RELATIVE_DUMMY_SCHEME . ':' . $url;
         }
@@ -87,6 +65,21 @@ class Parser implements ParserInterface
         }
 
         return $parts;
+    }
+
+    private function normalizeWhitespace(string $url): string
+    {
+        // Unencoded leading or trailing whitespace is not allowed
+        $url = trim($url);
+
+        // Whitespace that is not a regular space character is not allowed
+        // and should be removed.
+        //
+        // Not clearly spec'd anywhere but is the default behaviour of Chrome
+        // and FireFox
+        $url = str_replace(array("\t", "\r", "\n"), '', $url);
+
+        return $url;
     }
 
     private function fixFailedParse(?string $url): array

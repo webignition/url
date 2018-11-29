@@ -17,7 +17,7 @@ interface UrlInterface
     const PART_QUERY = 'query';
     const PART_FRAGMENT = 'fragment';
 
-    public function init(?string $originUrl);
+    public function init(string $originUrl);
 
     /**
      * @return string
