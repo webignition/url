@@ -70,6 +70,10 @@ class Normalizer
 
         $this->normalizePath($normalizedUrl, $optionsObject);
 
+        if ($optionsObject->getSortQueryParameters()) {
+            $this->sortQueryParameters($normalizedUrl);
+        }
+
         return $normalizedUrl;
     }
 
@@ -267,5 +271,15 @@ class Normalizer
         } else {
             $url->setPath('/');
         }
+    }
+
+    private function sortQueryParameters(UrlInterface $url)
+    {
+        $query = $url->getQuery();
+
+        $parameters = $query->pairs();
+        ksort($parameters);
+
+        $url->setQuery(http_build_query($parameters));
     }
 }

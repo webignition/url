@@ -16,6 +16,7 @@ class NormalizerOptions
     const OPTION_REMOVE_DEFAULT_FILES_PATTERNS = 'remove-default-files-patterns';
     const OPTION_REMOVE_PATH_DOT_SEGMENTS = 'remove-path-dot-segments';
     const OPTION_ADD_PATH_TRAILING_SLASH = 'add-path-trailing-slash';
+    const OPTION_SORT_QUERY_PARAMETERS = 'sort-query-parameters';
 
     const DEFAULT_SCHEME = Normalizer::SCHEME_HTTP;
     const DEFAULT_SET_SCHEME_IF_NO_SCHEME = false;
@@ -28,6 +29,7 @@ class NormalizerOptions
     const DEFAULT_REMOVE_KNOWN_PORTS = false;
     const DEFAULT_REMOVE_PATH_DOT_SEGMENTS = false;
     const DEFAULT_ADD_PATH_TRAILING_SLASH = false;
+    const DEFAULT_SORT_QUERY_PARAMETERS = false;
 
     const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
     const REMOVE_DEFAULT_FILE_PATTERN = '/^default\.[a-z]+$/i';
@@ -92,6 +94,11 @@ class NormalizerOptions
      */
     private $addPathTrailingSlash;
 
+    /**
+     * @var bool
+     */
+    private $sortQueryParameters;
+
     public function __construct(?array $options)
     {
         if (!is_array($options)) {
@@ -144,6 +151,10 @@ class NormalizerOptions
         $this->addPathTrailingSlash =
             $options[self::OPTION_ADD_PATH_TRAILING_SLASH] ?? self::DEFAULT_ADD_PATH_TRAILING_SLASH;
         $this->addPathTrailingSlash = (bool) $this->addPathTrailingSlash;
+
+        $this->sortQueryParameters =
+            $options[self::OPTION_SORT_QUERY_PARAMETERS] ?? self::DEFAULT_SORT_QUERY_PARAMETERS;
+        $this->sortQueryParameters = (bool) $this->sortQueryParameters;
     }
 
     public function getDefaultScheme(): string
@@ -207,5 +218,10 @@ class NormalizerOptions
     public function getAddPathTrailingSlash(): bool
     {
         return $this->addPathTrailingSlash;
+    }
+
+    public function getSortQueryParameters(): bool
+    {
+        return $this->sortQueryParameters;
     }
 }

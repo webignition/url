@@ -33,6 +33,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
      * @dataProvider reduceMultipleTrailingSlashesDataProvider
      * @dataProvider removeDotPathSegmentsDataProvider
      * @dataProvider addTrailingSlashDataProvider
+     * @dataProvider sortQueryParametersDataProvider
      *
      * @param UrlInterface $url
      * @param array $options
@@ -616,6 +617,40 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                     NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
                 ],
                 'expectedUrl' => new Url('http://example.com/foo/'),
+            ],
+        ];
+    }
+
+    public function sortQueryParametersDataProvider(): array
+    {
+        return [
+            'sortQueryParameters=false; no query' => [
+                'url' => new Url('http://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_SORT_QUERY_PARAMETERS => false,
+                ],
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'sortQueryParameters=false; has query' => [
+                'url' => new Url('http://example.com?b=bear&a=apple&c=cow'),
+                'options' => [
+                    NormalizerOptions::OPTION_SORT_QUERY_PARAMETERS => false,
+                ],
+                'expectedUrl' => new Url('http://example.com?b=bear&a=apple&c=cow'),
+            ],
+            'sortQueryParameters=true; no query' => [
+                'url' => new Url('http://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_SORT_QUERY_PARAMETERS => true,
+                ],
+                'expectedUrl' => new Url('http://example.com'),
+            ],
+            'sortQueryParameters=true; has query' => [
+                'url' => new Url('http://example.com?b=bear&a=apple&c=cow'),
+                'options' => [
+                    NormalizerOptions::OPTION_SORT_QUERY_PARAMETERS => true,
+                ],
+                'expectedUrl' => new Url('http://example.com?a=apple&b=bear&c=cow'),
             ],
         ];
     }
