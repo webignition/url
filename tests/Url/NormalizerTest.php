@@ -22,7 +22,10 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @dataProvider normalizeDataProvider
+     * @dataProvider schemeNormalizationDataProvider
+     * @dataProvider forceHttpForceHttpsDataProvider
+     * @dataProvider removeUserInfoDataProvider
+     * @dataProvider hostNormalizationDataProvider
      *
      * @param UrlInterface $url
      * @param array $options
@@ -35,7 +38,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals((string) $expectedUrl, (string) $normalizedUrl);
     }
 
-    public function normalizeDataProvider(): array
+    public function schemeNormalizationDataProvider(): array
     {
         return [
             'no scheme, no default scheme' => [
@@ -67,6 +70,12 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 'options' => [],
                 'expectedUrl' => new Url('http://example.com/foo/bar'),
             ],
+        ];
+    }
+
+    public function forceHttpForceHttpsDataProvider(): array
+    {
+        return [
             'forceHttp: http url' => [
                 'url' => new Url('http://example.com'),
                 'options' => [
@@ -111,6 +120,12 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 ],
                 'expectedUrl' => new Url('https://example.com'),
             ],
+        ];
+    }
+
+    public function removeUserInfoDataProvider(): array
+    {
+        return [
             'removeUserInfo=false: no user info' => [
                 'url' => new Url('https://example.com'),
                 'options' => [
@@ -139,6 +154,12 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 ],
                 'expectedUrl' => new Url('https://example.com'),
             ],
+        ];
+    }
+
+    public function hostNormalizationDataProvider(): array
+    {
+        return [
             'host to lowercase: is lowercase' => [
                 'url' => new Url('https://example.com'),
                 'options' => [],
