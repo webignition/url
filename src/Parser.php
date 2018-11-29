@@ -22,6 +22,8 @@ class Parser
 
     public function parse(string $url): array
     {
+        $url = $this->normalizeWhitespace($url);
+
         if (self::PROTOCOL_RELATIVE_START === substr($url, 0, strlen(self::PROTOCOL_RELATIVE_START))) {
             $url = self::PROTOCOL_RELATIVE_DUMMY_SCHEME . ':' . $url;
         }
@@ -63,6 +65,21 @@ class Parser
         }
 
         return $parts;
+    }
+
+    private function normalizeWhitespace(string $url): string
+    {
+        // Unencoded leading or trailing whitespace is not allowed
+        $url = trim($url);
+
+        // Whitespace that is not a regular space character is not allowed
+        // and should be removed.
+        //
+        // Not clearly spec'd anywhere but is the default behaviour of Chrome
+        // and FireFox
+        $url = str_replace(array("\t", "\r", "\n"), '', $url);
+
+        return $url;
     }
 
     private function fixFailedParse(?string $url): array

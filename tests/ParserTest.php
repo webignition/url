@@ -21,6 +21,7 @@ class ParserTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider parseDataProvider
+     * @dataProvider normalizeWhitespaceDataProvider
      *
      * @param string $url
      * @param array $expectedParts
@@ -204,6 +205,96 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                 'url' => 'file://',
                 'expectedParts' => [
                     UrlInterface::PART_SCHEME  => 'file',
+                    UrlInterface::PART_QUERY => '',
+                ],
+            ],
+        ];
+    }
+
+    public function normalizeWhitespaceDataProvider(): array
+    {
+        return [
+            'trailing tab is removed' => [
+                'url' => "http://example.com\t",
+                'expectedParts' => [
+                    UrlInterface::PART_SCHEME => 'http',
+                    UrlInterface::PART_HOST => 'example.com',
+                    UrlInterface::PART_QUERY => '',
+                ],
+            ],
+            'trailing newline is removed' => [
+                'url' => "http://example.com\n",
+                'expectedParts' => [
+                    UrlInterface::PART_SCHEME => 'http',
+                    UrlInterface::PART_HOST => 'example.com',
+                    UrlInterface::PART_QUERY => '',
+                ],
+            ],
+            'trailing line return' => [
+                'url' => "http://example.com\r",
+                'expectedParts' => [
+                    UrlInterface::PART_SCHEME => 'http',
+                    UrlInterface::PART_HOST => 'example.com',
+                    UrlInterface::PART_QUERY => '',
+                ],
+            ],
+            'leading tab is removed' => [
+                'url' => "\thttp://example.com",
+                'expectedParts' => [
+                    UrlInterface::PART_SCHEME => 'http',
+                    UrlInterface::PART_HOST => 'example.com',
+                    UrlInterface::PART_QUERY => '',
+                ],
+            ],
+            'leading newline is removed' => [
+                'url' => "\nhttp://example.com",
+                'expectedParts' => [
+                    UrlInterface::PART_SCHEME => 'http',
+                    UrlInterface::PART_HOST => 'example.com',
+                    UrlInterface::PART_QUERY => '',
+                ],
+            ],
+            'leading line return' => [
+                'url' => "\nhttp://example.com",
+                'expectedParts' => [
+                    UrlInterface::PART_SCHEME => 'http',
+                    UrlInterface::PART_HOST => 'example.com',
+                    UrlInterface::PART_QUERY => '',
+                ],
+            ],
+            'tab in path is removed' => [
+                'url' => "http://example.com/foo\t/bar",
+                'expectedParts' => [
+                    UrlInterface::PART_SCHEME => 'http',
+                    UrlInterface::PART_HOST => 'example.com',
+                    UrlInterface::PART_PATH => '/foo/bar',
+                    UrlInterface::PART_QUERY => '',
+                ],
+            ],
+            'newline in path is removed' => [
+                'url' => "http://example.com/foo\n/bar",
+                'expectedParts' => [
+                    UrlInterface::PART_SCHEME => 'http',
+                    UrlInterface::PART_HOST => 'example.com',
+                    UrlInterface::PART_PATH => '/foo/bar',
+                    UrlInterface::PART_QUERY => '',
+                ],
+            ],
+            'line return in path is removed' => [
+                'url' => "http://example.com/foo\r/bar",
+                'expectedParts' => [
+                    UrlInterface::PART_SCHEME => 'http',
+                    UrlInterface::PART_HOST => 'example.com',
+                    UrlInterface::PART_PATH => '/foo/bar',
+                    UrlInterface::PART_QUERY => '',
+                ],
+            ],
+            'many tabs, newlines and line returns' => [
+                'url' => "\n\thttp://example.com\r\n/\rpage/\t",
+                'expectedParts' => [
+                    UrlInterface::PART_SCHEME => 'http',
+                    UrlInterface::PART_HOST => 'example.com',
+                    UrlInterface::PART_PATH => '/page/',
                     UrlInterface::PART_QUERY => '',
                 ],
             ],

@@ -50,7 +50,6 @@ class Url implements UrlInterface
 
     public function init(string $originUrl)
     {
-        $originUrl = PreProcessor::preProcess($originUrl);
         $this->parts = $this->parser->parse($originUrl);
 
         $query = $this->parts[UrlInterface::PART_QUERY];
