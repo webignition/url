@@ -39,14 +39,16 @@ class Normalizer
             $normalizedUrl->setFragment(null);
         }
 
-        $this->normalizeHost($normalizedUrl, $optionsObject);
+        if ($normalizedUrl->hasHost()) {
+            $this->normalizeHost($normalizedUrl, $optionsObject);
+        }
 
         return $normalizedUrl;
     }
 
     private function normalizeScheme(UrlInterface $url, NormalizerOptions $options)
     {
-        if (!$url->hasScheme() && $options->getNormalizeScheme()) {
+        if (!$url->hasScheme() && $options->getSetDefaultSchemeIfNoScheme()) {
             $url->setScheme($options->getDefaultScheme());
         }
 

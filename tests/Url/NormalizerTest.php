@@ -41,33 +41,32 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
     public function schemeNormalizationDataProvider(): array
     {
         return [
-            'no scheme, no default scheme' => [
+            'setDefaultSchemeIfNoScheme=false, no scheme' => [
                 'url' => new Url('example.com/foo/bar'),
-                'options' => [],
-                'expectedUrl' => new Url('http://example.com/foo/bar'),
+                'options' => [
+                    NormalizerOptions::OPTION_SET_DEFAULT_SCHEME_IF_NO_SCHEME => false,
+                ],
+                'expectedUrl' => new Url('example.com/foo/bar'),
             ],
-            'no scheme (protocol-relative), no default scheme' => [
-                'url' => new Url('//example.com/foo/bar'),
-                'options' => [],
-                'expectedUrl' => new Url('http://example.com/foo/bar'),
-            ],
-            'no scheme (protocol-relative), normalizeScheme=false' => [
+            'setDefaultSchemeIfNoScheme=false, no scheme, protocol-relative' => [
                 'url' => new Url('//example.com/foo/bar'),
                 'options' => [
-                    NormalizerOptions::OPTION_NORMALIZE_SCHEME => false,
+                    NormalizerOptions::OPTION_SET_DEFAULT_SCHEME_IF_NO_SCHEME => false,
                 ],
                 'expectedUrl' => new Url('//example.com/foo/bar'),
             ],
-            'no scheme, has default scheme' => [
+            'setDefaultSchemeIfNoScheme=true, no scheme' => [
                 'url' => new Url('example.com/foo/bar'),
                 'options' => [
-                    NormalizerOptions::OPTION_DEFAULT_SCHEME => 'foo-scheme'
+                    NormalizerOptions::OPTION_SET_DEFAULT_SCHEME_IF_NO_SCHEME => true,
                 ],
-                'expectedUrl' => new Url('foo-scheme://example.com/foo/bar'),
+                'expectedUrl' => new Url('http://example.com/foo/bar'),
             ],
-            'non-lowercase scheme' => [
-                'url' => new Url('HTTP://example.com/foo/bar'),
-                'options' => [],
+            'setDefaultSchemeIfNoScheme=true, no scheme, protocol-relative' => [
+                'url' => new Url('//example.com/foo/bar'),
+                'options' => [
+                    NormalizerOptions::OPTION_SET_DEFAULT_SCHEME_IF_NO_SCHEME => true,
+                ],
                 'expectedUrl' => new Url('http://example.com/foo/bar'),
             ],
         ];
