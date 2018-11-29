@@ -591,6 +591,11 @@ class UrlTest extends \PHPUnit\Framework\TestCase
                 'host' => null,
                 'expectedUrl' => '/foo',
             ],
+            'root-relative url (no host)' => [
+                'url' => new Url('/path'),
+                'host' => 'example.com',
+                'expectedUrl' => '//example.com/path',
+            ],
         ];
     }
 
@@ -709,6 +714,16 @@ class UrlTest extends \PHPUnit\Framework\TestCase
                 'query' => '?bar=foobar',
                 'expectedUrl' => '//example.com?bar=foobar',
             ],
+            'no existing query, has fragment, no leading question mark' => [
+                'url' => new Url('http://example.com/#fragment'),
+                'query' => 'key2=value2&key1=value1',
+                'expectedUrl' => 'http://example.com/?key2=value2&key1=value1#fragment',
+            ],
+            'no existing query, has fragment, has leading question mark' => [
+                'url' => new Url('http://example.com/#fragment'),
+                'query' => '?key2=value2&key1=value1',
+                'expectedUrl' => 'http://example.com/?key2=value2&key1=value1#fragment',
+            ],
         ];
     }
 
@@ -753,6 +768,11 @@ class UrlTest extends \PHPUnit\Framework\TestCase
                 'url' => new Url('https://example.com'),
                 'scheme' => 'http',
                 'expectedUrl' => 'http://example.com',
+            ],
+            'root-relative url (no host), parse fails' => [
+                'url' => new Url('/path'),
+                'scheme' => 'http',
+                'expectedUrl' => '',
             ],
         ];
     }
@@ -1104,6 +1124,48 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             'has user, has pass' => [
                 'url' => new Url('http://user:pass@example.com'),
                 'expectedUrl' => new Url('http://example.com'),
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider punycodeToUnicodeHostConversionDataProvider
+     *
+     * @param string $url
+     * @param bool $enableConvertIdnToUtf8
+     * @param string $expectedUrl
+     */
+    public function testPunycodeToUnicodeHostConversion(string $url, bool $enableConvertIdnToUtf8, string $expectedUrl)
+    {
+        $normalisedUrl = new Url($url);
+
+        if ($enableConvertIdnToUtf8) {
+            $normalisedUrl->getConfiguration()->enableConvertIdnToUtf8();
+        }
+
+        $this->assertEquals($expectedUrl, (string)$normalisedUrl);
+    }
+
+    public function punycodeToUnicodeHostConversionDataProvider(): array
+    {
+        $punyCodeUrl = 'http://artesan.xn--a-iga.com/';
+        $utf8Url = 'http://artesan.ía.com/';
+
+        return [
+            'punycode domain not changed to utf8 with conversion disabled' => [
+                'url' => $punyCodeUrl,
+                'enableConvertIdnToUtf8' => false,
+                'expectedUrl' => $punyCodeUrl,
+            ],
+            'punycode domain is changed to utf8 with conversion enabled' => [
+                'url' => $punyCodeUrl,
+                'enableConvertIdnToUtf8' => true,
+                'expectedUrl' => $utf8Url,
+            ],
+            'utf8 domain not converted to punycode with conversion disabled' => [
+                'url' => $utf8Url,
+                'enableConvertIdnToUtf8' => true,
+                'expectedUrl' => $utf8Url,
             ],
         ];
     }

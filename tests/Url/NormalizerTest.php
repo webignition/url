@@ -652,6 +652,13 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 ],
                 'expectedUrl' => new Url('http://example.com?a=apple&b=bear&c=cow'),
             ],
+            'sortQueryParameters=true; key without value' => [
+                'url' => new Url('http://example.com?key2&key1=value1'),
+                'options' => [
+                    NormalizerOptions::OPTION_SORT_QUERY_PARAMETERS => true,
+                ],
+                'expectedUrl' => new Url('http://example.com?key1=value1&key2'),
+            ],
         ];
     }
 }

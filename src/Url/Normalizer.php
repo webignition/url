@@ -2,6 +2,8 @@
 
 namespace webignition\Url;
 
+use webignition\Url\Query\Encoder;
+
 class Normalizer
 {
     const SCHEME_HTTP = 'http';
@@ -278,8 +280,11 @@ class Normalizer
         $query = $url->getQuery();
 
         $parameters = $query->pairs();
+
         ksort($parameters);
 
-        $url->setQuery(http_build_query($parameters));
+        $queryEncoder = new Encoder($parameters);
+
+        $url->setQuery((string) $queryEncoder);
     }
 }
