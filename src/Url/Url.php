@@ -221,6 +221,10 @@ class Url implements UrlInterface
             return false;
         }
 
+        if (null === $pass && empty($this->getUser())) {
+            $this->parts[self::PART_USER] = null;
+        }
+
         $this->updatePart(UrlInterface::PART_PASS, $pass);
 
         return true;
