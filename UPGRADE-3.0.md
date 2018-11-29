@@ -9,6 +9,7 @@ The 3.x releases introduce some significant changes:
 - PHP 7.2+ only
 - Remove `NormalisedUrl`, replace with `Normalizer`
 - Remove Parser constructor, remove Parser::getParts()
+- Remove PreProcessor
 - Remove return value from most URL part setters
 
 PHP 7.2+ Only
@@ -73,6 +74,11 @@ $parser = new Parser();
 $urlParts = $parser->parse('http://example.com/);
 ```
 
+Remove PreProcessor
+-------------------
+
+The `PreProcessor` class was used exclusively in the preparation of a URL string prior to parsing.
+The functionality has been merged into `Parser`. The `PreProcessor` class has been removed.
 
 Remove Return Value From Most URL Part Setters
 ----------------------------------------------
