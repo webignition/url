@@ -8,6 +8,7 @@ The 3.x releases introduce some significant changes:
 
 - PHP 7.2+ only
 - Remove `NormalisedUrl`, replace with `Normalizer`
+- Remove Parser constructor, remove Parser::getParts()
 - Remove return value from most URL part setters
 
 PHP 7.2+ Only
@@ -49,6 +50,29 @@ $normalizedUrl = $normalizer->normalize($url);
 echo (string) $normalizedUrl;
 // http://example.com/?a=foo&b=bar
 ```
+
+Remove Parser Constructor, Remove Parser::getParts()
+----------------------------------------------------
+
+That the parser took a URL string as a constructor argument rendered a parser useful for parsing
+just a single URL.
+
+The constructor and the `getParts()` method have been removed. Call `parse()` instead.
+
+Before:
+
+```php
+$parser = new Parser('http://example.com/');
+$urlParts = $parser->getParts();
+```
+
+After:
+
+```php
+$parser = new Parser();
+$urlParts = $parser->parse('http://example.com/);
+```
+
 
 Remove Return Value From Most URL Part Setters
 ----------------------------------------------
