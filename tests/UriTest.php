@@ -506,4 +506,19 @@ class UriTest extends \PHPUnit\Framework\TestCase
             ],
         ];
     }
+
+    public function testWithScheme()
+    {
+        $originUri = Uri::create('http://example.com:443');
+        $this->assertSame('http', $originUri->getScheme());
+        $this->assertSame(443, $originUri->getPort());
+
+        $nonUpdatedUri = $originUri->withScheme('http');
+        $this->assertSame($originUri, $nonUpdatedUri);
+
+        $updatedUri = $originUri->withScheme('HTTPS');
+        $this->assertSame('https', $updatedUri->getScheme());
+        $this->assertNull($updatedUri->getPort());
+        $this->assertNotSame($originUri, $updatedUri);
+    }
 }
