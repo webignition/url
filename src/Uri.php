@@ -133,20 +133,9 @@ class Uri implements UriInterface
         return $this->userInfo;
     }
 
-    /**
-     * Retrieve the host component of the URI.
-     *
-     * If no host is present, this method MUST return an empty string.
-     *
-     * The value returned MUST be normalized to lowercase, per RFC 3986
-     * Section 3.2.2.
-     *
-     * @see http://tools.ietf.org/html/rfc3986#section-3.2.2
-     * @return string The URI host.
-     */
-    public function getHost()
+    public function getHost(): string
     {
-        // TODO: Implement getHost() method.
+        return $this->host;
     }
 
     /**

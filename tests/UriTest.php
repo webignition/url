@@ -13,18 +13,21 @@ class UriTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedScheme
      * @param string $expectedAuthority
      * @param string $expectedUserInfo
+     * @param string $expectedHost
      */
     public function testCreate(
         string $uri,
         string $expectedScheme,
         string $expectedAuthority,
-        string $expectedUserInfo
+        string $expectedUserInfo,
+        string $expectedHost
     ) {
         $uriObject = Uri::create($uri);
 
         $this->assertSame($expectedScheme, $uriObject->getScheme());
         $this->assertSame($expectedAuthority, $uriObject->getAuthority());
         $this->assertSame($expectedUserInfo, $uriObject->getUserInfo());
+        $this->assertSame($expectedHost, $uriObject->getHost());
     }
 
     public function createDataProvider(): array
@@ -35,18 +38,28 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedScheme' => '',
                 'expectedAuthority' => '',
                 'expectedUserInfo' => '',
+                'expectedHost' => '',
             ],
             'scheme only' => [
                 'uri' => 'http://',
                 'expectedScheme' => 'http',
                 'expectedAuthority' => '',
                 'expectedUserInfo' => '',
+                'expectedHost' => '',
+            ],
+            'scheme, host' => [
+                'uri' => 'http://example.com',
+                'expectedScheme' => 'http',
+                'expectedAuthority' => 'example.com',
+                'expectedUserInfo' => '',
+                'expectedHost' => 'example.com',
             ],
             'scheme, host, user, password' => [
                 'uri' => 'http://user:password@example.com',
                 'expectedScheme' => 'http',
                 'expectedAuthority' => 'user:password@example.com',
                 'expectedUserInfo' => 'user:password',
+                'expectedHost' => 'example.com',
             ],
         ];
     }
@@ -180,6 +193,43 @@ class UriTest extends \PHPUnit\Framework\TestCase
             'host, user, password (without scheme is indistinguishable from being the path)' => [
                 'uri' => Uri::create('user:password@example.com'),
                 'expectedUserInfo' => '',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getHostDataProvider
+     *
+     * @param Uri $uri
+     * @param string $expectedHost
+     */
+    public function testGetHost(Uri $uri, string $expectedHost)
+    {
+        $this->assertSame($expectedHost, $uri->getHost());
+    }
+
+    public function getHostDataProvider(): array
+    {
+        return [
+            'scheme, host' => [
+                'uri' => Uri::create('http://example.com'),
+                'expectedHost' => 'example.com',
+            ],
+            'scheme, host, port' => [
+                'uri' => Uri::create('http://example.com:8080'),
+                'expectedHost' => 'example.com',
+            ],
+            'scheme, host, userinfo' => [
+                'uri' => Uri::create('http://user:password@example.com'),
+                'expectedHost' => 'example.com',
+            ],
+            'scheme, host, path' => [
+                'uri' => Uri::create('http://@example.com/path'),
+                'expectedHost' => 'example.com',
+            ],
+            'scheme, host, path, fragment' => [
+                'uri' => Uri::create('http://@example.com/path#fragment'),
+                'expectedHost' => 'example.com',
             ],
         ];
     }
