@@ -4,7 +4,6 @@ namespace webignition\Url;
 
 use webignition\Url\Host\Host;
 use webignition\Url\Path\Path;
-use webignition\Url\Query\Query;
 
 interface UrlInterface
 {
@@ -71,7 +70,7 @@ interface UrlInterface
 
     public function setPath(?string $path);
 
-    public function getQuery(): ?Query;
+    public function getQuery(): string;
 
     public function setQuery(?string $query);
 

@@ -3,7 +3,6 @@
 namespace webignition\Url;
 
 use webignition\Url\Path\Path;
-use webignition\Url\Query\Query;
 
 class Parser
 {
@@ -41,8 +40,6 @@ class Parser
         if (empty($parts[UrlInterface::PART_QUERY])) {
             $parts[UrlInterface::PART_QUERY] = '';
         }
-
-        $parts[UrlInterface::PART_QUERY] = new Query($parts[UrlInterface::PART_QUERY]);
 
         if (isset($parts[UrlInterface::PART_PATH])) {
             $parts[UrlInterface::PART_PATH] = new Path($parts[UrlInterface::PART_PATH]);

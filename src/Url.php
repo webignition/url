@@ -5,10 +5,12 @@ namespace webignition\Url;
 use IpUtils\Exception\InvalidExpressionException;
 use webignition\Url\Host\Host;
 use webignition\Url\Path\Path;
-use webignition\Url\Query\Query;
 
 class Url implements UrlInterface
 {
+    private static $charUnreserved = 'a-zA-Z0-9_\-\.~';
+    private static $charSubDelims = '!\$&\'\(\)\*\+,;=';
+
     /**
      * @var Parser
      */
@@ -52,9 +54,9 @@ class Url implements UrlInterface
     {
         $this->parts = $this->parser->parse($originUrl);
 
-        $query = $this->parts[UrlInterface::PART_QUERY];
-        $query->setConfiguration($this->configuration);
-        $this->parts[UrlInterface::PART_QUERY] = $query;
+//        $query = $this->parts[UrlInterface::PART_QUERY];
+//        $query->setConfiguration($this->configuration);
+//        $this->parts[UrlInterface::PART_QUERY] = $query;
     }
 
     public function getRoot(): string
@@ -240,7 +242,7 @@ class Url implements UrlInterface
         $this->updatePart(UrlInterface::PART_PATH, new Path($path));
     }
 
-    public function getQuery(): ?Query
+    public function getQuery(): string
     {
         return $this->getPart(UrlInterface::PART_QUERY);
     }
@@ -253,7 +255,9 @@ class Url implements UrlInterface
             $query = substr($query, 1);
         }
 
-        $this->updatePart(UrlInterface::PART_QUERY, new Query($query));
+        $query = $this->filterQueryAndFragment($query);
+
+        $this->updatePart(UrlInterface::PART_QUERY, $query);
     }
 
     public function hasFragment(): bool
@@ -284,8 +288,10 @@ class Url implements UrlInterface
         $url .= $this->getPath();
 
         $query = $this->getQuery();
-        if (!$query->isEmpty()) {
-            $url .= '?' . $this->getQuery();
+//        if (!$query->isEmpty()) {
+        if (!empty($query)) {
+//            $url .= '?' . $this->getQuery();
+            $url .= '?' . $query;
         }
 
         if ($this->hasFragment()) {
@@ -460,5 +466,54 @@ class Url implements UrlInterface
         }
 
         return true;
+    }
+
+    /**
+     * Filters the path of a URI
+     *
+     * @param string $path
+     *
+     * @return string
+     *
+     * @throws \InvalidArgumentException If the path is invalid.
+     */
+    private function filterPath($path)
+    {
+        if (!is_string($path)) {
+            throw new \InvalidArgumentException('Path must be a string');
+        }
+
+        return preg_replace_callback(
+            '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
+            [$this, 'rawurlencodeMatchZero'],
+            $path
+        );
+    }
+
+    /**
+     * Filters the query string or fragment of a URI.
+     *
+     * @param string $str
+     *
+     * @return string
+     *
+     * @throws \InvalidArgumentException If the query or fragment is invalid.
+     */
+    private function filterQueryAndFragment($str)
+    {
+        if (!is_string($str)) {
+            throw new \InvalidArgumentException('Query and fragment must be a string');
+        }
+
+        return preg_replace_callback(
+            '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
+            [$this, 'rawurlencodeMatchZero'],
+            $str
+        );
+    }
+
+    private function rawurlencodeMatchZero(array $match)
+    {
+        return rawurlencode($match[0]);
     }
 }

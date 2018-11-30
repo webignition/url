@@ -3,7 +3,6 @@
 namespace webignition\Url\Tests;
 
 use IpUtils\Exception\InvalidExpressionException;
-use webignition\Url\Query\Query;
 use webignition\Url\Url;
 use webignition\Url\UrlInterface;
 
@@ -488,7 +487,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             'set path on url with plus characters in query' => [
                 'url' => new Url('example.html?foo=++'),
                 'path' => '/foo.html',
-                'expectedUrl' => '/foo.html?foo=%2B%2B',
+                'expectedUrl' => '/foo.html?foo=++',
             ],
         ];
     }
@@ -980,8 +979,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
 
         $query = $url->getQuery();
 
-        $this->assertInstanceOf(Query::class, $query);
-        $this->assertTrue($query->isEmpty());
+        $this->assertTrue(empty($query));
 
         $this->assertEquals('http://example.com/', (string)$url);
     }
@@ -1026,8 +1024,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
     {
         $query = $url->getQuery();
 
-        $this->assertInstanceOf(Query::class, $url->getQuery());
-        $this->assertEquals($expectedQueryString, (string)$query);
+        $this->assertEquals($expectedQueryString, $query);
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
