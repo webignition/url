@@ -14,6 +14,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedAuthority
      * @param string $expectedUserInfo
      * @param string $expectedHost
+     * @param int|null $expectedPort
      */
     public function testCreate(
         string $uri,
@@ -21,7 +22,8 @@ class UriTest extends \PHPUnit\Framework\TestCase
         string $expectedAuthority,
         string $expectedUserInfo,
         string $expectedHost,
-        ?int $expectedPort
+        ?int $expectedPort,
+        string $expectedPath
     ) {
         $uriObject = Uri::create($uri);
 
@@ -30,6 +32,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($expectedUserInfo, $uriObject->getUserInfo());
         $this->assertSame($expectedHost, $uriObject->getHost());
         $this->assertSame($expectedPort, $uriObject->getPort());
+        $this->assertSame($expectedPath, $uriObject->getPath());
     }
 
     public function createDataProvider(): array
@@ -42,6 +45,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedUserInfo' => '',
                 'expectedHost' => '',
                 'expectedPort' => null,
+                'expectedPath' => '',
             ],
             'scheme only' => [
                 'uri' => 'file://',
@@ -50,6 +54,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedUserInfo' => '',
                 'expectedHost' => '',
                 'expectedPort' => null,
+                'expectedPath' => '',
             ],
             'scheme, host' => [
                 'uri' => 'http://example.com',
@@ -58,6 +63,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedUserInfo' => '',
                 'expectedHost' => 'example.com',
                 'expectedPort' => null,
+                'expectedPath' => '',
             ],
             'scheme, user, password, host' => [
                 'uri' => 'http://user:password@example.com',
@@ -66,6 +72,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedUserInfo' => 'user:password',
                 'expectedHost' => 'example.com',
                 'expectedPort' => null,
+                'expectedPath' => '',
             ],
             'scheme, user, password, host, port (default)' => [
                 'uri' => 'http://user:password@example.com:80',
@@ -74,6 +81,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedUserInfo' => 'user:password',
                 'expectedHost' => 'example.com',
                 'expectedPort' => null,
+                'expectedPath' => '',
             ],
             'scheme, user, password, host, port (non-default)' => [
                 'uri' => 'http://user:password@example.com:8080',
@@ -82,6 +90,25 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedUserInfo' => 'user:password',
                 'expectedHost' => 'example.com',
                 'expectedPort' => 8080,
+                'expectedPath' => '',
+            ],
+            'complete except path' => [
+                'url' => 'http://user:password@example.com:8080?foo=bar#fragment',
+                'expectedScheme' => 'http',
+                'expectedAuthority' => 'user:password@example.com:8080',
+                'expectedUserInfo' => 'user:password',
+                'expectedHost' => 'example.com',
+                'expectedPort' => 8080,
+                'expectedPath' => '',
+            ],
+            'complete fully qualified' => [
+                'url' => 'http://user:password@example.com:8080/path1/path2/filename.extension?foo=bar#fragment',
+                'expectedScheme' => 'http',
+                'expectedAuthority' => 'user:password@example.com:8080',
+                'expectedUserInfo' => 'user:password',
+                'expectedHost' => 'example.com',
+                'expectedPort' => 8080,
+                'expectedPath' => '/path1/path2/filename.extension',
             ],
         ];
     }
@@ -289,6 +316,43 @@ class UriTest extends \PHPUnit\Framework\TestCase
             'https non-default port' => [
                 'uri' => Uri::create('https://example.com:4433'),
                 'expectedPort' => 4433,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getPathDataProvider
+     *
+     * @param Uri $uri
+     * @param string $expectedPath
+     */
+    public function testGetPath(Uri $uri, string $expectedPath)
+    {
+        $this->assertSame($expectedPath, $uri->getPath());
+    }
+
+    public function getPathDataProvider(): array
+    {
+        return [
+            'relative path' => [
+                'uri' => Uri::create('path'),
+                'expectedPath' => 'path',
+            ],
+            'absolute path' => [
+                'uri' => Uri::create('/path'),
+                'expectedPath' => '/path',
+            ],
+            'absolute path, query' => [
+                'uri' => Uri::create('/path?foo'),
+                'expectedPath' => '/path',
+            ],
+            'absolute path, query, fragment' => [
+                'uri' => Uri::create('/path?foo#bar'),
+                'expectedPath' => '/path',
+            ],
+            'scheme, host, absolute path, query, fragment' => [
+                'uri' => Uri::create('http://example.com/path?foo#bar'),
+                'expectedPath' => '/path',
             ],
         ];
     }
