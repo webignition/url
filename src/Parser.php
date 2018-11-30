@@ -2,8 +2,6 @@
 
 namespace webignition\Url;
 
-use webignition\Url\Path\Path;
-
 class Parser
 {
     const FRAGMENT_SEPARATOR = '#';
@@ -37,18 +35,6 @@ class Parser
             $parts[UrlInterface::PART_FRAGMENT] = '';
         }
 
-        if (empty($parts[UrlInterface::PART_QUERY])) {
-            $parts[UrlInterface::PART_QUERY] = '';
-        }
-
-        if (isset($parts[UrlInterface::PART_PATH])) {
-            $parts[UrlInterface::PART_PATH] = new Path($parts[UrlInterface::PART_PATH]);
-        }
-
-        if (isset($parts[UrlInterface::PART_HOST])) {
-            $parts[UrlInterface::PART_HOST] = new Host\Host($parts[UrlInterface::PART_HOST]);
-        }
-
         $scheme = isset($parts[UrlInterface::PART_SCHEME])
             ? $parts[UrlInterface::PART_SCHEME]
             : null;
@@ -59,6 +45,10 @@ class Parser
 
         if (isset($parts[UrlInterface::PART_PORT])) {
             $parts[UrlInterface::PART_PORT] = (int)$parts[UrlInterface::PART_PORT];
+        }
+
+        if (isset($parts[UrlInterface::PART_PATH]) && empty($parts[UrlInterface::PART_PATH])) {
+            unset($parts[UrlInterface::PART_PATH]);
         }
 
         return $parts;

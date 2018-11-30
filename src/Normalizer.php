@@ -2,6 +2,8 @@
 
 namespace webignition\Url;
 
+use webignition\Url\Path\Path;
+
 class Normalizer
 {
     const SCHEME_HTTP = 'http';
@@ -156,7 +158,7 @@ class Normalizer
             return;
         }
 
-        $pathObject = $url->getPath();
+        $pathObject = new Path($url->getPath());
         if (!$pathObject->hasFilename()) {
             return;
         }
@@ -259,14 +261,15 @@ class Normalizer
     private function addPathTrailingSlash(UrlInterface $url)
     {
         if ($url->hasPath()) {
-            $pathObject = $url->getPath();
+            $path = $url->getPath();
+            $pathObject = new Path($path);
 
             if ($pathObject->hasFilename()) {
                 return;
             }
 
             if (!$pathObject->hasTrailingSlash()) {
-                $url->setPath((string) $pathObject . '/');
+                $url->setPath($path. '/');
             }
         } else {
             $url->setPath('/');

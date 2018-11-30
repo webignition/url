@@ -2,10 +2,6 @@
 
 namespace webignition\Url;
 
-use IpUtils\Exception\InvalidExpressionException;
-use webignition\Url\Host\Host;
-use webignition\Url\Path\Path;
-
 class Url implements UrlInterface
 {
     private static $charUnreserved = 'a-zA-Z0-9_\-\.~';
@@ -118,15 +114,27 @@ class Url implements UrlInterface
         return $this->hasPart(UrlInterface::PART_HOST);
     }
 
-    public function getHost(): ?Host
+    public function getHost(): string
     {
-        return $this->getPart(UrlInterface::PART_HOST);
+        $host = $this->getPart(UrlInterface::PART_HOST);
+
+        if (null === $host) {
+            $host = '';
+        }
+
+        return $host;
     }
 
     public function setHost(?string $host)
     {
-        if ($this->hasPath() && $this->getPath()->isRelative()) {
-            $this->setPath('/' . $this->getPath());
+        if ($this->hasPath()) {
+            $path = $this->getPath();
+
+            $isRelative = '/' !== $path[0];
+
+            if ($isRelative) {
+                $this->setPath('/' . $this->getPath());
+            }
         }
 
         if (empty($host)) {
@@ -136,7 +144,7 @@ class Url implements UrlInterface
             $this->removePart(UrlInterface::PART_PORT);
             $this->removePart(UrlInterface::PART_HOST);
         } else {
-            $this->updatePart(UrlInterface::PART_HOST, new Host($host));
+            $this->updatePart(UrlInterface::PART_HOST, $host);
         }
     }
 
@@ -147,7 +155,13 @@ class Url implements UrlInterface
 
     public function getPort(): ?int
     {
-        return $this->getPart(UrlInterface::PART_PORT);
+        $port = $this->getPart(UrlInterface::PART_PORT);
+
+        if ('' === $port) {
+            $port = null;
+        }
+
+        return $port;
     }
 
     public function setPort($port): bool
@@ -232,19 +246,33 @@ class Url implements UrlInterface
         return $this->hasPart(UrlInterface::PART_PATH);
     }
 
-    public function getPath(): ?Path
+    public function getPath(): string
     {
-        return $this->getPart(UrlInterface::PART_PATH);
+        $path = $this->getPart(UrlInterface::PART_PATH);
+
+        if (null === $path) {
+            $path = '';
+        }
+
+        return $path;
     }
 
-    public function setPath(?string $path)
+    public function setPath(string $path)
     {
-        $this->updatePart(UrlInterface::PART_PATH, new Path($path));
+        $path = $this->filterPath($path);
+
+        $this->updatePart(UrlInterface::PART_PATH, $path);
     }
 
     public function getQuery(): string
     {
-        return $this->getPart(UrlInterface::PART_QUERY);
+        $query = $this->getPart(UrlInterface::PART_QUERY);
+
+        if (null === $query) {
+            $query = '';
+        }
+
+        return $query;
     }
 
     public function setQuery(?string $query)
@@ -288,9 +316,7 @@ class Url implements UrlInterface
         $url .= $this->getPath();
 
         $query = $this->getQuery();
-//        if (!$query->isEmpty()) {
         if (!empty($query)) {
-//            $url .= '?' . $this->getQuery();
             $url .= '?' . $query;
         }
 
@@ -426,46 +452,12 @@ class Url implements UrlInterface
 
     protected function hasPart(string $partName): bool
     {
-        return isset($this->parts[$partName]);
+        return isset($this->parts[$partName]) && null !== $this->parts[$partName];
     }
 
     public function getConfiguration(): Configuration
     {
         return $this->configuration;
-    }
-
-    /**
-     * @return bool
-     *
-     * @throws InvalidExpressionException
-     */
-    public function isPubliclyRoutable(): bool
-    {
-        $host = $this->getHost();
-        if (empty($host)) {
-            return false;
-        }
-
-        if (!$host->isPubliclyRoutable()) {
-            return false;
-        }
-
-        $hostContainsDots = substr_count($host, '.');
-        if (!$hostContainsDots) {
-            return false;
-        }
-
-        $hostStartsWithDot = strpos($host, '.') === 0;
-        if ($hostStartsWithDot) {
-            return false;
-        }
-
-        $hostEndsWithDot = strpos($host, '.') === strlen($host) - 1;
-        if ($hostEndsWithDot) {
-            return false;
-        }
-
-        return true;
     }
 
     /**

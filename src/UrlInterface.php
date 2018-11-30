@@ -2,9 +2,6 @@
 
 namespace webignition\Url;
 
-use webignition\Url\Host\Host;
-use webignition\Url\Path\Path;
-
 interface UrlInterface
 {
     const PART_SCHEME = 'scheme';
@@ -37,7 +34,7 @@ interface UrlInterface
 
     public function hasHost(): bool;
 
-    public function getHost(): ?Host;
+    public function getHost(): string;
 
     public function setHost(?string $host);
 
@@ -66,9 +63,9 @@ interface UrlInterface
 
     public function hasPath(): bool;
 
-    public function getPath(): ?Path;
+    public function getPath(): string;
 
-    public function setPath(?string $path);
+    public function setPath(string $path);
 
     public function getQuery(): string;
 
@@ -97,6 +94,4 @@ interface UrlInterface
     public function setPart(string $partName, $value): bool;
 
     public function hasCredentials(): bool;
-
-    public function isPubliclyRoutable(): bool;
 }
