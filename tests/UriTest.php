@@ -11,12 +11,20 @@ class UriTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $uri
      * @param string $expectedScheme
+     * @param string $expectedAuthority
+     * @param string $expectedUserInfo
      */
-    public function testCreate(string $uri, string $expectedScheme)
-    {
+    public function testCreate(
+        string $uri,
+        string $expectedScheme,
+        string $expectedAuthority,
+        string $expectedUserInfo
+    ) {
         $uriObject = Uri::create($uri);
 
         $this->assertSame($expectedScheme, $uriObject->getScheme());
+        $this->assertSame($expectedAuthority, $uriObject->getAuthority());
+        $this->assertSame($expectedUserInfo, $uriObject->getUserInfo());
     }
 
     public function createDataProvider(): array
@@ -25,10 +33,20 @@ class UriTest extends \PHPUnit\Framework\TestCase
             'empty' => [
                 'uri' => '',
                 'expectedScheme' => '',
+                'expectedAuthority' => '',
+                'expectedUserInfo' => '',
             ],
             'scheme only' => [
                 'uri' => 'http://',
                 'expectedScheme' => 'http',
+                'expectedAuthority' => '',
+                'expectedUserInfo' => '',
+            ],
+            'scheme, host, user, password' => [
+                'uri' => 'http://user:password@example.com',
+                'expectedScheme' => 'http',
+                'expectedAuthority' => 'user:password@example.com',
+                'expectedUserInfo' => 'user:password',
             ],
         ];
     }
@@ -82,14 +100,6 @@ class UriTest extends \PHPUnit\Framework\TestCase
     public function getAuthorityDataProvider(): array
     {
         return [
-            'empty' => [
-                'uri' => Uri::create(''),
-                'expectedAuthority' => '',
-            ],
-            'scheme' => [
-                'uri' => Uri::create('http://'),
-                'expectedAuthority' => '',
-            ],
             'scheme, host' => [
                 'uri' => Uri::create('http://example.com'),
                 'expectedAuthority' => 'example.com',
@@ -139,14 +149,6 @@ class UriTest extends \PHPUnit\Framework\TestCase
     public function getUserInfoDataProvider(): array
     {
         return [
-            'empty' => [
-                'uri' => Uri::create(''),
-                'expectedUserInfo' => '',
-            ],
-            'scheme' => [
-                'uri' => Uri::create('http://'),
-                'expectedUserInfo' => '',
-            ],
             'scheme, host' => [
                 'uri' => Uri::create('http://example.com'),
                 'expectedUserInfo' => '',
