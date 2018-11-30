@@ -6,6 +6,8 @@ use webignition\Url\Uri;
 
 class UriTest extends \PHPUnit\Framework\TestCase
 {
+    const UNRESERVED_CHARACTERS = 'a-zA-Z0-9.-_~!$&\'()*+,;=:@';
+
     /**
      * @dataProvider createDataProvider
      *
@@ -16,6 +18,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedHost
      * @param int|null $expectedPort
      * @param string $expectedPath
+     * @param string $expectedQuery
      */
     public function testCreate(
         string $uri,
@@ -24,7 +27,8 @@ class UriTest extends \PHPUnit\Framework\TestCase
         string $expectedUserInfo,
         string $expectedHost,
         ?int $expectedPort,
-        string $expectedPath
+        string $expectedPath,
+        string $expectedQuery
     ) {
         $uriObject = Uri::create($uri);
 
@@ -34,6 +38,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($expectedHost, $uriObject->getHost());
         $this->assertSame($expectedPort, $uriObject->getPort());
         $this->assertSame($expectedPath, $uriObject->getPath());
+        $this->assertSame($expectedQuery, $uriObject->getQuery());
     }
 
     public function createDataProvider(): array
@@ -47,6 +52,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedHost' => '',
                 'expectedPort' => null,
                 'expectedPath' => '',
+                'expectedQuery' => '',
             ],
             'scheme only' => [
                 'uri' => 'file://',
@@ -56,6 +62,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedHost' => '',
                 'expectedPort' => null,
                 'expectedPath' => '',
+                'expectedQuery' => '',
             ],
             'scheme, host' => [
                 'uri' => 'http://example.com',
@@ -65,6 +72,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedHost' => 'example.com',
                 'expectedPort' => null,
                 'expectedPath' => '',
+                'expectedQuery' => '',
             ],
             'scheme, user, password, host' => [
                 'uri' => 'http://user:password@example.com',
@@ -74,6 +82,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedHost' => 'example.com',
                 'expectedPort' => null,
                 'expectedPath' => '',
+                'expectedQuery' => '',
             ],
             'scheme, user, password, host, port (default)' => [
                 'uri' => 'http://user:password@example.com:80',
@@ -83,6 +92,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedHost' => 'example.com',
                 'expectedPort' => null,
                 'expectedPath' => '',
+                'expectedQuery' => '',
             ],
             'scheme, user, password, host, port (non-default)' => [
                 'uri' => 'http://user:password@example.com:8080',
@@ -92,6 +102,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedHost' => 'example.com',
                 'expectedPort' => 8080,
                 'expectedPath' => '',
+                'expectedQuery' => '',
             ],
             'complete except path' => [
                 'url' => 'http://user:password@example.com:8080?foo=bar#fragment',
@@ -101,6 +112,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedHost' => 'example.com',
                 'expectedPort' => 8080,
                 'expectedPath' => '',
+                'expectedQuery' => 'foo=bar',
             ],
             'complete fully qualified' => [
                 'url' => 'http://user:password@example.com:8080/path1/path2/filename.extension?foo=bar#fragment',
@@ -110,6 +122,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedHost' => 'example.com',
                 'expectedPort' => 8080,
                 'expectedPath' => '/path1/path2/filename.extension',
+                'expectedQuery' => 'foo=bar',
             ],
         ];
     }
@@ -334,8 +347,6 @@ class UriTest extends \PHPUnit\Framework\TestCase
 
     public function getPathDataProvider(): array
     {
-        $unreservedCharacters = 'a-zA-Z0-9.-_~!$&\'()*+,;=:@';
-
         return [
             'relative path' => [
                 'uri' => Uri::create('path'),
@@ -378,12 +389,61 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedPath' => '/pa/th//two',
             ],
             'do not encode unreserved characters' => [
-                'uri' => Uri::create('/' . $unreservedCharacters),
-                'expectedPath' => '/' . $unreservedCharacters,
+                'uri' => Uri::create('/' . self::UNRESERVED_CHARACTERS),
+                'expectedPath' => '/' . self::UNRESERVED_CHARACTERS,
             ],
             'encoded unreserved characters are not decoded' => [
                 'uri' => Uri::create('/p%61th'),
                 'expectedPath' => '/p%61th',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getQueryDataProvider
+     *
+     * @param Uri $uri
+     * @param string $expectedQuery
+     */
+    public function testGetQuery(Uri $uri, string $expectedQuery)
+    {
+        $this->assertSame($expectedQuery, $uri->getQuery());
+    }
+
+    public function getQueryDataProvider(): array
+    {
+        return [
+            'percent-encode spaces' => [
+                'uri' => Uri::create('/?f o=b r'),
+                'expectedQuery' => 'f%20o=b%20r',
+            ],
+            'do not encode plus' => [
+                'uri' => Uri::create('/?f+o=b+r'),
+                'expectedQuery' => 'f+o=b+r',
+            ],
+            'percent-encode multi-byte characters' => [
+                'uri' => Uri::create('/?€=€'),
+                'expectedQuery' => '%E2%82%AC=%E2%82%AC',
+            ],
+            'do not double encode' => [
+                'uri' => Uri::create('/?f%20o=b%20r'),
+                'expectedQuery' => 'f%20o=b%20r',
+            ],
+            'percent-encode invalid percent encodings' => [
+                'uri' => Uri::create('/?f%2o=b%2r'),
+                'expectedQuery' => 'f%252o=b%252r',
+            ],
+            'do not encode path separators' => [
+                'uri' => Uri::create('?q=va/lue'),
+                'expectedQuery' => 'q=va/lue',
+            ],
+            'do not encode unreserved characters' => [
+                'uri' => Uri::create('/?' . self::UNRESERVED_CHARACTERS),
+                'expectedQuery' => self::UNRESERVED_CHARACTERS,
+            ],
+            'encoded unreserved characters are not decoded' => [
+                'uri' => Uri::create('/?f%61r=b%61r'),
+                'expectedQuery' => 'f%61r=b%61r',
             ],
         ];
     }
