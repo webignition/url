@@ -6,10 +6,22 @@ use Psr\Http\Message\UriInterface;
 
 class Uri implements UriInterface
 {
-    /**
-     * @var Parser
-     */
-    private $parser;
+    private static $charUnreserved = 'a-zA-Z0-9_\-\.~';
+    private static $charSubDelims = '!\$&\'\(\)\*\+,;=';
+
+    private $schemeToPortMap = [
+        'http'  => 80,
+        'https' => 443,
+        'ftp' => 21,
+        'gopher' => 70,
+        'nntp' => 119,
+        'news' => 119,
+        'telnet' => 23,
+        'tn3270' => 23,
+        'imap' => 143,
+        'pop' => 110,
+        'ldap' => 389,
+    ];
 
     /**
      * @var string
@@ -39,12 +51,12 @@ class Uri implements UriInterface
     /**
      * @var string
      */
-    private $query;
+    private $query = '';
 
     /**
      * @var string
      */
-    private $fragment;
+    private $fragment = '';
 
     public function __construct(
         string $scheme,
@@ -58,52 +70,62 @@ class Uri implements UriInterface
         $this->scheme = strtolower($scheme);
         $this->userInfo = $userInfo;
         $this->host = strtolower($host);
+        $this->path = $this->filterPath($path);
+        $this->query = $this->filterQueryAndFragment($query);
+        $this->fragment = $this->filterQueryAndFragment($fragment);
+
+        if (!empty($port)) {
+            $knownPort = $this->schemeToPortMap[$scheme] ?? null;
+
+            if ($knownPort && $port === $knownPort) {
+                $port = null;
+            }
+        }
+
         $this->port = $port;
-        $this->path = $path;
-        $this->query = $query;
-        $this->fragment = $fragment;
     }
 
-    /**
-     * Retrieve the scheme component of the URI.
-     *
-     * If no scheme is present, this method MUST return an empty string.
-     *
-     * The value returned MUST be normalized to lowercase, per RFC 3986
-     * Section 3.1.
-     *
-     * The trailing ":" character is not part of the scheme and MUST NOT be
-     * added.
-     *
-     * @see https://tools.ietf.org/html/rfc3986#section-3.1
-     * @return string The URI scheme.
-     */
-    public function getScheme()
+    public static function create(string $uri)
+    {
+        $parser = new Parser();
+
+        $uriParts = $parser->parse($uri);
+
+        $scheme = $uriParts[Parser::PART_SCHEME] ?? '';
+        $host = $uriParts[Parser::PART_HOST] ?? '';
+        $path = $uriParts[Parser::PART_PATH] ?? '';
+        $query = $uriParts[Parser::PART_QUERY] ?? '';
+        $fragment = $uriParts[Parser::PART_FRAGMENT] ?? '';
+        $user = $uriParts[Parser::PART_USER] ?? '';
+        $pass = $uriParts[Parser::PART_PASS] ?? '';
+
+        $userInfo = UserInfoFactory::create($user, $pass);
+
+        $port = null;
+        if (isset($uriParts[Parser::PART_PORT]) && ctype_digit($uriParts[Parser::PART_PORT])) {
+            $port = (int) $uriParts[Parser::PART_PORT];
+        }
+
+        return new static($scheme, $userInfo, $host, $port, $path, $query, $fragment);
+    }
+
+    public function getScheme(): string
     {
         return $this->scheme;
     }
 
-    /**
-     * Retrieve the authority component of the URI.
-     *
-     * If no authority information is present, this method MUST return an empty
-     * string.
-     *
-     * The authority syntax of the URI is:
-     *
-     * <pre>
-     * [user-info@]host[:port]
-     * </pre>
-     *
-     * If the port component is not set or is the standard port for the current
-     * scheme, it SHOULD NOT be included.
-     *
-     * @see https://tools.ietf.org/html/rfc3986#section-3.2
-     * @return string The URI authority, in "[user-info@]host[:port]" format.
-     */
-    public function getAuthority()
+    public function getAuthority(): string
     {
-        // TODO: Implement getAuthority() method.
+        $authority = $this->host;
+        if ('' !== $this->userInfo) {
+            $authority = $this->userInfo . '@' . $authority;
+        }
+
+        if (null !== $this->port) {
+            $authority .= ':' . $this->port;
+        }
+
+        return $authority;
     }
 
     /**
@@ -408,5 +430,54 @@ class Uri implements UriInterface
     public function __toString()
     {
         // TODO: Implement __toString() method.
+    }
+
+    /**
+     * Filters the path of a URI
+     *
+     * @param string $path
+     *
+     * @return string
+     *
+     * @throws \InvalidArgumentException If the path is invalid.
+     */
+    private function filterPath($path)
+    {
+        if (!is_string($path)) {
+            throw new \InvalidArgumentException('Path must be a string');
+        }
+
+        return preg_replace_callback(
+            '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
+            [$this, 'rawurlencodeMatchZero'],
+            $path
+        );
+    }
+
+    /**
+     * Filters the query string or fragment of a URI.
+     *
+     * @param string $str
+     *
+     * @return string
+     *
+     * @throws \InvalidArgumentException If the query or fragment is invalid.
+     */
+    private function filterQueryAndFragment($str)
+    {
+        if (!is_string($str)) {
+            throw new \InvalidArgumentException('Query and fragment must be a string');
+        }
+
+        return preg_replace_callback(
+            '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
+            [$this, 'rawurlencodeMatchZero'],
+            $str
+        );
+    }
+
+    private function rawurlencodeMatchZero(array $match)
+    {
+        return rawurlencode($match[0]);
     }
 }
