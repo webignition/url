@@ -28,7 +28,8 @@ class UriTest extends \PHPUnit\Framework\TestCase
         string $expectedHost,
         ?int $expectedPort,
         string $expectedPath,
-        string $expectedQuery
+        string $expectedQuery,
+        string $expectedFragment
     ) {
         $uriObject = Uri::create($uri);
 
@@ -39,6 +40,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($expectedPort, $uriObject->getPort());
         $this->assertSame($expectedPath, $uriObject->getPath());
         $this->assertSame($expectedQuery, $uriObject->getQuery());
+        $this->assertSame($expectedFragment, $uriObject->getFragment());
     }
 
     public function createDataProvider(): array
@@ -53,6 +55,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedPort' => null,
                 'expectedPath' => '',
                 'expectedQuery' => '',
+                'expectedFragment' => '',
             ],
             'scheme only' => [
                 'uri' => 'file://',
@@ -63,6 +66,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedPort' => null,
                 'expectedPath' => '',
                 'expectedQuery' => '',
+                'expectedFragment' => '',
             ],
             'scheme, host' => [
                 'uri' => 'http://example.com',
@@ -73,6 +77,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedPort' => null,
                 'expectedPath' => '',
                 'expectedQuery' => '',
+                'expectedFragment' => '',
             ],
             'scheme, user, password, host' => [
                 'uri' => 'http://user:password@example.com',
@@ -83,6 +88,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedPort' => null,
                 'expectedPath' => '',
                 'expectedQuery' => '',
+                'expectedFragment' => '',
             ],
             'scheme, user, password, host, port (default)' => [
                 'uri' => 'http://user:password@example.com:80',
@@ -93,6 +99,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedPort' => null,
                 'expectedPath' => '',
                 'expectedQuery' => '',
+                'expectedFragment' => '',
             ],
             'scheme, user, password, host, port (non-default)' => [
                 'uri' => 'http://user:password@example.com:8080',
@@ -103,6 +110,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedPort' => 8080,
                 'expectedPath' => '',
                 'expectedQuery' => '',
+                'expectedFragment' => '',
             ],
             'complete except path' => [
                 'url' => 'http://user:password@example.com:8080?foo=bar#fragment',
@@ -113,6 +121,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedPort' => 8080,
                 'expectedPath' => '',
                 'expectedQuery' => 'foo=bar',
+                'expectedFragment' => 'fragment',
             ],
             'complete fully qualified' => [
                 'url' => 'http://user:password@example.com:8080/path1/path2/filename.extension?foo=bar#fragment',
@@ -123,6 +132,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedPort' => 8080,
                 'expectedPath' => '/path1/path2/filename.extension',
                 'expectedQuery' => 'foo=bar',
+                'expectedFragment' => 'fragment',
             ],
         ];
     }
@@ -444,6 +454,55 @@ class UriTest extends \PHPUnit\Framework\TestCase
             'encoded unreserved characters are not decoded' => [
                 'uri' => Uri::create('/?f%61r=b%61r'),
                 'expectedQuery' => 'f%61r=b%61r',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getFragmentDataProvider
+     *
+     * @param Uri $uri
+     * @param string $expectedFragment
+     */
+    public function testGetFragment(Uri $uri, string $expectedFragment)
+    {
+        $this->assertSame($expectedFragment, $uri->getFragment());
+    }
+
+    public function getFragmentDataProvider(): array
+    {
+        return [
+            'percent-encode spaces' => [
+                'uri' => Uri::create('/#f o'),
+                'expectedQuery' => 'f%20o',
+            ],
+            'do not encode plus' => [
+                'uri' => Uri::create('/#f+o'),
+                'expectedQuery' => 'f+o',
+            ],
+            'percent-encode multi-byte characters' => [
+                'uri' => Uri::create('/#€'),
+                'expectedQuery' => '%E2%82%AC',
+            ],
+            'do not double encode' => [
+                'uri' => Uri::create('/#f%20o'),
+                'expectedQuery' => 'f%20o',
+            ],
+            'percent-encode invalid percent encodings' => [
+                'uri' => Uri::create('/#f%2o'),
+                'expectedQuery' => 'f%252o',
+            ],
+            'do not encode path separators' => [
+                'uri' => Uri::create('#f/o'),
+                'expectedQuery' => 'f/o',
+            ],
+            'do not encode unreserved characters' => [
+                'uri' => Uri::create('/#' . self::UNRESERVED_CHARACTERS),
+                'expectedQuery' => self::UNRESERVED_CHARACTERS,
+            ],
+            'encoded unreserved characters are not decoded' => [
+                'uri' => Uri::create('/#f%61r'),
+                'expectedQuery' => 'f%61r',
             ],
         ];
     }

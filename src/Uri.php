@@ -153,25 +153,9 @@ class Uri implements UriInterface
         return $this->query;
     }
 
-    /**
-     * Retrieve the fragment component of the URI.
-     *
-     * If no fragment is present, this method MUST return an empty string.
-     *
-     * The leading "#" character is not part of the fragment and MUST NOT be
-     * added.
-     *
-     * The value returned MUST be percent-encoded, but MUST NOT double-encode
-     * any characters. To determine what characters to encode, please refer to
-     * RFC 3986, Sections 2 and 3.5.
-     *
-     * @see https://tools.ietf.org/html/rfc3986#section-2
-     * @see https://tools.ietf.org/html/rfc3986#section-3.5
-     * @return string The URI fragment.
-     */
     public function getFragment()
     {
-        // TODO: Implement getFragment() method.
+        return $this->fragment;
     }
 
     /**
