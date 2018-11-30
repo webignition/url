@@ -128,24 +128,9 @@ class Uri implements UriInterface
         return $authority;
     }
 
-    /**
-     * Retrieve the user information component of the URI.
-     *
-     * If no user information is present, this method MUST return an empty
-     * string.
-     *
-     * If a user is present in the URI, this will return that value;
-     * additionally, if the password is also present, it will be appended to the
-     * user value, with a colon (":") separating the values.
-     *
-     * The trailing "@" character is not part of the user information and MUST
-     * NOT be added.
-     *
-     * @return string The URI user information, in "username[:password]" format.
-     */
-    public function getUserInfo()
+    public function getUserInfo(): string
     {
-        // TODO: Implement getUserInfo() method.
+        return $this->userInfo;
     }
 
     /**

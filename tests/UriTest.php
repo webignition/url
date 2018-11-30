@@ -124,4 +124,61 @@ class UriTest extends \PHPUnit\Framework\TestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider getUserInfoDataProvider
+     *
+     * @param Uri $uri
+     * @param string $expectedUserInfo
+     */
+    public function testGetUserInfo(Uri $uri, string $expectedUserInfo)
+    {
+        $this->assertSame($expectedUserInfo, $uri->getUserInfo());
+    }
+
+    public function getUserInfoDataProvider(): array
+    {
+        return [
+            'empty' => [
+                'uri' => Uri::create(''),
+                'expectedUserInfo' => '',
+            ],
+            'scheme' => [
+                'uri' => Uri::create('http://'),
+                'expectedUserInfo' => '',
+            ],
+            'scheme, host' => [
+                'uri' => Uri::create('http://example.com'),
+                'expectedUserInfo' => '',
+            ],
+            'scheme, host, user' => [
+                'uri' => Uri::create('http://user@example.com'),
+                'expectedUserInfo' => 'user',
+            ],
+            'scheme, host, password' => [
+                'uri' => Uri::create('http://:password@example.com'),
+                'expectedUserInfo' => ':password',
+            ],
+            'scheme, host, user, password' => [
+                'uri' => Uri::create('http://user:password@example.com'),
+                'expectedUserInfo' => 'user:password',
+            ],
+            'host' => [
+                'uri' => Uri::create('example.com'),
+                'expectedUserInfo' => '',
+            ],
+            'host, user (without scheme is indistinguishable from being the path)' => [
+                'uri' => Uri::create('user@example.com'),
+                'expectedUserInfo' => '',
+            ],
+            'host, password (without scheme is indistinguishable from being the path)' => [
+                'uri' => Uri::create('password@example.com'),
+                'expectedUserInfo' => '',
+            ],
+            'host, user, password (without scheme is indistinguishable from being the path)' => [
+                'uri' => Uri::create('user:password@example.com'),
+                'expectedUserInfo' => '',
+            ],
+        ];
+    }
 }
