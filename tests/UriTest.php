@@ -15,6 +15,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedUserInfo
      * @param string $expectedHost
      * @param int|null $expectedPort
+     * @param string $expectedPath
      */
     public function testCreate(
         string $uri,
@@ -333,6 +334,8 @@ class UriTest extends \PHPUnit\Framework\TestCase
 
     public function getPathDataProvider(): array
     {
+        $unreservedCharacters = 'a-zA-Z0-9.-_~!$&\'()*+,;=:@';
+
         return [
             'relative path' => [
                 'uri' => Uri::create('path'),
@@ -353,6 +356,34 @@ class UriTest extends \PHPUnit\Framework\TestCase
             'scheme, host, absolute path, query, fragment' => [
                 'uri' => Uri::create('http://example.com/path?foo#bar'),
                 'expectedPath' => '/path',
+            ],
+            'percent-encode spaces' => [
+                'uri' => Uri::create('/pa th'),
+                'expectedPath' => '/pa%20th',
+            ],
+            'percent-encode multi-byte characters' => [
+                'uri' => Uri::create('/€?€#€'),
+                'expectedPath' => '/%E2%82%AC',
+            ],
+            'do not double encode' => [
+                'uri' => Uri::create('/pa%20th'),
+                'expectedPath' => '/pa%20th',
+            ],
+            'percent-encode invalid percent encodings' => [
+                'uri' => Uri::create('/pa%2-th'),
+                'expectedPath' => '/pa%252-th',
+            ],
+            'do not encode path separators' => [
+                'uri' => Uri::create('/pa/th//two'),
+                'expectedPath' => '/pa/th//two',
+            ],
+            'do not encode unreserved characters' => [
+                'uri' => Uri::create('/' . $unreservedCharacters),
+                'expectedPath' => '/' . $unreservedCharacters,
+            ],
+            'encoded unreserved characters are not decoded' => [
+                'uri' => Uri::create('/p%61th'),
+                'expectedPath' => '/p%61th',
             ],
         ];
     }

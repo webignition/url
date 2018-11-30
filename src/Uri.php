@@ -168,9 +168,9 @@ class Uri implements UriInterface
      * @see https://tools.ietf.org/html/rfc3986#section-3.4
      * @return string The URI query string.
      */
-    public function getQuery()
+    public function getQuery(): string
     {
-        // TODO: Implement getQuery() method.
+        return $this->query;
     }
 
     /**
