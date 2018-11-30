@@ -42,10 +42,7 @@ class ParserTest extends \PHPUnit\Framework\TestCase
         return [
             'empty' => [
                 'url' => '',
-                'expectedParts' => [
-                    UrlInterface::PART_PATH => '',
-                    UrlInterface::PART_QUERY => '',
-                ],
+                'expectedParts' => [],
             ],
             'complete fully qualified' => [
                 'url' => 'http://user:pass@example.com:8080/path1/path2/filename.extension?foo=bar#fragment',
@@ -92,7 +89,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                 'url' => '#',
                 'expectedParts' => [
                     UrlInterface::PART_FRAGMENT => '',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'path and hash only' => [
@@ -100,14 +96,12 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                 'expectedParts' => [
                     UrlInterface::PART_PATH => '/index.html',
                     UrlInterface::PART_FRAGMENT => '',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'hash and identifier only' => [
                 'url' => '#fragment',
                 'expectedParts' => [
                     UrlInterface::PART_FRAGMENT => 'fragment',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'scheme, no username, no password' => [
@@ -116,7 +110,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                     UrlInterface::PART_SCHEME => 'https',
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => '',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'protocol-relative, no username, no password' => [
@@ -124,7 +117,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                 'expectedParts' => [
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => '',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'scheme, empty username, empty password' => [
@@ -134,7 +126,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => '',
                     UrlInterface::PART_PASS => '',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'protocol-relative, empty username, empty password' => [
@@ -143,7 +134,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => '',
                     UrlInterface::PART_PASS => '',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'scheme, empty username, has password' => [
@@ -153,7 +143,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => '',
                     UrlInterface::PART_PASS => 'password',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'protocol-relative, empty username, has password' => [
@@ -162,7 +151,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => '',
                     UrlInterface::PART_PASS => 'password',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'scheme, has username, empty password' => [
@@ -172,7 +160,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => 'username',
                     UrlInterface::PART_PASS => '',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'protocol-relative, has username, empty password' => [
@@ -181,7 +168,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => 'username',
                     UrlInterface::PART_PASS => '',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'scheme, has username, no password' => [
@@ -190,7 +176,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                     UrlInterface::PART_SCHEME => 'https',
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => 'username',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'protocol-relative, has username, no password' => [
@@ -198,14 +183,12 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                 'expectedParts' => [
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_USER => 'username',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'scheme-only' => [
                 'url' => 'file://',
                 'expectedParts' => [
                     UrlInterface::PART_SCHEME  => 'file',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
         ];
@@ -219,7 +202,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                 'expectedParts' => [
                     UrlInterface::PART_SCHEME => 'http',
                     UrlInterface::PART_HOST => 'example.com',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'trailing newline is removed' => [
@@ -227,7 +209,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                 'expectedParts' => [
                     UrlInterface::PART_SCHEME => 'http',
                     UrlInterface::PART_HOST => 'example.com',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'trailing line return' => [
@@ -235,7 +216,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                 'expectedParts' => [
                     UrlInterface::PART_SCHEME => 'http',
                     UrlInterface::PART_HOST => 'example.com',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'leading tab is removed' => [
@@ -243,7 +223,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                 'expectedParts' => [
                     UrlInterface::PART_SCHEME => 'http',
                     UrlInterface::PART_HOST => 'example.com',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'leading newline is removed' => [
@@ -251,7 +230,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                 'expectedParts' => [
                     UrlInterface::PART_SCHEME => 'http',
                     UrlInterface::PART_HOST => 'example.com',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'leading line return' => [
@@ -259,7 +237,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                 'expectedParts' => [
                     UrlInterface::PART_SCHEME => 'http',
                     UrlInterface::PART_HOST => 'example.com',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'tab in path is removed' => [
@@ -268,7 +245,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                     UrlInterface::PART_SCHEME => 'http',
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_PATH => '/foo/bar',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'newline in path is removed' => [
@@ -277,7 +253,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                     UrlInterface::PART_SCHEME => 'http',
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_PATH => '/foo/bar',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'line return in path is removed' => [
@@ -286,7 +261,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                     UrlInterface::PART_SCHEME => 'http',
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_PATH => '/foo/bar',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
             'many tabs, newlines and line returns' => [
@@ -295,7 +269,6 @@ class ParserTest extends \PHPUnit\Framework\TestCase
                     UrlInterface::PART_SCHEME => 'http',
                     UrlInterface::PART_HOST => 'example.com',
                     UrlInterface::PART_PATH => '/page/',
-                    UrlInterface::PART_QUERY => '',
                 ],
             ],
         ];

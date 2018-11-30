@@ -2,8 +2,6 @@
 
 namespace webignition\Url\Tests;
 
-use IpUtils\Exception\InvalidExpressionException;
-use webignition\Url\Query\Query;
 use webignition\Url\Url;
 use webignition\Url\UrlInterface;
 
@@ -467,12 +465,12 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             ],
             'remove existing path' => [
                 'url' => new Url('http://example.com/foo'),
-                'path' => null,
+                'path' => '',
                 'expectedUrl' => 'http://example.com',
             ],
             'remove existing path from url that has query and fragment' => [
                 'url' => new Url('http://example.com/foo?query#fragment'),
-                'path' => null,
+                'path' => '',
                 'expectedUrl' => 'http://example.com?query#fragment',
             ],
             'add path to hash-only url' => [
@@ -488,7 +486,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
             'set path on url with plus characters in query' => [
                 'url' => new Url('example.html?foo=++'),
                 'path' => '/foo.html',
-                'expectedUrl' => '/foo.html?foo=%2B%2B',
+                'expectedUrl' => '/foo.html?foo=++',
             ],
         ];
     }
@@ -980,8 +978,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
 
         $query = $url->getQuery();
 
-        $this->assertInstanceOf(Query::class, $query);
-        $this->assertTrue($query->isEmpty());
+        $this->assertTrue(empty($query));
 
         $this->assertEquals('http://example.com/', (string)$url);
     }
@@ -1026,8 +1023,7 @@ class UrlTest extends \PHPUnit\Framework\TestCase
     {
         $query = $url->getQuery();
 
-        $this->assertInstanceOf(Query::class, $url->getQuery());
-        $this->assertEquals($expectedQueryString, (string)$query);
+        $this->assertEquals($expectedQueryString, $query);
         $this->assertEquals($expectedUrl, (string)$url);
     }
 
@@ -1043,51 +1039,6 @@ class UrlTest extends \PHPUnit\Framework\TestCase
                 'url' => new Url('//example.com?foo=bar'),
                 'expectedQueryString' => 'foo=bar',
                 'expectedUrl' => '//example.com?foo=bar',
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider isPubliclyRoutableDataProvider
-     *
-     * @param string $url
-     * @param bool $expectedIsPubliclyRoutable
-     *
-     * @throws InvalidExpressionException
-     */
-    public function testIsPubliclyRoutable(string $url, bool $expectedIsPubliclyRoutable)
-    {
-        $urlObject = new Url($url);
-
-        $this->assertEquals($expectedIsPubliclyRoutable, $urlObject->isPubliclyRoutable());
-    }
-
-    public function isPubliclyRoutableDataProvider(): array
-    {
-        return [
-            'no host' => [
-                'url' => 'example',
-                'expectedIsPubliclyRoutable' => false,
-            ],
-            'host not publicly routable' => [
-                'url' => 'http://127.0.0.1',
-                'expectedIsPubliclyRoutable' => false,
-            ],
-            'host lacks dots' => [
-                'url' => 'http://example',
-                'expectedIsPubliclyRoutable' => false,
-            ],
-            'host starts with dot' => [
-                'url' => 'http://.example',
-                'expectedIsPubliclyRoutable' => false,
-            ],
-            'host ends with dot' => [
-                'url' => 'http://example.',
-                'expectedIsPubliclyRoutable' => false,
-            ],
-            'valid' => [
-                'url' => 'http://example.com',
-                'expectedIsPubliclyRoutable' => true,
             ],
         ];
     }

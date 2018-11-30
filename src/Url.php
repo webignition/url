@@ -2,13 +2,11 @@
 
 namespace webignition\Url;
 
-use IpUtils\Exception\InvalidExpressionException;
-use webignition\Url\Host\Host;
-use webignition\Url\Path\Path;
-use webignition\Url\Query\Query;
-
 class Url implements UrlInterface
 {
+    private static $charUnreserved = 'a-zA-Z0-9_\-\.~';
+    private static $charSubDelims = '!\$&\'\(\)\*\+,;=';
+
     /**
      * @var Parser
      */
@@ -52,9 +50,9 @@ class Url implements UrlInterface
     {
         $this->parts = $this->parser->parse($originUrl);
 
-        $query = $this->parts[UrlInterface::PART_QUERY];
-        $query->setConfiguration($this->configuration);
-        $this->parts[UrlInterface::PART_QUERY] = $query;
+//        $query = $this->parts[UrlInterface::PART_QUERY];
+//        $query->setConfiguration($this->configuration);
+//        $this->parts[UrlInterface::PART_QUERY] = $query;
     }
 
     public function getRoot(): string
@@ -116,15 +114,27 @@ class Url implements UrlInterface
         return $this->hasPart(UrlInterface::PART_HOST);
     }
 
-    public function getHost(): ?Host
+    public function getHost(): string
     {
-        return $this->getPart(UrlInterface::PART_HOST);
+        $host = $this->getPart(UrlInterface::PART_HOST);
+
+        if (null === $host) {
+            $host = '';
+        }
+
+        return $host;
     }
 
     public function setHost(?string $host)
     {
-        if ($this->hasPath() && $this->getPath()->isRelative()) {
-            $this->setPath('/' . $this->getPath());
+        if ($this->hasPath()) {
+            $path = $this->getPath();
+
+            $isRelative = '/' !== $path[0];
+
+            if ($isRelative) {
+                $this->setPath('/' . $this->getPath());
+            }
         }
 
         if (empty($host)) {
@@ -134,7 +144,7 @@ class Url implements UrlInterface
             $this->removePart(UrlInterface::PART_PORT);
             $this->removePart(UrlInterface::PART_HOST);
         } else {
-            $this->updatePart(UrlInterface::PART_HOST, new Host($host));
+            $this->updatePart(UrlInterface::PART_HOST, $host);
         }
     }
 
@@ -145,7 +155,13 @@ class Url implements UrlInterface
 
     public function getPort(): ?int
     {
-        return $this->getPart(UrlInterface::PART_PORT);
+        $port = $this->getPart(UrlInterface::PART_PORT);
+
+        if ('' === $port) {
+            $port = null;
+        }
+
+        return $port;
     }
 
     public function setPort($port): bool
@@ -230,19 +246,33 @@ class Url implements UrlInterface
         return $this->hasPart(UrlInterface::PART_PATH);
     }
 
-    public function getPath(): ?Path
+    public function getPath(): string
     {
-        return $this->getPart(UrlInterface::PART_PATH);
+        $path = $this->getPart(UrlInterface::PART_PATH);
+
+        if (null === $path) {
+            $path = '';
+        }
+
+        return $path;
     }
 
-    public function setPath(?string $path)
+    public function setPath(string $path)
     {
-        $this->updatePart(UrlInterface::PART_PATH, new Path($path));
+        $path = $this->filterPath($path);
+
+        $this->updatePart(UrlInterface::PART_PATH, $path);
     }
 
-    public function getQuery(): ?Query
+    public function getQuery(): string
     {
-        return $this->getPart(UrlInterface::PART_QUERY);
+        $query = $this->getPart(UrlInterface::PART_QUERY);
+
+        if (null === $query) {
+            $query = '';
+        }
+
+        return $query;
     }
 
     public function setQuery(?string $query)
@@ -253,7 +283,9 @@ class Url implements UrlInterface
             $query = substr($query, 1);
         }
 
-        $this->updatePart(UrlInterface::PART_QUERY, new Query($query));
+        $query = $this->filterQueryAndFragment($query);
+
+        $this->updatePart(UrlInterface::PART_QUERY, $query);
     }
 
     public function hasFragment(): bool
@@ -284,8 +316,8 @@ class Url implements UrlInterface
         $url .= $this->getPath();
 
         $query = $this->getQuery();
-        if (!$query->isEmpty()) {
-            $url .= '?' . $this->getQuery();
+        if (!empty($query)) {
+            $url .= '?' . $query;
         }
 
         if ($this->hasFragment()) {
@@ -420,7 +452,7 @@ class Url implements UrlInterface
 
     protected function hasPart(string $partName): bool
     {
-        return isset($this->parts[$partName]);
+        return isset($this->parts[$partName]) && null !== $this->parts[$partName];
     }
 
     public function getConfiguration(): Configuration
@@ -429,36 +461,51 @@ class Url implements UrlInterface
     }
 
     /**
-     * @return bool
+     * Filters the path of a URI
      *
-     * @throws InvalidExpressionException
+     * @param string $path
+     *
+     * @return string
+     *
+     * @throws \InvalidArgumentException If the path is invalid.
      */
-    public function isPubliclyRoutable(): bool
+    private function filterPath($path)
     {
-        $host = $this->getHost();
-        if (empty($host)) {
-            return false;
+        if (!is_string($path)) {
+            throw new \InvalidArgumentException('Path must be a string');
         }
 
-        if (!$host->isPubliclyRoutable()) {
-            return false;
+        return preg_replace_callback(
+            '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
+            [$this, 'rawurlencodeMatchZero'],
+            $path
+        );
+    }
+
+    /**
+     * Filters the query string or fragment of a URI.
+     *
+     * @param string $str
+     *
+     * @return string
+     *
+     * @throws \InvalidArgumentException If the query or fragment is invalid.
+     */
+    private function filterQueryAndFragment($str)
+    {
+        if (!is_string($str)) {
+            throw new \InvalidArgumentException('Query and fragment must be a string');
         }
 
-        $hostContainsDots = substr_count($host, '.');
-        if (!$hostContainsDots) {
-            return false;
-        }
+        return preg_replace_callback(
+            '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
+            [$this, 'rawurlencodeMatchZero'],
+            $str
+        );
+    }
 
-        $hostStartsWithDot = strpos($host, '.') === 0;
-        if ($hostStartsWithDot) {
-            return false;
-        }
-
-        $hostEndsWithDot = strpos($host, '.') === strlen($host) - 1;
-        if ($hostEndsWithDot) {
-            return false;
-        }
-
-        return true;
+    private function rawurlencodeMatchZero(array $match)
+    {
+        return rawurlencode($match[0]);
     }
 }

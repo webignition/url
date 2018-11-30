@@ -2,7 +2,7 @@
 
 namespace webignition\Url;
 
-use webignition\Url\Query\Encoder;
+use webignition\Url\Path\Path;
 
 class Normalizer
 {
@@ -158,7 +158,7 @@ class Normalizer
             return;
         }
 
-        $pathObject = $url->getPath();
+        $pathObject = new Path($url->getPath());
         if (!$pathObject->hasFilename()) {
             return;
         }
@@ -261,14 +261,15 @@ class Normalizer
     private function addPathTrailingSlash(UrlInterface $url)
     {
         if ($url->hasPath()) {
-            $pathObject = $url->getPath();
+            $path = $url->getPath();
+            $pathObject = new Path($path);
 
             if ($pathObject->hasFilename()) {
                 return;
             }
 
             if (!$pathObject->hasTrailingSlash()) {
-                $url->setPath((string) $pathObject . '/');
+                $url->setPath($path. '/');
             }
         } else {
             $url->setPath('/');
@@ -279,12 +280,13 @@ class Normalizer
     {
         $query = $url->getQuery();
 
-        $parameters = $query->pairs();
+        if (empty($query)) {
+            return;
+        }
 
-        ksort($parameters);
+        $queryKeyValues = explode('&', $query);
+        sort($queryKeyValues);
 
-        $queryEncoder = new Encoder($parameters);
-
-        $url->setQuery((string) $queryEncoder);
+        $url->setQuery(implode('&', $queryKeyValues));
     }
 }
