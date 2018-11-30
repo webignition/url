@@ -4,7 +4,7 @@ namespace webignition\Url;
 
 class UserInfoFactory
 {
-    public static function create(string $user, string $password): string
+    public static function create(string $user, ?string $password): string
     {
         $userInfo = '';
 

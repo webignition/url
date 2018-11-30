@@ -521,4 +521,18 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($updatedUri->getPort());
         $this->assertNotSame($originUri, $updatedUri);
     }
+
+    public function testWithUserInfo()
+    {
+        $originUri = Uri::create('http://example.com');
+        $this->assertSame('', $originUri->getUserInfo());
+
+        $uriWithUserOnly = $originUri->withUserInfo('user');
+        $this->assertNotSame($originUri, $uriWithUserOnly);
+        $this->assertSame('user', $uriWithUserOnly->getUserInfo());
+
+        $uriWithUserAndPassword = $uriWithUserOnly->withUserInfo('user-with-password', 'password');
+        $this->assertNotSame($uriWithUserOnly, $uriWithUserAndPassword);
+        $this->assertSame('user-with-password:password', $uriWithUserAndPassword->getUserInfo());
+    }
 }
