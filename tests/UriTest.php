@@ -20,7 +20,8 @@ class UriTest extends \PHPUnit\Framework\TestCase
         string $expectedScheme,
         string $expectedAuthority,
         string $expectedUserInfo,
-        string $expectedHost
+        string $expectedHost,
+        ?int $expectedPort
     ) {
         $uriObject = Uri::create($uri);
 
@@ -28,6 +29,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($expectedAuthority, $uriObject->getAuthority());
         $this->assertSame($expectedUserInfo, $uriObject->getUserInfo());
         $this->assertSame($expectedHost, $uriObject->getHost());
+        $this->assertSame($expectedPort, $uriObject->getPort());
     }
 
     public function createDataProvider(): array
@@ -39,13 +41,15 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedAuthority' => '',
                 'expectedUserInfo' => '',
                 'expectedHost' => '',
+                'expectedPort' => null,
             ],
             'scheme only' => [
-                'uri' => 'http://',
-                'expectedScheme' => 'http',
+                'uri' => 'file://',
+                'expectedScheme' => 'file',
                 'expectedAuthority' => '',
                 'expectedUserInfo' => '',
                 'expectedHost' => '',
+                'expectedPort' => null,
             ],
             'scheme, host' => [
                 'uri' => 'http://example.com',
@@ -53,13 +57,31 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedAuthority' => 'example.com',
                 'expectedUserInfo' => '',
                 'expectedHost' => 'example.com',
+                'expectedPort' => null,
             ],
-            'scheme, host, user, password' => [
+            'scheme, user, password, host' => [
                 'uri' => 'http://user:password@example.com',
                 'expectedScheme' => 'http',
                 'expectedAuthority' => 'user:password@example.com',
                 'expectedUserInfo' => 'user:password',
                 'expectedHost' => 'example.com',
+                'expectedPort' => null,
+            ],
+            'scheme, user, password, host, port (default)' => [
+                'uri' => 'http://user:password@example.com:80',
+                'expectedScheme' => 'http',
+                'expectedAuthority' => 'user:password@example.com',
+                'expectedUserInfo' => 'user:password',
+                'expectedHost' => 'example.com',
+                'expectedPort' => null,
+            ],
+            'scheme, user, password, host, port (non-default)' => [
+                'uri' => 'http://user:password@example.com:8080',
+                'expectedScheme' => 'http',
+                'expectedAuthority' => 'user:password@example.com:8080',
+                'expectedUserInfo' => 'user:password',
+                'expectedHost' => 'example.com',
+                'expectedPort' => 8080,
             ],
         ];
     }
@@ -230,6 +252,43 @@ class UriTest extends \PHPUnit\Framework\TestCase
             'scheme, host, path, fragment' => [
                 'uri' => Uri::create('http://@example.com/path#fragment'),
                 'expectedHost' => 'example.com',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getPortDataProvider
+     *
+     * @param Uri $uri
+     * @param int|null $expectedPort
+     */
+    public function testGetPort(Uri $uri, ?int $expectedPort)
+    {
+        $this->assertSame($expectedPort, $uri->getPort());
+    }
+
+    public function getPortDataProvider(): array
+    {
+        return [
+            'no port' => [
+                'uri' => Uri::create('http://example.com'),
+                'expectedPort' => null,
+            ],
+            'http default port' => [
+                'uri' => Uri::create('http://example.com:80'),
+                'expectedPort' => null,
+            ],
+            'https default port' => [
+                'uri' => Uri::create('https://example.com:443'),
+                'expectedPort' => null,
+            ],
+            'http non-default port' => [
+                'uri' => Uri::create('http://example.com:8080'),
+                'expectedPort' => 8080,
+            ],
+            'https non-default port' => [
+                'uri' => Uri::create('https://example.com:4433'),
+                'expectedPort' => 4433,
             ],
         ];
     }
