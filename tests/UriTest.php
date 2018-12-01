@@ -9,7 +9,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
     const UNRESERVED_CHARACTERS = 'a-zA-Z0-9.-_~!$&\'()*+,;=:@';
 
     /**
-     * @dataProvider createDataProvider
+     * @dataProvider createSuccessDataProvider
      *
      * @param string $uri
      * @param string $expectedScheme
@@ -19,8 +19,9 @@ class UriTest extends \PHPUnit\Framework\TestCase
      * @param int|null $expectedPort
      * @param string $expectedPath
      * @param string $expectedQuery
+     * @param string $expectedFragment
      */
-    public function testCreate(
+    public function testCreateSuccess(
         string $uri,
         string $expectedScheme,
         string $expectedAuthority,
@@ -43,7 +44,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($expectedFragment, $uriObject->getFragment());
     }
 
-    public function createDataProvider(): array
+    public function createSuccessDataProvider(): array
     {
         return [
             'empty' => [
@@ -133,6 +134,30 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedPath' => '/path1/path2/filename.extension',
                 'expectedQuery' => 'foo=bar',
                 'expectedFragment' => 'fragment',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider createWithInvalidPortDataProvider
+     *
+     * @param string $url
+     */
+    public function testCreateWithInvalidPort(string $url)
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        Uri::create($url);
+    }
+
+    public function createWithInvalidPortDataProvider(): array
+    {
+        return [
+            'less than min' => [
+                'url' => 'http://example.com:' . (Uri::MIN_PORT - 1),
+            ],
+            'greater than max' => [
+                'url' => 'http://example.com:' . (Uri::MAX_PORT + 1),
             ],
         ];
     }

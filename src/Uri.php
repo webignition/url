@@ -6,6 +6,9 @@ use Psr\Http\Message\UriInterface;
 
 class Uri implements UriInterface
 {
+    const MIN_PORT = 1;
+    const MAX_PORT = 65535;
+
     private static $charUnreserved = 'a-zA-Z0-9_\-\.~';
     private static $charSubDelims = '!\$&\'\(\)\*\+,;=';
 
@@ -82,7 +85,7 @@ class Uri implements UriInterface
             }
         }
 
-        $this->port = $port;
+        $this->port = $this->filterPort($port);
     }
 
     public static function create(string $uri)
@@ -102,8 +105,16 @@ class Uri implements UriInterface
         $userInfo = UserInfoFactory::create($user, $pass);
 
         $port = null;
-        if (isset($uriParts[Parser::PART_PORT]) && ctype_digit($uriParts[Parser::PART_PORT])) {
-            $port = (int) $uriParts[Parser::PART_PORT];
+        if (isset($uriParts[Parser::PART_PORT])) {
+            $port = $uriParts[Parser::PART_PORT];
+
+            if (ctype_digit($port)) {
+                $port = (int) $port;
+            }
+
+            if (!is_int($port)) {
+                $port = null;
+            }
         }
 
         return new static($scheme, $userInfo, $host, $port, $path, $query, $fragment);
@@ -354,5 +365,29 @@ class Uri implements UriInterface
     private function rawurlencodeMatchZero(array $match)
     {
         return rawurlencode($match[0]);
+    }
+
+    /**
+     * @param int|null $port
+     *
+     * @return int|null
+     *
+     * @throws \InvalidArgumentException If the port is invalid.
+     */
+    private function filterPort(?int $port): ?int
+    {
+        if (null === $port) {
+            return null;
+        }
+
+        $port = (int) $port;
+
+        if (self::MIN_PORT > $port || self::MAX_PORT < $port) {
+            throw new \InvalidArgumentException(
+                sprintf('Invalid port: %d. Must be between %d and %d', $port, self::MIN_PORT, self::MAX_PORT)
+            );
+        }
+
+        return $port;
     }
 }
