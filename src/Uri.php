@@ -160,7 +160,7 @@ class Uri implements UriInterface
 
     public function withScheme($scheme)
     {
-        $scheme = strtolower($scheme);
+        $scheme = trim(strtolower($scheme));
 
         if ($this->scheme === $scheme) {
             return $this;
@@ -180,21 +180,15 @@ class Uri implements UriInterface
         return new Uri($this->scheme, $userInfo, $this->host, $this->port, $this->path, $this->query, $this->fragment);
     }
 
-    /**
-     * Return an instance with the specified host.
-     *
-     * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified host.
-     *
-     * An empty host value is equivalent to removing the host.
-     *
-     * @param string $host The hostname to use with the new instance.
-     * @return static A new instance with the specified host.
-     * @throws \InvalidArgumentException for invalid hostnames.
-     */
     public function withHost($host)
     {
-        // TODO: Implement withHost() method.
+        $host = trim(strtolower($host));
+
+        if ($this->host === $host) {
+            return $this;
+        }
+
+        return new Uri($this->scheme, $this->userInfo, $host, $this->port, $this->path, $this->query, $this->fragment);
     }
 
     /**

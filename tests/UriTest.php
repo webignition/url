@@ -535,4 +535,20 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertNotSame($uriWithUserOnly, $uriWithUserAndPassword);
         $this->assertSame('user-with-password:password', $uriWithUserAndPassword->getUserInfo());
     }
+
+    public function testWithHost()
+    {
+        $uriWithOnlyPath = Uri::create('/path');
+        $this->assertSame('', $uriWithOnlyPath->getHost());
+
+        $uriWithPathAndHost = $uriWithOnlyPath->withHost('example.com');
+        $this->assertNotSame($uriWithOnlyPath, $uriWithPathAndHost);
+        $this->assertSame('example.com', $uriWithPathAndHost->getHost());
+
+        $uriWithChangedHost = $uriWithPathAndHost->withHost('foo.example.com');
+        $this->assertSame('foo.example.com', $uriWithChangedHost->getHost());
+
+        $uriWithRemovedHost = $uriWithPathAndHost->withHost('');
+        $this->assertSame('', $uriWithRemovedHost->getHost());
+    }
 }
