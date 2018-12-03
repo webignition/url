@@ -628,5 +628,8 @@ class UriTest extends \PHPUnit\Framework\TestCase
 
         $httpUriWithNonDefaultPort = $httpUriWithDefaultPortAdded->withPort(8080);
         $this->assertSame(8080, $httpUriWithNonDefaultPort->getPort());
+
+        $httpUriWithPortRemoved = $httpUriWithNonDefaultPort->withPort(null);
+        $this->assertNull($httpUriWithPortRemoved->getPort());
     }
 }
