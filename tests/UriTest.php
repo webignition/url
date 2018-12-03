@@ -632,4 +632,20 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $httpUriWithPortRemoved = $httpUriWithNonDefaultPort->withPort(null);
         $this->assertNull($httpUriWithPortRemoved->getPort());
     }
+
+    public function testWithPath()
+    {
+        $uriWithoutPath = Uri::create('http://example.com');
+        $this->assertSame('', $uriWithoutPath->getPath());
+
+        $uriWithPathAdded = $uriWithoutPath->withPath('/path');
+        $this->assertNotSame($uriWithoutPath, $uriWithPathAdded);
+        $this->assertSame('/path', $uriWithPathAdded->getPath());
+
+        $uriWithSamePathAdded = $uriWithPathAdded->withPath('/path');
+        $this->assertSame($uriWithPathAdded, $uriWithSamePathAdded);
+
+        $uriWithPathRemoved = $uriWithSamePathAdded->withPath('');
+        $this->assertSame('', $uriWithPathRemoved->getPath());
+    }
 }
