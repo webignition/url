@@ -3,21 +3,21 @@
 namespace webignition\Url\Tests;
 
 use IpUtils\Exception\InvalidExpressionException;
+use Psr\Http\Message\UriInterface;
 use webignition\Url\Inspector;
-use webignition\Url\Url;
-use webignition\Url\UrlInterface;
+use webignition\Url\Uri;
 
 class InspectorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider isPubliclyRoutableDataProvider
      *
-     * @param UrlInterface $url
+     * @param UriInterface $url
      * @param bool $expectedIsPubliclyRoutable
      *
      * @throws InvalidExpressionException
      */
-    public function testIsPubliclyRoutable(UrlInterface $url, bool $expectedIsPubliclyRoutable)
+    public function testIsPubliclyRoutable(UriInterface $url, bool $expectedIsPubliclyRoutable)
     {
         $inspector = new Inspector();
 
@@ -28,27 +28,27 @@ class InspectorTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'no host' => [
-                'url' => new Url('example'),
+                'url' => Uri::create('example'),
                 'expectedIsPubliclyRoutable' => false,
             ],
             'host not publicly routable' => [
-                'url' => new Url('http://127.0.0.1'),
+                'url' => Uri::create('http://127.0.0.1'),
                 'expectedIsPubliclyRoutable' => false,
             ],
             'host lacks dots' => [
-                'url' => new Url('http://example'),
+                'url' => Uri::create('http://example'),
                 'expectedIsPubliclyRoutable' => false,
             ],
             'host starts with dot' => [
-                'url' => new Url('http://.example'),
+                'url' => Uri::create('http://.example'),
                 'expectedIsPubliclyRoutable' => false,
             ],
             'host ends with dot' => [
-                'url' => new Url('http://example.'),
+                'url' => Uri::create('http://example.'),
                 'expectedIsPubliclyRoutable' => false,
             ],
             'valid' => [
-                'url' => new Url('http://example.com'),
+                'url' => Uri::create('http://example.com'),
                 'expectedIsPubliclyRoutable' => true,
             ],
         ];
