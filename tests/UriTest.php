@@ -576,4 +576,43 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $uriWithRemovedHost = $uriWithPathAndHost->withHost('');
         $this->assertSame('', $uriWithRemovedHost->getHost());
     }
+
+    /**
+     * @dataProvider withPortInvalidPortDataProvider
+     *
+     * @param int $port
+     */
+    public function testWithPortInvalidPort(int $port)
+    {
+        $uri = Uri::create('http://example.co/');
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $uri->withPort($port);
+    }
+
+    public function withPortInvalidPortDataProvider(): array
+    {
+        return [
+            'less than min' => [
+                'port' => Uri::MIN_PORT - 1,
+            ],
+            'greater than max' => [
+                'port' => Uri::MAX_PORT + 1,
+            ],
+        ];
+    }
+
+    public function testWithPort()
+    {
+        $httpUriWithoutPort = Uri::create('http://example.com');
+        $this->assertNull($httpUriWithoutPort->getPort());
+
+        $httpUriWithDefaultPortAdded = $httpUriWithoutPort->withPort(80);
+        $this->assertNotSame($httpUriWithoutPort, $httpUriWithDefaultPortAdded);
+        $this->assertNull($httpUriWithDefaultPortAdded->getPort());
+
+        $httpUriWithNonDefaultPort = $httpUriWithDefaultPortAdded->withPort(8080);
+        $this->assertSame(8080, $httpUriWithNonDefaultPort->getPort());
+    }
 }

@@ -202,26 +202,17 @@ class Uri implements UriInterface
         return new Uri($this->scheme, $this->userInfo, $host, $this->port, $this->path, $this->query, $this->fragment);
     }
 
-    /**
-     * Return an instance with the specified port.
-     *
-     * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified port.
-     *
-     * Implementations MUST raise an exception for ports outside the
-     * established TCP and UDP port ranges.
-     *
-     * A null value provided for the port is equivalent to removing the port
-     * information.
-     *
-     * @param null|int $port The port to use with the new instance; a null value
-     *     removes the port information.
-     * @return static A new instance with the specified port.
-     * @throws \InvalidArgumentException for invalid ports.
-     */
     public function withPort($port)
     {
-        // TODO: Implement withPort() method.
+        if (null !== $port) {
+            $port = (int) $port;
+        }
+
+        if ($this->port === $port) {
+            return $this;
+        }
+
+        return new Uri($this->scheme, $this->userInfo, $this->host, $port, $this->path, $this->query, $this->fragment);
     }
 
     /**
