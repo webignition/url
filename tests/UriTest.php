@@ -48,7 +48,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'empty' => [
-                'uri' => '',
+                'uriString' => '',
                 'expectedScheme' => '',
                 'expectedAuthority' => '',
                 'expectedUserInfo' => '',
@@ -59,7 +59,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedFragment' => '',
             ],
             'scheme only' => [
-                'uri' => 'file://',
+                'uriString' => 'file://',
                 'expectedScheme' => 'file',
                 'expectedAuthority' => '',
                 'expectedUserInfo' => '',
@@ -70,7 +70,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedFragment' => '',
             ],
             'scheme, host' => [
-                'uri' => 'http://example.com',
+                'uriString' => 'http://example.com',
                 'expectedScheme' => 'http',
                 'expectedAuthority' => 'example.com',
                 'expectedUserInfo' => '',
@@ -81,7 +81,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedFragment' => '',
             ],
             'scheme, user, password, host' => [
-                'uri' => 'http://user:password@example.com',
+                'uriString' => 'http://user:password@example.com',
                 'expectedScheme' => 'http',
                 'expectedAuthority' => 'user:password@example.com',
                 'expectedUserInfo' => 'user:password',
@@ -92,7 +92,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedFragment' => '',
             ],
             'scheme, user, password, host, port (default)' => [
-                'uri' => 'http://user:password@example.com:80',
+                'uriString' => 'http://user:password@example.com:80',
                 'expectedScheme' => 'http',
                 'expectedAuthority' => 'user:password@example.com',
                 'expectedUserInfo' => 'user:password',
@@ -103,7 +103,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
                 'expectedFragment' => '',
             ],
             'scheme, user, password, host, port (non-default)' => [
-                'uri' => 'http://user:password@example.com:8080',
+                'uriString' => 'http://user:password@example.com:8080',
                 'expectedScheme' => 'http',
                 'expectedAuthority' => 'user:password@example.com:8080',
                 'expectedUserInfo' => 'user:password',
@@ -200,11 +200,13 @@ class UriTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider getAuthorityDataProvider
      *
-     * @param Uri $uri
+     * @param string $uriString
      * @param string $expectedAuthority
      */
-    public function testGetAuthority(Uri $uri, string $expectedAuthority)
+    public function testGetAuthority(string $uriString, string $expectedAuthority)
     {
+        $uri = Uri::create($uriString);
+
         $this->assertSame($expectedAuthority, $uri->getAuthority());
     }
 
@@ -212,35 +214,35 @@ class UriTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'scheme, host' => [
-                'uri' => Uri::create('http://example.com'),
+                'uriString' => 'http://example.com',
                 'expectedAuthority' => 'example.com',
             ],
             'scheme, host, user' => [
-                'uri' => Uri::create('http://user@example.com'),
+                'uriString' => 'http://user@example.com',
                 'expectedAuthority' => 'user@example.com',
             ],
             'scheme, host, password' => [
-                'uri' => Uri::create('http://:password@example.com'),
+                'uriString' => 'http://:password@example.com',
                 'expectedAuthority' => ':password@example.com',
             ],
             'scheme, host, user, password' => [
-                'uri' => Uri::create('http://user:password@example.com'),
+                'uriString' => 'http://user:password@example.com',
                 'expectedAuthority' => 'user:password@example.com',
             ],
-            'scheme, host, user, password, default port (http)' => [
-                'uri' => Uri::create('http://user:password@example.com:80'),
+            'scheme, host, user, password, default port (http' => [
+                'uriString' => 'http://user:password@example.com:80',
                 'expectedAuthority' => 'user:password@example.com',
             ],
-            'scheme, host, user, password, default port (https)' => [
-                'uri' => Uri::create('https://user:password@example.com:443'),
+            'scheme, host, user, password, default port (https' => [
+                'uriString' => 'https://user:password@example.com:443',
                 'expectedAuthority' => 'user:password@example.com',
             ],
-            'scheme, host, user, password, non-default port (http)' => [
-                'uri' => Uri::create('http://user:password@example.com:8080'),
+            'scheme, host, user, password, non-default port (http' => [
+                'uriString' => 'http://user:password@example.com:8080',
                 'expectedAuthority' => 'user:password@example.com:8080',
             ],
-            'scheme, host, user, password, non-default port (https)' => [
-                'uri' => Uri::create('https://user:password@example.com:4433'),
+            'scheme, host, user, password, non-default port (https' => [
+                'uriString' => 'https://user:password@example.com:4433',
                 'expectedAuthority' => 'user:password@example.com:4433',
             ],
         ];
@@ -249,11 +251,13 @@ class UriTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider getUserInfoDataProvider
      *
-     * @param Uri $uri
+     * @param string $uriString
      * @param string $expectedUserInfo
      */
-    public function testGetUserInfo(Uri $uri, string $expectedUserInfo)
+    public function testGetUserInfo(string $uriString, string $expectedUserInfo)
     {
+        $uri = Uri::create($uriString);
+
         $this->assertSame($expectedUserInfo, $uri->getUserInfo());
     }
 
@@ -261,35 +265,35 @@ class UriTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'scheme, host' => [
-                'uri' => Uri::create('http://example.com'),
+                'uriString' => 'http://example.com',
                 'expectedUserInfo' => '',
             ],
             'scheme, host, user' => [
-                'uri' => Uri::create('http://user@example.com'),
+                'uriString' => 'http://user@example.com',
                 'expectedUserInfo' => 'user',
             ],
             'scheme, host, password' => [
-                'uri' => Uri::create('http://:password@example.com'),
+                'uriString' => 'http://:password@example.com',
                 'expectedUserInfo' => ':password',
             ],
             'scheme, host, user, password' => [
-                'uri' => Uri::create('http://user:password@example.com'),
+                'uriString' => 'http://user:password@example.com',
                 'expectedUserInfo' => 'user:password',
             ],
             'host' => [
-                'uri' => Uri::create('example.com'),
+                'uriString' => 'example.com',
                 'expectedUserInfo' => '',
             ],
-            'host, user (without scheme is indistinguishable from being the path)' => [
-                'uri' => Uri::create('user@example.com'),
+            'host, user (without scheme is indistinguishable from being the path' => [
+                'uriString' => 'user@example.com',
                 'expectedUserInfo' => '',
             ],
-            'host, password (without scheme is indistinguishable from being the path)' => [
-                'uri' => Uri::create('password@example.com'),
+            'host, password (without scheme is indistinguishable from being the path' => [
+                'uriString' => 'password@example.com',
                 'expectedUserInfo' => '',
             ],
-            'host, user, password (without scheme is indistinguishable from being the path)' => [
-                'uri' => Uri::create('user:password@example.com'),
+            'host, user, password (without scheme is indistinguishable from being the path' => [
+                'uriString' => 'user:password@example.com',
                 'expectedUserInfo' => '',
             ],
         ];
@@ -298,11 +302,13 @@ class UriTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider getHostDataProvider
      *
-     * @param Uri $uri
+     * @param string $uriString
      * @param string $expectedHost
      */
-    public function testGetHost(Uri $uri, string $expectedHost)
+    public function testGetHost(string $uriString, string $expectedHost)
     {
+        $uri = Uri::create($uriString);
+
         $this->assertSame($expectedHost, $uri->getHost());
     }
 
@@ -310,23 +316,23 @@ class UriTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'scheme, host' => [
-                'uri' => Uri::create('http://example.com'),
+                'uriString' => 'http://example.com',
                 'expectedHost' => 'example.com',
             ],
             'scheme, host, port' => [
-                'uri' => Uri::create('http://example.com:8080'),
+                'uriString' => 'http://example.com:8080',
                 'expectedHost' => 'example.com',
             ],
             'scheme, host, userinfo' => [
-                'uri' => Uri::create('http://user:password@example.com'),
+                'uriString' => 'http://user:password@example.com',
                 'expectedHost' => 'example.com',
             ],
             'scheme, host, path' => [
-                'uri' => Uri::create('http://@example.com/path'),
+                'uriString' => 'http://@example.com/path',
                 'expectedHost' => 'example.com',
             ],
             'scheme, host, path, fragment' => [
-                'uri' => Uri::create('http://@example.com/path#fragment'),
+                'uriString' => 'http://@example.com/path#fragment',
                 'expectedHost' => 'example.com',
             ],
         ];
@@ -335,11 +341,13 @@ class UriTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider getPortDataProvider
      *
-     * @param Uri $uri
+     * @param string $uriString
      * @param int|null $expectedPort
      */
-    public function testGetPort(Uri $uri, ?int $expectedPort)
+    public function testGetPort(string $uriString, ?int $expectedPort)
     {
+        $uri = Uri::create($uriString);
+
         $this->assertSame($expectedPort, $uri->getPort());
     }
 
@@ -347,23 +355,23 @@ class UriTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'no port' => [
-                'uri' => Uri::create('http://example.com'),
+                'uriString' => 'http://example.com',
                 'expectedPort' => null,
             ],
             'http default port' => [
-                'uri' => Uri::create('http://example.com:80'),
+                'uriString' => 'http://example.com:80',
                 'expectedPort' => null,
             ],
             'https default port' => [
-                'uri' => Uri::create('https://example.com:443'),
+                'uriString' => 'https://example.com:443',
                 'expectedPort' => null,
             ],
             'http non-default port' => [
-                'uri' => Uri::create('http://example.com:8080'),
+                'uriString' => 'http://example.com:8080',
                 'expectedPort' => 8080,
             ],
             'https non-default port' => [
-                'uri' => Uri::create('https://example.com:4433'),
+                'uriString' => 'https://example.com:4433',
                 'expectedPort' => 4433,
             ],
         ];
@@ -372,11 +380,13 @@ class UriTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider getPathDataProvider
      *
-     * @param Uri $uri
+     * @param string $uriString
      * @param string $expectedPath
      */
-    public function testGetPath(Uri $uri, string $expectedPath)
+    public function testGetPath(string $uriString, string $expectedPath)
     {
+        $uri = Uri::create($uriString);
+
         $this->assertSame($expectedPath, $uri->getPath());
     }
 
@@ -384,51 +394,51 @@ class UriTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'relative path' => [
-                'uri' => Uri::create('path'),
+                'uriString' => 'path',
                 'expectedPath' => 'path',
             ],
             'absolute path' => [
-                'uri' => Uri::create('/path'),
+                'uriString' => '/path',
                 'expectedPath' => '/path',
             ],
             'absolute path, query' => [
-                'uri' => Uri::create('/path?foo'),
+                'uriString' => '/path?foo',
                 'expectedPath' => '/path',
             ],
             'absolute path, query, fragment' => [
-                'uri' => Uri::create('/path?foo#bar'),
+                'uriString' => '/path?foo#bar',
                 'expectedPath' => '/path',
             ],
             'scheme, host, absolute path, query, fragment' => [
-                'uri' => Uri::create('http://example.com/path?foo#bar'),
+                'uriString' => 'http://example.com/path?foo#bar',
                 'expectedPath' => '/path',
             ],
             'percent-encode spaces' => [
-                'uri' => Uri::create('/pa th'),
+                'uriString' => '/pa th',
                 'expectedPath' => '/pa%20th',
             ],
             'percent-encode multi-byte characters' => [
-                'uri' => Uri::create('/€?€#€'),
+                'uriString' => '/€?€#€',
                 'expectedPath' => '/%E2%82%AC',
             ],
             'do not double encode' => [
-                'uri' => Uri::create('/pa%20th'),
+                'uriString' => '/pa%20th',
                 'expectedPath' => '/pa%20th',
             ],
             'percent-encode invalid percent encodings' => [
-                'uri' => Uri::create('/pa%2-th'),
+                'uriString' => '/pa%2-th',
                 'expectedPath' => '/pa%252-th',
             ],
             'do not encode path separators' => [
-                'uri' => Uri::create('/pa/th//two'),
+                'uriString' => '/pa/th//two',
                 'expectedPath' => '/pa/th//two',
             ],
             'do not encode unreserved characters' => [
-                'uri' => Uri::create('/' . self::UNRESERVED_CHARACTERS),
+                'uriString' => '/' . self::UNRESERVED_CHARACTERS,
                 'expectedPath' => '/' . self::UNRESERVED_CHARACTERS,
             ],
             'encoded unreserved characters are not decoded' => [
-                'uri' => Uri::create('/p%61th'),
+                'uriString' => '/p%61th',
                 'expectedPath' => '/p%61th',
             ],
         ];
@@ -437,11 +447,13 @@ class UriTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider getQueryDataProvider
      *
-     * @param Uri $uri
+     * @param string $uriString
      * @param string $expectedQuery
      */
-    public function testGetQuery(Uri $uri, string $expectedQuery)
+    public function testGetQuery(string $uriString, string $expectedQuery)
     {
+        $uri = Uri::create($uriString);
+
         $this->assertSame($expectedQuery, $uri->getQuery());
     }
 
@@ -449,35 +461,35 @@ class UriTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'percent-encode spaces' => [
-                'uri' => Uri::create('/?f o=b r'),
+                'uriString' => '/?f o=b r',
                 'expectedQuery' => 'f%20o=b%20r',
             ],
             'do not encode plus' => [
-                'uri' => Uri::create('/?f+o=b+r'),
+                'uriString' => '/?f+o=b+r',
                 'expectedQuery' => 'f+o=b+r',
             ],
             'percent-encode multi-byte characters' => [
-                'uri' => Uri::create('/?€=€'),
+                'uriString' => '/?€=€',
                 'expectedQuery' => '%E2%82%AC=%E2%82%AC',
             ],
             'do not double encode' => [
-                'uri' => Uri::create('/?f%20o=b%20r'),
+                'uriString' => '/?f%20o=b%20r',
                 'expectedQuery' => 'f%20o=b%20r',
             ],
             'percent-encode invalid percent encodings' => [
-                'uri' => Uri::create('/?f%2o=b%2r'),
+                'uriString' => '/?f%2o=b%2r',
                 'expectedQuery' => 'f%252o=b%252r',
             ],
             'do not encode path separators' => [
-                'uri' => Uri::create('?q=va/lue'),
+                'uriString' => '?q=va/lue',
                 'expectedQuery' => 'q=va/lue',
             ],
             'do not encode unreserved characters' => [
-                'uri' => Uri::create('/?' . self::UNRESERVED_CHARACTERS),
+                'uriString' => '/?' . self::UNRESERVED_CHARACTERS,
                 'expectedQuery' => self::UNRESERVED_CHARACTERS,
             ],
             'encoded unreserved characters are not decoded' => [
-                'uri' => Uri::create('/?f%61r=b%61r'),
+                'uriString' => '/?f%61r=b%61r',
                 'expectedQuery' => 'f%61r=b%61r',
             ],
         ];
@@ -486,11 +498,13 @@ class UriTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider getFragmentDataProvider
      *
-     * @param Uri $uri
+     * @param string $uriString
      * @param string $expectedFragment
      */
-    public function testGetFragment(Uri $uri, string $expectedFragment)
+    public function testGetFragment(string $uriString, string $expectedFragment)
     {
+        $uri = Uri::create($uriString);
+
         $this->assertSame($expectedFragment, $uri->getFragment());
     }
 
@@ -498,35 +512,35 @@ class UriTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'percent-encode spaces' => [
-                'uri' => Uri::create('/#f o'),
+                'uriString' => '/#f o',
                 'expectedQuery' => 'f%20o',
             ],
             'do not encode plus' => [
-                'uri' => Uri::create('/#f+o'),
+                'uriString' => '/#f+o',
                 'expectedQuery' => 'f+o',
             ],
             'percent-encode multi-byte characters' => [
-                'uri' => Uri::create('/#€'),
+                'uriString' => '/#€',
                 'expectedQuery' => '%E2%82%AC',
             ],
             'do not double encode' => [
-                'uri' => Uri::create('/#f%20o'),
+                'uriString' => '/#f%20o',
                 'expectedQuery' => 'f%20o',
             ],
             'percent-encode invalid percent encodings' => [
-                'uri' => Uri::create('/#f%2o'),
+                'uriString' => '/#f%2o',
                 'expectedQuery' => 'f%252o',
             ],
             'do not encode path separators' => [
-                'uri' => Uri::create('#f/o'),
+                'uriString' => '#f/o',
                 'expectedQuery' => 'f/o',
             ],
             'do not encode unreserved characters' => [
-                'uri' => Uri::create('/#' . self::UNRESERVED_CHARACTERS),
+                'uriString' => '/#' . self::UNRESERVED_CHARACTERS,
                 'expectedQuery' => self::UNRESERVED_CHARACTERS,
             ],
             'encoded unreserved characters are not decoded' => [
-                'uri' => Uri::create('/#f%61r'),
+                'uriString' => '/#f%61r',
                 'expectedQuery' => 'f%61r',
             ],
         ];
