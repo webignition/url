@@ -718,6 +718,87 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('', $uriWithFragmentRemoved->getFragment());
     }
 
+    /**
+     * @dataProvider toStringWithMutationDataProvider
+     *
+     * @param Uri $uri
+     * @param string $expectedUri
+     */
+    public function testToStringWithMutation(Uri $uri, string $expectedUri)
+    {
+        $this->assertSame($expectedUri, (string) $uri);
+    }
+
+    public function toStringWithMutationDataProvider(): array
+    {
+        return [
+            'fragment only' => [
+                'uri' => new Uri('', '', '', null, '', '', 'fragment'),
+                'expectedUrl' => '#fragment',
+            ],
+            'query only' => [
+                'uri' => new Uri('', '', '', null, '', 'query', ''),
+                'expectedUrl' => '?query',
+            ],
+            'path only' => [
+                'uri' => new Uri('', '', '', null, '/path', '', ''),
+                'expectedUrl' => '/path',
+            ],
+            'path only, starts with //' => [
+                'uri' => new Uri('', '', '', null, '//path', '', ''),
+                'expectedUrl' => '/path',
+            ],
+            'path and host, path does not start with /' => [
+                'uri' => new Uri('', '', 'example.com', null, 'path', '', ''),
+                'expectedUrl' => '//example.com/path',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider toStringDataProvider
+     *
+     * @param string $uri
+     */
+    public function testToString(string $uri)
+    {
+        $this->assertSame($uri, (string) Uri::create($uri));
+    }
+
+    public function toStringDataProvider(): array
+    {
+        return [
+            'scheme' => [
+                'uri' => 'file://',
+            ],
+            'scheme, host' => [
+                'uri' => 'http://example.com',
+            ],
+            'scheme, user, host' => [
+                'uri' => 'http://user@example.com',
+            ],
+            'scheme, password, host' => [
+                'uri' => 'http://:password@example.com',
+            ],
+            'scheme, user, password, host' => [
+                'uri' => 'http://user:password@example.com',
+            ],
+            'scheme, user, password, host, port' => [
+                'uri' => 'http://user:password@example.com:8080',
+            ],
+            'scheme, user, password, host, port, path' => [
+                'uri' => 'http://user:password@example.com:8080/path',
+            ],
+            'scheme, user, password, host, port, path, query' => [
+                'uri' => 'http://user:password@example.com:8080/path?query',
+            ],
+            'scheme, user, password, host, port, path, query, fragment' => [
+                'uri' => 'http://user:password@example.com:8080/path?query#fragment',
+            ],
+        ];
+    }
+
+
     private function assertUrisEqual(UriInterface $expected, UriInterface $actual, array $exceptionFields = [])
     {
         if (in_array(self::URI_FIELD_AUTHORITY, $exceptionFields)) {
