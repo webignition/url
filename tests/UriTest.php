@@ -704,6 +704,20 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('', $uriWithQueryRemoved->getQuery());
     }
 
+    public function testWithFragment()
+    {
+        $uriWithoutFragment = Uri::create('http://example.com');
+        $this->assertSame('', $uriWithoutFragment->getFragment());
+
+        $uriWithFragmentAdded = $uriWithoutFragment->withFragment('foo');
+        $this->assertSame('foo', $uriWithFragmentAdded->getFragment());
+        $this->assertNotSame($uriWithoutFragment, $uriWithFragmentAdded);
+        $this->assertUrisEqual($uriWithoutFragment, $uriWithFragmentAdded, [self::URI_FIELD_FRAGMENT]);
+
+        $uriWithFragmentRemoved = $uriWithFragmentAdded->withFragment('');
+        $this->assertSame('', $uriWithFragmentRemoved->getFragment());
+    }
+
     private function assertUrisEqual(UriInterface $expected, UriInterface $actual, array $exceptionFields = [])
     {
         if (in_array(self::URI_FIELD_AUTHORITY, $exceptionFields)) {

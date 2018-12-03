@@ -237,23 +237,15 @@ class Uri implements UriInterface
         return new Uri($this->scheme, $this->userInfo, $this->host, $this->port, $this->path, $query, $this->fragment);
     }
 
-    /**
-     * Return an instance with the specified URI fragment.
-     *
-     * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified URI fragment.
-     *
-     * Users can provide both encoded and decoded fragment characters.
-     * Implementations ensure the correct encoding as outlined in getFragment().
-     *
-     * An empty fragment value is equivalent to removing the fragment.
-     *
-     * @param string $fragment The fragment to use with the new instance.
-     * @return static A new instance with the specified fragment.
-     */
     public function withFragment($fragment)
     {
-        // TODO: Implement withFragment() method.
+        $fragment = $this->filterQueryAndFragment($fragment);
+
+        if ($this->fragment === $fragment) {
+            return $this;
+        }
+
+        return new Uri($this->scheme, $this->userInfo, $this->host, $this->port, $this->path, $this->query, $fragment);
     }
 
     /**
