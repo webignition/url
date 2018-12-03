@@ -660,4 +660,20 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $uriWithPathRemoved = $uriWithSamePathAdded->withPath('');
         $this->assertSame('', $uriWithPathRemoved->getPath());
     }
+
+    public function testWithQuery()
+    {
+        $uriWithoutQuery = Uri::create('http://example.com');
+        $this->assertSame('', $uriWithoutQuery->getQuery());
+
+        $uriWithQueryAdded = $uriWithoutQuery->withQuery('foo=bar');
+        $this->assertNotSame($uriWithoutQuery, $uriWithQueryAdded);
+        $this->assertSame('foo=bar', $uriWithQueryAdded->getQuery());
+
+        $uriWithSameQueryAdded = $uriWithQueryAdded->withQuery('foo=bar');
+        $this->assertSame($uriWithQueryAdded, $uriWithSameQueryAdded);
+
+        $uriWithQueryRemoved = $uriWithSameQueryAdded->withQuery('');
+        $this->assertSame('', $uriWithQueryRemoved->getQuery());
+    }
 }

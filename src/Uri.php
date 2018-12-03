@@ -226,24 +226,15 @@ class Uri implements UriInterface
         return new Uri($this->scheme, $this->userInfo, $this->host, $this->port, $path, $this->query, $this->fragment);
     }
 
-    /**
-     * Return an instance with the specified query string.
-     *
-     * This method MUST retain the state of the current instance, and return
-     * an instance that contains the specified query string.
-     *
-     * Users can provide both encoded and decoded query characters.
-     * Implementations ensure the correct encoding as outlined in getQuery().
-     *
-     * An empty query string value is equivalent to removing the query string.
-     *
-     * @param string $query The query string to use with the new instance.
-     * @return static A new instance with the specified query string.
-     * @throws \InvalidArgumentException for invalid query strings.
-     */
     public function withQuery($query)
     {
-        // TODO: Implement withQuery() method.
+        $query = $this->filterQueryAndFragment($query);
+
+        if ($this->query === $query) {
+            return $this;
+        }
+
+        return new Uri($this->scheme, $this->userInfo, $this->host, $this->port, $this->path, $query, $this->fragment);
     }
 
     /**
