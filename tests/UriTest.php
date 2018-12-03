@@ -573,6 +573,12 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $uriWithUserAndPassword = $uriWithUserOnly->withUserInfo('user-with-password', 'password');
         $this->assertNotSame($uriWithUserOnly, $uriWithUserAndPassword);
         $this->assertSame('user-with-password:password', $uriWithUserAndPassword->getUserInfo());
+
+        $uriWithSameUserAndPassword = $uriWithUserAndPassword->withUserInfo('user-with-password', 'password');
+        $this->assertSame($uriWithUserAndPassword, $uriWithSameUserAndPassword);
+
+        $uriWithUserInfoRemoved = $uriWithUserAndPassword->withUserInfo('');
+        $this->assertSame('', $uriWithUserInfoRemoved->getUserInfo());
     }
 
     public function testWithHost()
@@ -584,7 +590,10 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertNotSame($uriWithOnlyPath, $uriWithPathAndHost);
         $this->assertSame('example.com', $uriWithPathAndHost->getHost());
 
-        $uriWithChangedHost = $uriWithPathAndHost->withHost('foo.example.com');
+        $uriWithSamePathAndHost = $uriWithPathAndHost->withHost('example.com');
+        $this->assertSame($uriWithPathAndHost, $uriWithSamePathAndHost);
+
+        $uriWithChangedHost = $uriWithSamePathAndHost->withHost('foo.example.com');
         $this->assertSame('foo.example.com', $uriWithChangedHost->getHost());
 
         $uriWithRemovedHost = $uriWithPathAndHost->withHost('');
@@ -628,6 +637,9 @@ class UriTest extends \PHPUnit\Framework\TestCase
 
         $httpUriWithNonDefaultPort = $httpUriWithDefaultPortAdded->withPort(8080);
         $this->assertSame(8080, $httpUriWithNonDefaultPort->getPort());
+
+        $httpUriWithSameNonDefaultPort = $httpUriWithNonDefaultPort->withPort(8080);
+        $this->assertSame($httpUriWithNonDefaultPort, $httpUriWithSameNonDefaultPort);
 
         $httpUriWithPortRemoved = $httpUriWithNonDefaultPort->withPort(null);
         $this->assertNull($httpUriWithPortRemoved->getPort());
