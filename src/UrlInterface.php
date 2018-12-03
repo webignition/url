@@ -51,13 +51,13 @@ interface UrlInterface
 
     public function hasUser(): bool;
 
-    public function getUser(): ?string;
+    public function getUser(): string;
 
     public function setUser(?string $user): bool;
 
     public function hasPass(): bool;
 
-    public function getPass(): ?string;
+    public function getPass(): string;
 
     public function setPass(?string $pass): bool;
 

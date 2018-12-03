@@ -49,10 +49,6 @@ class Url implements UrlInterface
     public function init(string $originUrl)
     {
         $this->parts = $this->parser->parse($originUrl);
-
-//        $query = $this->parts[UrlInterface::PART_QUERY];
-//        $query->setConfiguration($this->configuration);
-//        $this->parts[UrlInterface::PART_QUERY] = $query;
     }
 
     public function getRoot(): string
@@ -68,8 +64,10 @@ class Url implements UrlInterface
         }
 
         if ($this->hasHost()) {
-            if ($this->hasCredentials()) {
-                $rawRootUrl .= $this->getCredentials() . '@';
+            $userInfo = UserInfoFactory::create($this->getUser(), $this->getPass());
+
+            if (!empty($userInfo)) {
+                $rawRootUrl .= $userInfo . '@';
             }
 
             $host = (string)$this->getHost();
@@ -188,9 +186,15 @@ class Url implements UrlInterface
         return $this->hasPart(UrlInterface::PART_USER);
     }
 
-    public function getUser(): ?string
+    public function getUser(): string
     {
-        return $this->getPart(UrlInterface::PART_USER);
+        $user = $this->getPart(UrlInterface::PART_USER);
+
+        if (null === $user) {
+            $user = '';
+        }
+
+        return $user;
     }
 
     public function setUser(?string $user): bool
@@ -219,9 +223,15 @@ class Url implements UrlInterface
         return $this->hasPart(UrlInterface::PART_PASS);
     }
 
-    public function getPass(): ?string
+    public function getPass(): string
     {
-        return $this->getPart(UrlInterface::PART_PASS);
+        $pass = $this->getPart(UrlInterface::PART_PASS);
+
+        if (null === $pass) {
+            $pass = '';
+        }
+
+        return $pass;
     }
 
     public function setPass(?string $pass): bool
@@ -420,22 +430,6 @@ class Url implements UrlInterface
     public function hasCredentials(): bool
     {
         return $this->hasUser() || $this->hasPass();
-    }
-
-    private function getCredentials(): string
-    {
-        $credentials = '';
-
-        if ($this->hasUser()) {
-            $credentials .= $this->getUser();
-        }
-
-        if ($this->hasPass()) {
-            $credentials .= ':';
-            $credentials .= $this->getPass();
-        }
-
-        return $credentials;
     }
 
     /**
