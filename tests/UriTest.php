@@ -2,11 +2,21 @@
 
 namespace webignition\Url\Tests;
 
+use Psr\Http\Message\UriInterface;
 use webignition\Url\Uri;
 
 class UriTest extends \PHPUnit\Framework\TestCase
 {
     const UNRESERVED_CHARACTERS = 'a-zA-Z0-9.-_~!$&\'()*+,;=:@';
+
+    const URI_FIELD_AUTHORITY = 'authority';
+    const URI_FIELD_FRAGMENT = 'fragment';
+    const URI_FIELD_HOST = 'host';
+    const URI_FIELD_PATH = 'path';
+    const URI_FIELD_PORT = 'port';
+    const URI_FIELD_QUERY = 'query';
+    const URI_FIELD_SCHEME = 'scheme';
+    const URI_FIELD_USERINFO = 'userinfo';
 
     /**
      * @dataProvider createSuccessDataProvider
@@ -548,27 +558,36 @@ class UriTest extends \PHPUnit\Framework\TestCase
 
     public function testWithScheme()
     {
-        $originUri = Uri::create('http://example.com:443');
-        $this->assertSame('http', $originUri->getScheme());
-        $this->assertSame(443, $originUri->getPort());
+        $httpUrl = Uri::create('http://example.com');
+        $this->assertSame('http', $httpUrl->getScheme());
 
-        $nonUpdatedUri = $originUri->withScheme('http');
-        $this->assertSame($originUri, $nonUpdatedUri);
+        $httpsUrl = $httpUrl->withScheme('https');
+        $this->assertSame('https', $httpsUrl->getScheme());
+        $this->assertNotSame($httpUrl, $httpsUrl);
+        $this->assertUrisEqual($httpUrl, $httpsUrl, [self::URI_FIELD_SCHEME]);
+    }
 
-        $updatedUri = $originUri->withScheme('HTTPS');
-        $this->assertSame('https', $updatedUri->getScheme());
-        $this->assertNull($updatedUri->getPort());
-        $this->assertNotSame($originUri, $updatedUri);
+    public function testWithSchemeRemovesDefaultPort()
+    {
+        $httpUrl = Uri::create('http://example.com:443');
+        $this->assertSame(443, $httpUrl->getPort());
+
+        $httpsUrl = $httpUrl->withScheme('https');
+        $this->assertNull($httpsUrl->getPort());
     }
 
     public function testWithUserInfo()
     {
-        $originUri = Uri::create('http://example.com');
-        $this->assertSame('', $originUri->getUserInfo());
+        $uriWithoutUserInfo = Uri::create('http://example.com');
+        $this->assertSame('', $uriWithoutUserInfo->getUserInfo());
 
-        $uriWithUserOnly = $originUri->withUserInfo('user');
-        $this->assertNotSame($originUri, $uriWithUserOnly);
+        $uriWithUserOnly = $uriWithoutUserInfo->withUserInfo('user');
         $this->assertSame('user', $uriWithUserOnly->getUserInfo());
+        $this->assertNotSame($uriWithoutUserInfo, $uriWithUserOnly);
+        $this->assertUrisEqual($uriWithoutUserInfo, $uriWithUserOnly, [
+            self::URI_FIELD_AUTHORITY,
+            self::URI_FIELD_USERINFO,
+        ]);
 
         $uriWithUserAndPassword = $uriWithUserOnly->withUserInfo('user-with-password', 'password');
         $this->assertNotSame($uriWithUserOnly, $uriWithUserAndPassword);
@@ -587,8 +606,12 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('', $uriWithOnlyPath->getHost());
 
         $uriWithPathAndHost = $uriWithOnlyPath->withHost('example.com');
-        $this->assertNotSame($uriWithOnlyPath, $uriWithPathAndHost);
         $this->assertSame('example.com', $uriWithPathAndHost->getHost());
+        $this->assertNotSame($uriWithOnlyPath, $uriWithPathAndHost);
+        $this->assertUrisEqual($uriWithOnlyPath, $uriWithPathAndHost, [
+            self::URI_FIELD_AUTHORITY,
+            self::URI_FIELD_HOST,
+        ]);
 
         $uriWithSamePathAndHost = $uriWithPathAndHost->withHost('example.com');
         $this->assertSame($uriWithPathAndHost, $uriWithSamePathAndHost);
@@ -632,8 +655,9 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($httpUriWithoutPort->getPort());
 
         $httpUriWithDefaultPortAdded = $httpUriWithoutPort->withPort(80);
-        $this->assertNotSame($httpUriWithoutPort, $httpUriWithDefaultPortAdded);
         $this->assertNull($httpUriWithDefaultPortAdded->getPort());
+        $this->assertNotSame($httpUriWithoutPort, $httpUriWithDefaultPortAdded);
+        $this->assertUrisEqual($httpUriWithDefaultPortAdded, $httpUriWithoutPort);
 
         $httpUriWithNonDefaultPort = $httpUriWithDefaultPortAdded->withPort(8080);
         $this->assertSame(8080, $httpUriWithNonDefaultPort->getPort());
@@ -651,8 +675,9 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('', $uriWithoutPath->getPath());
 
         $uriWithPathAdded = $uriWithoutPath->withPath('/path');
-        $this->assertNotSame($uriWithoutPath, $uriWithPathAdded);
         $this->assertSame('/path', $uriWithPathAdded->getPath());
+        $this->assertNotSame($uriWithoutPath, $uriWithPathAdded);
+        $this->assertUrisEqual($uriWithoutPath, $uriWithPathAdded, [self::URI_FIELD_PATH]);
 
         $uriWithSamePathAdded = $uriWithPathAdded->withPath('/path');
         $this->assertSame($uriWithPathAdded, $uriWithSamePathAdded);
@@ -667,13 +692,66 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('', $uriWithoutQuery->getQuery());
 
         $uriWithQueryAdded = $uriWithoutQuery->withQuery('foo=bar');
-        $this->assertNotSame($uriWithoutQuery, $uriWithQueryAdded);
         $this->assertSame('foo=bar', $uriWithQueryAdded->getQuery());
+        $this->assertNotSame($uriWithoutQuery, $uriWithQueryAdded);
+        $this->assertUrisEqual($uriWithoutQuery, $uriWithQueryAdded, [self::URI_FIELD_QUERY]);
+
 
         $uriWithSameQueryAdded = $uriWithQueryAdded->withQuery('foo=bar');
         $this->assertSame($uriWithQueryAdded, $uriWithSameQueryAdded);
 
         $uriWithQueryRemoved = $uriWithSameQueryAdded->withQuery('');
         $this->assertSame('', $uriWithQueryRemoved->getQuery());
+    }
+
+    private function assertUrisEqual(UriInterface $expected, UriInterface $actual, array $exceptionFields = [])
+    {
+        if (in_array(self::URI_FIELD_AUTHORITY, $exceptionFields)) {
+            $this->assertNotSame($expected->getAuthority(), $actual->getAuthority());
+        } else {
+            $this->assertSame($expected->getAuthority(), $actual->getAuthority());
+        }
+
+        if (in_array(self::URI_FIELD_FRAGMENT, $exceptionFields)) {
+            $this->assertNotSame($expected->getFragment(), $actual->getFragment());
+        } else {
+            $this->assertSame($expected->getFragment(), $actual->getFragment());
+        }
+
+        if (in_array(self::URI_FIELD_HOST, $exceptionFields)) {
+            $this->assertNotSame($expected->getHost(), $actual->getHost());
+        } else {
+            $this->assertSame($expected->getHost(), $actual->getHost());
+        }
+
+        if (in_array(self::URI_FIELD_PATH, $exceptionFields)) {
+            $this->assertNotSame($expected->getPath(), $actual->getPath());
+        } else {
+            $this->assertSame($expected->getPath(), $actual->getPath());
+        }
+
+        if (in_array(self::URI_FIELD_PORT, $exceptionFields)) {
+            $this->assertNotSame($expected->getPort(), $actual->getPort());
+        } else {
+            $this->assertSame($expected->getPort(), $actual->getPort());
+        }
+
+        if (in_array(self::URI_FIELD_QUERY, $exceptionFields)) {
+            $this->assertNotSame($expected->getQuery(), $actual->getQuery());
+        } else {
+            $this->assertSame($expected->getQuery(), $actual->getQuery());
+        }
+
+        if (in_array(self::URI_FIELD_SCHEME, $exceptionFields)) {
+            $this->assertNotSame($expected->getScheme(), $actual->getScheme());
+        } else {
+            $this->assertSame($expected->getScheme(), $actual->getScheme());
+        }
+
+        if (in_array(self::URI_FIELD_USERINFO, $exceptionFields)) {
+            $this->assertNotSame($expected->getUserInfo(), $actual->getUserInfo());
+        } else {
+            $this->assertSame($expected->getUserInfo(), $actual->getUserInfo());
+        }
     }
 }
