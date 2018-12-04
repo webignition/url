@@ -8,6 +8,8 @@ use webignition\Url\Uri;
 class UriTest extends \PHPUnit\Framework\TestCase
 {
     const UNRESERVED_CHARACTERS = 'a-zA-Z0-9.-_~!$&\'()*+,;=:@';
+    const GEN_DELIMITERS = ':/?#[]@';
+    const SUB_DELIMITERS = '/!$&\'()*+,;=';
 
     public function testCreateWithInvalidPort()
     {
@@ -503,6 +505,75 @@ class UriTest extends \PHPUnit\Framework\TestCase
             ],
             'scheme, user, password, host, port, path, query, fragment' => [
                 'uri' => 'http://user:password@example.com:8080/path?query#fragment',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider encodingOfGenAndSubDelimitersDataProvider
+     *
+     * @param string $uri
+     * @param string $expectedPath
+     * @param string $expectedQuery
+     * @param string $expectedFragment
+     */
+    public function testEncodingOfGenAndSubDelimiters(
+        string $uri,
+        string $expectedPath,
+        string $expectedQuery,
+        string $expectedFragment
+    ) {
+        $uriObject = Uri::create($uri);
+
+        $this->assertSame($expectedPath, $uriObject->getPath());
+        $this->assertSame($expectedQuery, $uriObject->getQuery());
+        $this->assertSame($expectedFragment, $uriObject->getFragment());
+        $this->assertSame($uri, (string) $uri);
+    }
+
+    public function encodingOfGenAndSubDelimitersDataProvider(): array
+    {
+        return [
+            'no path, no query, no fragment' => [
+                'uri' => 'http://example.com',
+                'expectedPath' => '',
+                'expectedQuery' => '',
+                'expectedFragment' => '',
+            ],
+            'sub-delimiters in path' => [
+                'uri' => 'http://example.com/' . self::SUB_DELIMITERS,
+                'expectedPath' => '/' . self::SUB_DELIMITERS,
+                'expectedQuery' => '',
+                'expectedFragment' => '',
+            ],
+            'sub-delimiters in query' => [
+                'uri' => 'http://example.com?' . self::SUB_DELIMITERS,
+                'expectedPath' => '',
+                'expectedQuery' => self::SUB_DELIMITERS,
+                'expectedFragment' => '',
+            ],
+            'sub-delimiters in fragment' => [
+                'uri' => 'http://example.com#' . self::SUB_DELIMITERS,
+                'expectedPath' => '',
+                'expectedQuery' => '',
+                'expectedFragment' => self::SUB_DELIMITERS,
+            ],
+            'sub-delimiters in path, query, fragment' => [
+                'uri' => sprintf(
+                    'http://example.com/%s?%s#%s',
+                    self::SUB_DELIMITERS,
+                    self::SUB_DELIMITERS,
+                    self::SUB_DELIMITERS
+                ),
+                'expectedPath' => '/' . self::SUB_DELIMITERS,
+                'expectedQuery' => self::SUB_DELIMITERS,
+                'expectedFragment' => self::SUB_DELIMITERS,
+            ],
+            'gen-delimiters in fragment' => [
+                'uri' => 'http://example.com?#' . self::GEN_DELIMITERS,
+                'expectedPath' => '',
+                'expectedQuery' => '',
+                'expectedFragment' => ':/?%23%5B%5D@',
             ],
         ];
     }
