@@ -3,18 +3,19 @@
 namespace webignition\Url;
 
 use IpUtils\Exception\InvalidExpressionException;
+use Psr\Http\Message\UriInterface;
 use webignition\Url\Host\Host;
 
 class Inspector
 {
     /**
-     * @param UrlInterface $url
+     * @param UriInterface $url
      *
      * @return bool
      *
      * @throws InvalidExpressionException
      */
-    public function isPubliclyRoutable(UrlInterface $url): bool
+    public function isPubliclyRoutable(UriInterface $url): bool
     {
         $host = $url->getHost();
         if (empty($host)) {
