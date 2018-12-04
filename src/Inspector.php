@@ -4,7 +4,6 @@ namespace webignition\Url;
 
 use IpUtils\Exception\InvalidExpressionException;
 use Psr\Http\Message\UriInterface;
-use webignition\Url\Host\Host;
 
 class Inspector
 {

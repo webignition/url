@@ -1,12 +1,11 @@
 <?php
 
-namespace webignition\Url\Host;
+namespace webignition\Url;
 
 use IpUtils\Address\IPv4;
 use IpUtils\Exception\InvalidExpressionException;
 use IpUtils\Expression\Subnet;
 use IpUtils\Factory as IpUtilsFactory;
-use webignition\Url\PunycodeEncoder;
 
 /**
  * Represents the host part of a URL
@@ -68,23 +67,13 @@ class Host
     {
         $this->punycodeEncoder = new PunycodeEncoder();
 
-        $this->set($host);
-    }
-
-    public function get(): string
-    {
-        return $this->host;
-    }
-
-    public function set(string $host)
-    {
-        $this->host = trim($host);
-        $this->parts = explode(self::HOST_PART_SEPARATOR, $this->get());
+        $this->host = $host;
+        $this->parts = explode(self::HOST_PART_SEPARATOR, $host);
     }
 
     public function __toString(): string
     {
-        return $this->get();
+        return $this->host;
     }
 
     public function getParts(): array
@@ -94,30 +83,30 @@ class Host
 
     public function equals(Host $comparator): bool
     {
-        return $this->get() == $comparator->get();
+        return (string) $this === (string) $comparator;
     }
 
-    public function isEquivalentTo(Host $comparator, array $excludeParts = []): bool
+    public function isEquivalentTo(Host $comparator, array $excludedParts = []): bool
     {
         $thisHost = new Host($this->punycodeEncoder->encode((string) $this));
         $comparatorHost = new Host($this->punycodeEncoder->encode((string) $comparator));
 
-        if (empty($excludeParts)) {
+        if (empty($excludedParts)) {
             return $thisHost->equals($comparatorHost);
         }
 
-        $thisParts = $this->excludeParts($thisHost->getParts(), $excludeParts);
-        $comparatorParts = $this->excludeParts($comparatorHost->getParts(), $excludeParts);
+        $thisParts = $this->excludeParts($thisHost->getParts(), $excludedParts);
+        $comparatorParts = $this->excludeParts($comparatorHost->getParts(), $excludedParts);
 
-        return $thisParts == $comparatorParts;
+        return $thisParts === $comparatorParts;
     }
 
     private function excludeParts(array $parts, array $exclusions): array
     {
-        $filteredParts = array();
+        $filteredParts = [];
 
         foreach ($parts as $index => $part) {
-            if (!isset($exclusions[$index]) || $exclusions[$index] != $part) {
+            if (!isset($exclusions[$index]) || $exclusions[$index] !== $part) {
                 $filteredParts[] = $part;
             }
         }
@@ -133,7 +122,7 @@ class Host
     public function isPubliclyRoutable(): bool
     {
         try {
-            $ip = IpUtilsFactory::getAddress($this->get());
+            $ip = IpUtilsFactory::getAddress($this->host);
 
             if ($ip->isPrivate()) {
                 return false;
