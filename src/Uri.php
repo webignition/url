@@ -9,9 +9,6 @@ class Uri implements UriInterface
     const MIN_PORT = 1;
     const MAX_PORT = 65535;
 
-    private static $charUnreserved = 'a-zA-Z0-9_\-\.~';
-    private static $charSubDelims = '!\$&\'\(\)\*\+,;=';
-
     private $schemeToPortMap = [
         'http'  => 80,
         'https' => 443,
@@ -73,9 +70,9 @@ class Uri implements UriInterface
         $this->scheme = strtolower($scheme);
         $this->userInfo = $userInfo;
         $this->host = strtolower($host);
-        $this->path = $this->filterPath($path);
-        $this->query = $this->filterQueryAndFragment($query);
-        $this->fragment = $this->filterQueryAndFragment($fragment);
+        $this->path = Filter::filterPath($path);
+        $this->query = Filter::filterQueryOrFragment($query);
+        $this->fragment = Filter::filterQueryOrFragment($fragment);
 
         if (!empty($port)) {
             $knownPort = $this->schemeToPortMap[$scheme] ?? null;
@@ -85,7 +82,7 @@ class Uri implements UriInterface
             }
         }
 
-        $this->port = $this->filterPort($port);
+        $this->port = Filter::filterPort($port);
     }
 
     public static function create(string $uri)
@@ -217,7 +214,7 @@ class Uri implements UriInterface
 
     public function withPath($path)
     {
-        $path = $this->filterPath($path);
+        $path = Filter::filterPath($path);
 
         if ($this->path === $path) {
             return $this;
@@ -228,7 +225,7 @@ class Uri implements UriInterface
 
     public function withQuery($query)
     {
-        $query = $this->filterQueryAndFragment($query);
+        $query = Filter::filterQueryOrFragment($query);
 
         if ($this->query === $query) {
             return $this;
@@ -239,7 +236,7 @@ class Uri implements UriInterface
 
     public function withFragment($fragment)
     {
-        $fragment = $this->filterQueryAndFragment($fragment);
+        $fragment = Filter::filterQueryOrFragment($fragment);
 
         if ($this->fragment === $fragment) {
             return $this;
@@ -283,78 +280,5 @@ class Uri implements UriInterface
         }
 
         return $uri;
-    }
-
-    /**
-     * Filters the path of a URI
-     *
-     * @param string $path
-     *
-     * @return string
-     *
-     * @throws \InvalidArgumentException If the path is invalid.
-     */
-    private function filterPath($path)
-    {
-        if (!is_string($path)) {
-            throw new \InvalidArgumentException('Path must be a string');
-        }
-
-        return preg_replace_callback(
-            '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
-            [$this, 'rawurlencodeMatchZero'],
-            $path
-        );
-    }
-
-    /**
-     * Filters the query string or fragment of a URI.
-     *
-     * @param string $str
-     *
-     * @return string
-     *
-     * @throws \InvalidArgumentException If the query or fragment is invalid.
-     */
-    private function filterQueryAndFragment($str)
-    {
-        if (!is_string($str)) {
-            throw new \InvalidArgumentException('Query and fragment must be a string');
-        }
-
-        return preg_replace_callback(
-            '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
-            [$this, 'rawurlencodeMatchZero'],
-            $str
-        );
-    }
-
-    private function rawurlencodeMatchZero(array $match)
-    {
-        return rawurlencode($match[0]);
-    }
-
-    /**
-     * @param int|null $port
-     *
-     * @return int|null
-     *
-     * @throws \InvalidArgumentException If the port is invalid.
-     */
-    private function filterPort(?int $port): ?int
-    {
-        if (null === $port) {
-            return null;
-        }
-
-        $port = (int) $port;
-
-        if (self::MIN_PORT > $port || self::MAX_PORT < $port) {
-            throw new \InvalidArgumentException(
-                sprintf('Invalid port: %d. Must be between %d and %d', $port, self::MIN_PORT, self::MAX_PORT)
-            );
-        }
-
-        return $port;
     }
 }
