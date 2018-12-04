@@ -6,9 +6,6 @@ use Psr\Http\Message\UriInterface;
 
 class Uri implements UriInterface
 {
-    const MIN_PORT = 1;
-    const MAX_PORT = 65535;
-
     private $schemeToPortMap = [
         'http'  => 80,
         'https' => 443,
