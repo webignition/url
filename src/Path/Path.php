@@ -21,12 +21,16 @@ class Path
 
     public function isRelative(): bool
     {
-        return !$this->isAbsolute();
+        return '' === $this->path
+            ? true
+            : self::PATH_PART_SEPARATOR !== $this->path[0];
     }
 
     public function isAbsolute(): bool
     {
-        return substr($this->path, 0, 1) === self::PATH_PART_SEPARATOR;
+        return '' === $this->path
+            ? false
+            : self::PATH_PART_SEPARATOR === $this->path[0];
     }
 
     public function __toString(): string
@@ -36,7 +40,7 @@ class Path
 
     public function hasFilename(): bool
     {
-        if (substr($this->path, strlen($this->path) - 1) == '/') {
+        if ('' === $this->path || self::PATH_PART_SEPARATOR === $this->path[-1]) {
             return false;
         }
 
@@ -55,7 +59,9 @@ class Path
 
     public function hasTrailingSlash(): bool
     {
-        return substr($this->path, strlen($this->path) - 1) == '/';
+        return '' === $this->path
+            ? false
+            : self::PATH_PART_SEPARATOR === $this->path[-1];
     }
 
     private function filter(string $path): string
