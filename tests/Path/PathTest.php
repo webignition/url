@@ -9,10 +9,10 @@ class PathTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider createDataProvider
      *
-     * @param string|null $path
+     * @param string $path
      * @param string $expectedPath
      */
-    public function testCreate(?string $path, string $expectedPath)
+    public function testCreate(string $path, string $expectedPath)
     {
         $path = new Path($path);
 
@@ -22,10 +22,6 @@ class PathTest extends \PHPUnit\Framework\TestCase
     public function createDataProvider(): array
     {
         return [
-            'null' => [
-                'pathString' => null,
-                'expectedPath' => '',
-            ],
             'empty' => [
                 'pathString' => '',
                 'expectedPath' => '',
