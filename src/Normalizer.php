@@ -186,7 +186,7 @@ class Normalizer
     private function removePathDotSegments(UriInterface $uri): UriInterface
     {
         $path = $uri->getPath();
-        if ('/' === $path) {
+        if ('' === $path || '/' === $path) {
             return $uri;
         }
 

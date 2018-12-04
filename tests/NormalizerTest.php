@@ -321,6 +321,20 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 ],
                 'expectedUrl' => Uri::create('http://example.com/index.html'),
             ],
+            'removeDefaultFilesPatterns=non-empty, empty path' => [
+                'url' => Uri::create('http://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
+                ],
+                'expectedUrl' => Uri::create('http://example.com'),
+            ],
+            'removeDefaultFilesPatterns=non-empty, no filename' => [
+                'url' => Uri::create('http://example.com/'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
+                ],
+                'expectedUrl' => Uri::create('http://example.com/'),
+            ],
             'removeDefaultFilesPatterns=non-empty, foo-index.html filename' => [
                 'url' => Uri::create('http://example.com/foo-index.html'),
                 'options' => [
@@ -422,6 +436,20 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
     public function removeDotPathSegmentsDataProvider(): array
     {
         return [
+            'removeDotPathSegments=true, no path' => [
+                'url' => Uri::create('http://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
+                ],
+                'expectedUrl' => Uri::create('http://example.com'),
+            ],
+            'removeDotPathSegments=true, / path' => [
+                'url' => Uri::create('http://example.com/'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
+                ],
+                'expectedUrl' => Uri::create('http://example.com/'),
+            ],
             'removeDotPathSegments=true, single dot' => [
                 'url' => Uri::create('http://example.com/.'),
                 'options' => [
@@ -511,6 +539,13 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                     NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
                 ],
                 'expectedUrl' => Uri::create('http://example.com/foo/'),
+            ],
+            'addTrailingSlash: has filename' => [
+                'url' => Uri::create('http://example.com/index.html'),
+                'options' => [
+                    NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
+                ],
+                'expectedUrl' => Uri::create('http://example.com/index.html'),
             ],
         ];
     }
