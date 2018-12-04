@@ -2,19 +2,10 @@
 
 namespace webignition\Url;
 
+use Psr\Http\Message\UriInterface;
+
 class ScopeComparer
 {
-    /**
-     * @var string[]
-     */
-    private $ignoredParts = [
-        UrlInterface::PART_PORT,
-        UrlInterface::PART_USER,
-        UrlInterface::PART_PASS,
-        UrlInterface::PART_QUERY,
-        UrlInterface::PART_FRAGMENT,
-    ];
-
     /**
      * @var array
      */
@@ -58,23 +49,18 @@ class ScopeComparer
      *  - query
      *  - fragment
      *
-     * @param Url $sourceUrl
-     * @param Url $comparator
+     * @param UriInterface $source
+     * @param UriInterface $comparator
      *
      * @return bool
      */
-    public function isInScope(Url $sourceUrl, Url $comparator): bool
+    public function isInScope(UriInterface $source, UriInterface $comparator): bool
     {
-        $localSource = clone $sourceUrl;
-        $localComparator = clone $comparator;
+        $source = $this->removeIgnoredComponents($source);
+        $comparator = $this->removeIgnoredComponents($comparator);
 
-        foreach ($this->ignoredParts as $partName) {
-            $localSource->setPart($partName, null);
-            $localComparator->setPart($partName, null);
-        }
-
-        $sourceString = (string) $localSource;
-        $comparatorString = (string)$localComparator;
+        $sourceString = (string) $source;
+        $comparatorString = (string) $comparator;
 
         if ($sourceString === $comparatorString) {
             return true;
@@ -84,15 +70,15 @@ class ScopeComparer
             return true;
         }
 
-        if (!$this->areSchemesEquivalent($localSource, $localComparator)) {
+        if (!$this->areSchemesEquivalent($source->getScheme(), $comparator->getScheme())) {
             return false;
         }
 
-        if (!$this->areHostsEquivalent($localSource, $localComparator)) {
+        if (!$this->areHostsEquivalent($source->getHost(), $comparator->getHost())) {
             return false;
         }
 
-        return $this->isSourcePathSubstringOfComparatorPath($localSource, $localComparator);
+        return $this->isSourcePathSubstringOfComparatorPath($source, $comparator);
     }
 
     private function isSourceUrlSubstringOfComparatorUrl(string $source, string $comparator): bool
@@ -100,22 +86,14 @@ class ScopeComparer
         return strpos($comparator, $source) === 0;
     }
 
-    private function areSchemesEquivalent(Url $source, Url $comparator): bool
+    private function areSchemesEquivalent(string $source, string $comparator): bool
     {
-        return $this->areUrlPartsEquivalent(
-            (string) $source->getScheme(),
-            (string) $comparator->getScheme(),
-            $this->equivalentSchemes
-        );
+        return $this->areUrlPartsEquivalent($source, $comparator, $this->equivalentSchemes);
     }
 
-    private function areHostsEquivalent(Url $source, Url $comparator): bool
+    private function areHostsEquivalent(string $source, string $comparator): bool
     {
-        return $this->areUrlPartsEquivalent(
-            (string) $source->getHost(),
-            (string) $comparator->getHost(),
-            $this->equivalentHosts
-        );
+        return $this->areUrlPartsEquivalent($source, $comparator, $this->equivalentHosts);
     }
 
     private function areUrlPartsEquivalent(string $sourceValue, string $comparatorValue, array $equivalenceSets): bool
@@ -133,9 +111,11 @@ class ScopeComparer
         return false;
     }
 
-    private function isSourcePathSubstringOfComparatorPath(Url $source, Url $comparator): bool
+    private function isSourcePathSubstringOfComparatorPath(UriInterface $source, UriInterface $comparator): bool
     {
-        if (!$source->hasPath()) {
+        $path = $source->getPath();
+
+        if ('' === $path) {
             return true;
         }
 
@@ -143,5 +123,15 @@ class ScopeComparer
         $comparatorPath = (string) $comparator->getPath();
 
         return strpos($comparatorPath, $sourcePath) === 0;
+    }
+
+    private function removeIgnoredComponents(UriInterface $uri): UriInterface
+    {
+        $uri = $uri->withPort(null);
+        $uri = $uri->withUserInfo('');
+        $uri = $uri->withQuery('');
+        $uri = $uri->withFragment('');
+
+        return $uri;
     }
 }
