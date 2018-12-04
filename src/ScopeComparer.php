@@ -5,26 +5,6 @@ namespace webignition\Url;
 class ScopeComparer
 {
     /**
-     * @var Url
-     */
-    private $sourceUrl;
-
-    /**
-     * @var Url
-     */
-    private $comparatorUrl;
-
-    /**
-     * @var string
-     */
-    private $sourceUrlString;
-
-    /**
-     * @var string
-     */
-    private $comparatorUrlString;
-
-    /**
      * @var string[]
      */
     private $ignoredParts = [
@@ -79,61 +59,61 @@ class ScopeComparer
      *  - fragment
      *
      * @param Url $sourceUrl
-     * @param Url $comparatorUrl
+     * @param Url $comparator
      *
      * @return bool
      */
-    public function isInScope(Url $sourceUrl, Url $comparatorUrl): bool
+    public function isInScope(Url $sourceUrl, Url $comparator): bool
     {
-        $this->sourceUrl = clone $sourceUrl;
-        $this->comparatorUrl = clone $comparatorUrl;
+        $localSource = clone $sourceUrl;
+        $localComparator = clone $comparator;
 
         foreach ($this->ignoredParts as $partName) {
-            $this->sourceUrl->setPart($partName, null);
-            $this->comparatorUrl->setPart($partName, null);
+            $localSource->setPart($partName, null);
+            $localComparator->setPart($partName, null);
         }
 
-        $this->sourceUrlString = (string)$this->sourceUrl;
-        $this->comparatorUrlString = (string)$this->comparatorUrl;
+        $sourceString = (string) $localSource;
+        $comparatorString = (string)$localComparator;
 
-        if ($this->sourceUrlString === $this->comparatorUrlString) {
+        if ($sourceString === $comparatorString) {
             return true;
         }
 
-        if ($this->isSourceUrlSubstringOfComparatorUrl()) {
+        if ($this->isSourceUrlSubstringOfComparatorUrl($sourceString, $comparatorString)) {
             return true;
         }
 
-        if (!$this->areSchemesEquivalent()) {
+        if (!$this->areSchemesEquivalent($localSource, $localComparator)) {
             return false;
         }
 
-        if (!$this->areHostsEquivalent()) {
+        if (!$this->areHostsEquivalent($localSource, $localComparator)) {
             return false;
         }
 
-        return $this->isSourcePathSubstringOfComparatorPath();
+        return $this->isSourcePathSubstringOfComparatorPath($localSource, $localComparator);
     }
 
-    private function isSourceUrlSubstringOfComparatorUrl(): bool
+    private function isSourceUrlSubstringOfComparatorUrl(string $source, string $comparator): bool
     {
-        return strpos($this->comparatorUrlString, $this->sourceUrlString) === 0;
+        return strpos($comparator, $source) === 0;
     }
 
-    private function areSchemesEquivalent(): bool
+    private function areSchemesEquivalent(Url $source, Url $comparator): bool
     {
         return $this->areUrlPartsEquivalent(
-            (string)$this->sourceUrl->getScheme(),
-            (string)$this->comparatorUrl->getScheme(),
+            (string) $source->getScheme(),
+            (string) $comparator->getScheme(),
             $this->equivalentSchemes
         );
     }
 
-    private function areHostsEquivalent(): bool
+    private function areHostsEquivalent(Url $source, Url $comparator): bool
     {
         return $this->areUrlPartsEquivalent(
-            (string)$this->sourceUrl->getHost(),
-            (string)$this->comparatorUrl->getHost(),
+            (string) $source->getHost(),
+            (string) $comparator->getHost(),
             $this->equivalentHosts
         );
     }
@@ -153,14 +133,14 @@ class ScopeComparer
         return false;
     }
 
-    private function isSourcePathSubstringOfComparatorPath(): bool
+    private function isSourcePathSubstringOfComparatorPath(Url $source, Url $comparator): bool
     {
-        if (!$this->sourceUrl->hasPath()) {
+        if (!$source->hasPath()) {
             return true;
         }
 
-        $sourcePath = (string)$this->sourceUrl->getPath();
-        $comparatorPath = (string)$this->comparatorUrl->getPath();
+        $sourcePath = (string) $source->getPath();
+        $comparatorPath = (string) $comparator->getPath();
 
         return strpos($comparatorPath, $sourcePath) === 0;
     }
