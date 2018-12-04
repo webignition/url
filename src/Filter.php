@@ -12,10 +12,6 @@ class Filter
 
     public static function filterPath(string $path): string
     {
-        if (!is_string($path)) {
-            throw new \InvalidArgumentException('Path must be a string');
-        }
-
         $pattern = '/(?:[^'
             . self::UNRESERVED_CHARACTERS
             . self::CHARACTER_SUB_DELIMITERS
@@ -28,10 +24,6 @@ class Filter
 
     public static function filterQueryOrFragment(string $value): string
     {
-        if (!is_string($value)) {
-            throw new \InvalidArgumentException('Query and fragment must be a string');
-        }
-
         $pattern = '/(?:[^'
             . self::UNRESERVED_CHARACTERS
             . self::CHARACTER_SUB_DELIMITERS
