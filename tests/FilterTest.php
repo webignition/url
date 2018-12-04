@@ -58,6 +58,10 @@ class FilterTest extends \PHPUnit\Framework\TestCase
                 'path' => '/p%61th',
                 'expectedPath' => '/p%61th',
             ],
+            'encode reserved characters' => [
+                'path' => '/?#[]',
+                'expectedPath' => '/%3F%23%5B%5D',
+            ],
         ];
     }
 
