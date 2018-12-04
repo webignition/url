@@ -7,12 +7,12 @@ use Psr\Http\Message\UriInterface;
 class ScopeComparer
 {
     /**
-     * @var array
+     * @var string[]
      */
     private $equivalentSchemes = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     private $equivalentHosts = [];
 
@@ -33,8 +33,7 @@ class ScopeComparer
     }
 
     /**
-     * Is the given comparator url in the scope
-     * of this url?
+     * Is the given comparator url in the scope of the source url?
      *
      * Comparator is in the same scope as the source if:
      *  - scheme is the same or equivalent (e.g. http and https are equivalent)
@@ -78,7 +77,7 @@ class ScopeComparer
             return false;
         }
 
-        return $this->isSourcePathSubstringOfComparatorPath($source, $comparator);
+        return $this->isSourcePathSubstringOfComparatorPath($source->getPath(), $comparator->getPath());
     }
 
     private function isSourceUrlSubstringOfComparatorUrl(string $source, string $comparator): bool
@@ -111,18 +110,13 @@ class ScopeComparer
         return false;
     }
 
-    private function isSourcePathSubstringOfComparatorPath(UriInterface $source, UriInterface $comparator): bool
+    private function isSourcePathSubstringOfComparatorPath(string $source, string $comparator): bool
     {
-        $path = $source->getPath();
-
-        if ('' === $path) {
+        if ('' === $source) {
             return true;
         }
 
-        $sourcePath = (string) $source->getPath();
-        $comparatorPath = (string) $comparator->getPath();
-
-        return strpos($comparatorPath, $sourcePath) === 0;
+        return 0 === strpos($comparator, $source);
     }
 
     private function removeIgnoredComponents(UriInterface $uri): UriInterface
