@@ -2,46 +2,17 @@
 
 namespace webignition\Url;
 
+use Psr\Http\Message\UriInterface;
+
 class ScopeComparer
 {
     /**
-     * @var Url
-     */
-    private $sourceUrl;
-
-    /**
-     * @var Url
-     */
-    private $comparatorUrl;
-
-    /**
-     * @var string
-     */
-    private $sourceUrlString;
-
-    /**
-     * @var string
-     */
-    private $comparatorUrlString;
-
-    /**
      * @var string[]
-     */
-    private $ignoredParts = [
-        UrlInterface::PART_PORT,
-        UrlInterface::PART_USER,
-        UrlInterface::PART_PASS,
-        UrlInterface::PART_QUERY,
-        UrlInterface::PART_FRAGMENT,
-    ];
-
-    /**
-     * @var array
      */
     private $equivalentSchemes = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     private $equivalentHosts = [];
 
@@ -62,8 +33,7 @@ class ScopeComparer
     }
 
     /**
-     * Is the given comparator url in the scope
-     * of this url?
+     * Is the given comparator url in the scope of the source url?
      *
      * Comparator is in the same scope as the source if:
      *  - scheme is the same or equivalent (e.g. http and https are equivalent)
@@ -78,64 +48,51 @@ class ScopeComparer
      *  - query
      *  - fragment
      *
-     * @param Url $sourceUrl
-     * @param Url $comparatorUrl
+     * @param UriInterface $source
+     * @param UriInterface $comparator
      *
      * @return bool
      */
-    public function isInScope(Url $sourceUrl, Url $comparatorUrl): bool
+    public function isInScope(UriInterface $source, UriInterface $comparator): bool
     {
-        $this->sourceUrl = clone $sourceUrl;
-        $this->comparatorUrl = clone $comparatorUrl;
+        $source = $this->removeIgnoredComponents($source);
+        $comparator = $this->removeIgnoredComponents($comparator);
 
-        foreach ($this->ignoredParts as $partName) {
-            $this->sourceUrl->setPart($partName, null);
-            $this->comparatorUrl->setPart($partName, null);
-        }
+        $sourceString = (string) $source;
+        $comparatorString = (string) $comparator;
 
-        $this->sourceUrlString = (string)$this->sourceUrl;
-        $this->comparatorUrlString = (string)$this->comparatorUrl;
-
-        if ($this->sourceUrlString === $this->comparatorUrlString) {
+        if ($sourceString === $comparatorString) {
             return true;
         }
 
-        if ($this->isSourceUrlSubstringOfComparatorUrl()) {
+        if ($this->isSourceUrlSubstringOfComparatorUrl($sourceString, $comparatorString)) {
             return true;
         }
 
-        if (!$this->areSchemesEquivalent()) {
+        if (!$this->areSchemesEquivalent($source->getScheme(), $comparator->getScheme())) {
             return false;
         }
 
-        if (!$this->areHostsEquivalent()) {
+        if (!$this->areHostsEquivalent($source->getHost(), $comparator->getHost())) {
             return false;
         }
 
-        return $this->isSourcePathSubstringOfComparatorPath();
+        return $this->isSourcePathSubstringOfComparatorPath($source->getPath(), $comparator->getPath());
     }
 
-    private function isSourceUrlSubstringOfComparatorUrl(): bool
+    private function isSourceUrlSubstringOfComparatorUrl(string $source, string $comparator): bool
     {
-        return strpos($this->comparatorUrlString, $this->sourceUrlString) === 0;
+        return strpos($comparator, $source) === 0;
     }
 
-    private function areSchemesEquivalent(): bool
+    private function areSchemesEquivalent(string $source, string $comparator): bool
     {
-        return $this->areUrlPartsEquivalent(
-            (string)$this->sourceUrl->getScheme(),
-            (string)$this->comparatorUrl->getScheme(),
-            $this->equivalentSchemes
-        );
+        return $this->areUrlPartsEquivalent($source, $comparator, $this->equivalentSchemes);
     }
 
-    private function areHostsEquivalent(): bool
+    private function areHostsEquivalent(string $source, string $comparator): bool
     {
-        return $this->areUrlPartsEquivalent(
-            (string)$this->sourceUrl->getHost(),
-            (string)$this->comparatorUrl->getHost(),
-            $this->equivalentHosts
-        );
+        return $this->areUrlPartsEquivalent($source, $comparator, $this->equivalentHosts);
     }
 
     private function areUrlPartsEquivalent(string $sourceValue, string $comparatorValue, array $equivalenceSets): bool
@@ -153,15 +110,22 @@ class ScopeComparer
         return false;
     }
 
-    private function isSourcePathSubstringOfComparatorPath(): bool
+    private function isSourcePathSubstringOfComparatorPath(string $source, string $comparator): bool
     {
-        if (!$this->sourceUrl->hasPath()) {
+        if ('' === $source) {
             return true;
         }
 
-        $sourcePath = (string)$this->sourceUrl->getPath();
-        $comparatorPath = (string)$this->comparatorUrl->getPath();
+        return 0 === strpos($comparator, $source);
+    }
 
-        return strpos($comparatorPath, $sourcePath) === 0;
+    private function removeIgnoredComponents(UriInterface $uri): UriInterface
+    {
+        $uri = $uri->withPort(null);
+        $uri = $uri->withUserInfo('');
+        $uri = $uri->withQuery('');
+        $uri = $uri->withFragment('');
+
+        return $uri;
     }
 }

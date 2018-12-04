@@ -2,23 +2,24 @@
 
 namespace webignition\Url\Tests;
 
+use Psr\Http\Message\UriInterface;
 use webignition\Url\ScopeComparer;
-use webignition\Url\Url;
+use webignition\Url\Uri;
 
 class ScopeComparerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @dataProvider isInScopeDataProvider
      *
-     * @param Url $sourceUrl
-     * @param Url $comparatorUrl
+     * @param UriInterface $sourceUrl
+     * @param UriInterface $comparatorUrl
      * @param array $equivalentSchemeSets
      * @param array $equivalentHostSets
      * @param bool $expectedIsInScope
      */
     public function testIsInScope(
-        Url $sourceUrl,
-        Url $comparatorUrl,
+        UriInterface $sourceUrl,
+        UriInterface $comparatorUrl,
         array $equivalentSchemeSets,
         array $equivalentHostSets,
         bool $expectedIsInScope
@@ -44,22 +45,22 @@ class ScopeComparerTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'two empty urls are in scope' => [
-                'sourceUrl' => new Url(''),
-                'comparatorUrl' => new Url(''),
+                'sourceUrl' => Uri::create(''),
+                'comparatorUrl' => Uri::create(''),
                 'equivalentSchemeSets' => [],
                 'equivalentHostSets' => [],
                 'expectedIsInScope' => true,
             ],
             'different schemes, no equivalent schemes, not in scope' => [
-                'sourceUrl' => new Url('http://example.com/'),
-                'comparatorUrl' => new Url('https://example.com/'),
+                'sourceUrl' => Uri::create('http://example.com/'),
+                'comparatorUrl' => Uri::create('https://example.com/'),
                 'equivalentSchemeSets' => [],
                 'equivalentHostSets' => [],
                 'expectedIsInScope' => false,
             ],
             'different schemes, has equivalent schemes, is in scope' => [
-                'sourceUrl' => new Url('http://example.com/'),
-                'comparatorUrl' => new Url('https://example.com/'),
+                'sourceUrl' => Uri::create('http://example.com/'),
+                'comparatorUrl' => Uri::create('https://example.com/'),
                 'equivalentSchemeSets' => [
                     [
                         'http',
@@ -70,29 +71,29 @@ class ScopeComparerTest extends \PHPUnit\Framework\TestCase
                 'expectedIsInScope' => true,
             ],
             'comparator as substring of source, is not in scope' => [
-                'sourceUrl' => new Url('http://example.com/foo'),
-                'comparatorUrl' => new Url('http://example.com/'),
+                'sourceUrl' => Uri::create('http://example.com/foo'),
+                'comparatorUrl' => Uri::create('http://example.com/'),
                 'equivalentSchemeSets' => [],
                 'equivalentHostSets' => [],
                 'expectedIsInScope' => false,
             ],
             'source as substring of comparator, is in scope' => [
-                'sourceUrl' => new Url('http://example.com/'),
-                'comparatorUrl' => new Url('http://example.com/foo'),
+                'sourceUrl' => Uri::create('http://example.com/'),
+                'comparatorUrl' => Uri::create('http://example.com/foo'),
                 'equivalentSchemeSets' => [],
                 'equivalentHostSets' => [],
                 'expectedIsInScope' => true,
             ],
             'different hosts, no equivalent hosts, not in scope' => [
-                'sourceUrl' => new Url('http://example.com/'),
-                'comparatorUrl' => new Url('https://example.com/'),
+                'sourceUrl' => Uri::create('http://example.com/'),
+                'comparatorUrl' => Uri::create('https://example.com/'),
                 'equivalentSchemeSets' => [],
                 'equivalentHostSets' => [],
                 'expectedIsInScope' => false,
             ],
             'different hosts, has equivalent hosts, is in scope' => [
-                'sourceUrl' => new Url('http://www.example.com/'),
-                'comparatorUrl' => new Url('http://example.com/'),
+                'sourceUrl' => Uri::create('http://www.example.com/'),
+                'comparatorUrl' => Uri::create('http://example.com/'),
                 'equivalentSchemeSets' => [],
                 'equivalentHostSets' => [
                     [
@@ -103,8 +104,8 @@ class ScopeComparerTest extends \PHPUnit\Framework\TestCase
                 'expectedIsInScope' => true,
             ],
             'equivalent schemes, equivalent hosts, identical path, is in scope' => [
-                'sourceUrl' => new Url('https://www.example.com/'),
-                'comparatorUrl' => new Url('http://example.com/'),
+                'sourceUrl' => Uri::create('https://www.example.com/'),
+                'comparatorUrl' => Uri::create('http://example.com/'),
                 'equivalentSchemeSets' => [
                     [
                         'http',
@@ -120,8 +121,8 @@ class ScopeComparerTest extends \PHPUnit\Framework\TestCase
                 'expectedIsInScope' => true,
             ],
             'equivalent schemes, non-equivalent hosts, identical path, not in scope' => [
-                'sourceUrl' => new Url('https://www.example.com/'),
-                'comparatorUrl' => new Url('http://example.com/'),
+                'sourceUrl' => Uri::create('https://www.example.com/'),
+                'comparatorUrl' => Uri::create('http://example.com/'),
                 'equivalentSchemeSets' => [
                     [
                         'http',
@@ -132,8 +133,8 @@ class ScopeComparerTest extends \PHPUnit\Framework\TestCase
                 'expectedIsInScope' => false,
             ],
             'equivalent schemes, equivalent hosts, source has no path, is in scope' => [
-                'sourceUrl' => new Url('https://www.example.com'),
-                'comparatorUrl' => new Url('http://example.com/foo'),
+                'sourceUrl' => Uri::create('https://www.example.com'),
+                'comparatorUrl' => Uri::create('http://example.com/foo'),
                 'equivalentSchemeSets' => [
                     [
                         'http',
@@ -149,8 +150,8 @@ class ScopeComparerTest extends \PHPUnit\Framework\TestCase
                 'expectedIsInScope' => true,
             ],
             'equivalent schemes, equivalent hosts, source path substring of comparator path, is in scope' => [
-                'sourceUrl' => new Url('https://www.example.com/foo'),
-                'comparatorUrl' => new Url('http://example.com/foo/bar'),
+                'sourceUrl' => Uri::create('https://www.example.com/foo'),
+                'comparatorUrl' => Uri::create('http://example.com/foo/bar'),
                 'equivalentSchemeSets' => [
                     [
                         'http',
@@ -166,36 +167,36 @@ class ScopeComparerTest extends \PHPUnit\Framework\TestCase
                 'expectedIsInScope' => true,
             ],
             'different ports; port difference is ignored' => [
-                'sourceUrl' => new Url('http://example.com/'),
-                'comparatorUrl' => new Url('http://example.com:8080/'),
+                'sourceUrl' => Uri::create('http://example.com/'),
+                'comparatorUrl' => Uri::create('http://example.com:8080/'),
                 'equivalentSchemeSets' => [],
                 'equivalentHostSets' => [],
                 'expectedIsInScope' => true,
             ],
             'different users; user difference is ignored' => [
-                'sourceUrl' => new Url('http://foo:password@example.com/'),
-                'comparatorUrl' => new Url('http://bar:password@example.com/'),
+                'sourceUrl' => Uri::create('http://foo:password@example.com/'),
+                'comparatorUrl' => Uri::create('http://bar:password@example.com/'),
                 'equivalentSchemeSets' => [],
                 'equivalentHostSets' => [],
                 'expectedIsInScope' => true,
             ],
             'different passwords; password difference is ignored' => [
-                'sourceUrl' => new Url('http://user:foo@example.com/'),
-                'comparatorUrl' => new Url('http://user:bar@example.com/'),
+                'sourceUrl' => Uri::create('http://user:foo@example.com/'),
+                'comparatorUrl' => Uri::create('http://user:bar@example.com/'),
                 'equivalentSchemeSets' => [],
                 'equivalentHostSets' => [],
                 'expectedIsInScope' => true,
             ],
             'different queries; query difference is ignored' => [
-                'sourceUrl' => new Url('http://example.com/?foo=bar'),
-                'comparatorUrl' => new Url('http://example.com/?bar=foo'),
+                'sourceUrl' => Uri::create('http://example.com/?foo=bar'),
+                'comparatorUrl' => Uri::create('http://example.com/?bar=foo'),
                 'equivalentSchemeSets' => [],
                 'equivalentHostSets' => [],
                 'expectedIsInScope' => true,
             ],
             'different fragments; fragment difference is ignored' => [
-                'sourceUrl' => new Url('http://example.com/#foo'),
-                'comparatorUrl' => new Url('http://example.com/#bar'),
+                'sourceUrl' => Uri::create('http://example.com/#foo'),
+                'comparatorUrl' => Uri::create('http://example.com/#bar'),
                 'equivalentSchemeSets' => [],
                 'equivalentHostSets' => [],
                 'expectedIsInScope' => true,
