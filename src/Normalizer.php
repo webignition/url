@@ -3,7 +3,6 @@
 namespace webignition\Url;
 
 use Psr\Http\Message\UriInterface;
-use webignition\Url\Path\Path;
 
 class Normalizer
 {
