@@ -1,12 +1,11 @@
 <?php
 
-namespace webignition\Url\Host;
+namespace webignition\Url;
 
 use IpUtils\Address\IPv4;
 use IpUtils\Exception\InvalidExpressionException;
 use IpUtils\Expression\Subnet;
 use IpUtils\Factory as IpUtilsFactory;
-use webignition\Url\PunycodeEncoder;
 
 /**
  * Represents the host part of a URL
