@@ -45,7 +45,7 @@ class Parser
             $parts[self::PART_FRAGMENT] = '';
         }
 
-        $scheme = isset($parts[UrlInterface::PART_SCHEME])
+        $scheme = isset($parts[self::PART_SCHEME])
             ? $parts[self::PART_SCHEME]
             : null;
 
@@ -57,7 +57,7 @@ class Parser
             $parts[self::PART_PORT] = (int)$parts[self::PART_PORT];
         }
 
-        if (isset($parts[self::PART_PATH]) && empty($parts[UrlInterface::PART_PATH])) {
+        if (isset($parts[self::PART_PATH]) && empty($parts[self::PART_PATH])) {
             unset($parts[self::PART_PATH]);
         }
 
