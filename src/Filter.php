@@ -8,36 +8,49 @@ class Filter
     public const MAX_PORT = 65535;
     private const UNRESERVED_CHARACTERS = 'a-zA-Z0-9_\-\.~';
     private const CHARACTER_SUB_DELIMITERS = '!\$&\'\(\)\*\+,;=';
+    private const TWO_CHARACTER_HEX_STRING = '[A-Fa-f0-9]{2}';
 
-    public function filterPath(string $path): string
+    public static function filterPath(string $path): string
     {
         if (!is_string($path)) {
             throw new \InvalidArgumentException('Path must be a string');
         }
 
-        return preg_replace_callback(
-            '/(?:[^' . self::UNRESERVED_CHARACTERS . self::CHARACTER_SUB_DELIMITERS . '%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
-            [$this, 'rawurlencodeMatchZero'],
-            $path
-        );
+        $pattern = '/(?:[^'
+            . self::UNRESERVED_CHARACTERS
+            . self::CHARACTER_SUB_DELIMITERS
+            . '%:@\/]++|%(?!'
+            . self::TWO_CHARACTER_HEX_STRING
+            . '))/';
+
+        return self::pregReplaceCallbackRawUrlEncodeMatchZero($pattern, $path);
     }
 
-    public function filterQueryOrFragment(string $value): string
+    public static function filterQueryOrFragment(string $value): string
     {
         if (!is_string($value)) {
             throw new \InvalidArgumentException('Query and fragment must be a string');
         }
 
-        return preg_replace_callback(
-            '/(?:[^' . self::UNRESERVED_CHARACTERS . self::CHARACTER_SUB_DELIMITERS . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
-            [$this, 'rawurlencodeMatchZero'],
-            $value
-        );
+        $pattern = '/(?:[^'
+            . self::UNRESERVED_CHARACTERS
+            . self::CHARACTER_SUB_DELIMITERS
+            . '%:@\/\?]++|%(?!'
+            . self::TWO_CHARACTER_HEX_STRING
+            . '))/';
+
+        return self::pregReplaceCallbackRawUrlEncodeMatchZero($pattern, $value);
     }
 
-    private function rawurlencodeMatchZero(array $match): string
+    private static function pregReplaceCallbackRawUrlEncodeMatchZero(string $pattern, string $value): string
     {
-        return rawurlencode($match[0]);
+        return preg_replace_callback(
+            $pattern,
+            function (array $match) {
+                return rawurlencode($match[0]);
+            },
+            $value
+        );
     }
 
     /**
@@ -47,7 +60,7 @@ class Filter
      *
      * @throws \InvalidArgumentException If the port is invalid.
      */
-    public function filterPort(?int $port): ?int
+    public static function filterPort(?int $port): ?int
     {
         if (null === $port) {
             return null;

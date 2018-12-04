@@ -16,9 +16,7 @@ class FilterTest extends \PHPUnit\Framework\TestCase
      */
     public function testFilterPath(string $path, string $expectedPath)
     {
-        $filter = new Filter();
-
-        $this->assertSame($expectedPath, $filter->filterPath($path));
+        $this->assertSame($expectedPath, Filter::filterPath($path));
     }
 
     public function filterPathDataProvider(): array
@@ -71,9 +69,7 @@ class FilterTest extends \PHPUnit\Framework\TestCase
      */
     public function testFilterQueryOrFragment(string $queryOrFragment, string $expectedQuery)
     {
-        $filter = new Filter();
-
-        $this->assertSame($expectedQuery, $filter->filterQueryOrFragment($queryOrFragment));
+        $this->assertSame($expectedQuery, Filter::filterQueryOrFragment($queryOrFragment));
     }
 
     public function filterQueryOrFragmentDataProvider(): array
@@ -121,10 +117,8 @@ class FilterTest extends \PHPUnit\Framework\TestCase
      */
     public function testFilterPortInvalidPort(int $port)
     {
-        $filter = new Filter();
-
         $this->expectException(\InvalidArgumentException::class);
-        $filter->filterPort($port);
+        Filter::filterPort($port);
     }
 
     public function filterPortInvalidPortDataProvider(): array
@@ -147,9 +141,7 @@ class FilterTest extends \PHPUnit\Framework\TestCase
      */
     public function testFilterPortSuccess($port, ?int $expectedPort)
     {
-        $filter = new Filter();
-
-        $this->assertSame($expectedPort, $filter->filterPort($port));
+        $this->assertSame($expectedPort, Filter::filterPort($port));
     }
 
     public function filterPortSuccessDataProvider(): array
