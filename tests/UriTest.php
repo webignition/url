@@ -528,6 +528,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($expectedPath, $uriObject->getPath());
         $this->assertSame($expectedQuery, $uriObject->getQuery());
         $this->assertSame($expectedFragment, $uriObject->getFragment());
+        $this->assertSame($uri, (string) $uri);
     }
 
     public function encodingOfGenAndSubDelimitersDataProvider(): array
