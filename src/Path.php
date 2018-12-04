@@ -6,9 +6,6 @@ class Path
 {
     const PATH_PART_SEPARATOR = '/';
 
-    private static $charUnreserved = 'a-zA-Z0-9_\-\.~';
-    private static $charSubDelims = '!\$&\'\(\)\*\+,;=';
-
     /**
      * @var string
      */
@@ -16,7 +13,7 @@ class Path
 
     public function __construct(string $path)
     {
-        $this->path = $this->filter($path);
+        $this->path = Filter::filterPath($path);
     }
 
     public function isRelative(): bool
@@ -62,19 +59,5 @@ class Path
         return '' === $this->path
             ? false
             : self::PATH_PART_SEPARATOR === $this->path[-1];
-    }
-
-    private function filter(string $path): string
-    {
-        return preg_replace_callback(
-            '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
-            [$this, 'rawurlencodeMatchZero'],
-            $path
-        );
-    }
-
-    private function rawurlencodeMatchZero(array $match)
-    {
-        return rawurlencode($match[0]);
     }
 }

@@ -2,34 +2,18 @@
 
 namespace webignition\Url\Tests;
 
+use webignition\Url\Filter;
 use webignition\Url\Uri;
 
 class UriTest extends \PHPUnit\Framework\TestCase
 {
     const UNRESERVED_CHARACTERS = 'a-zA-Z0-9.-_~!$&\'()*+,;=:@';
 
-    /**
-     * @dataProvider createWithInvalidPortDataProvider
-     *
-     * @param string $url
-     */
-    public function testCreateWithInvalidPort(string $url)
+    public function testCreateWithInvalidPort()
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        Uri::create($url);
-    }
-
-    public function createWithInvalidPortDataProvider(): array
-    {
-        return [
-            'less than min' => [
-                'url' => 'http://example.com:' . (Uri::MIN_PORT - 1),
-            ],
-            'greater than max' => [
-                'url' => 'http://example.com:' . (Uri::MAX_PORT + 1),
-            ],
-        ];
+        Uri::create('http://example.com:' . (Filter::MIN_PORT - 1));
     }
 
     /**
@@ -240,164 +224,64 @@ class UriTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @dataProvider getPathDataProvider
+     * @dataProvider getPathGetQueryGetFragmentDataProvider
      *
      * @param string $uri
      * @param string $expectedPath
+     * @param string $expectedQuery
+     * @param string $expectedFragment
      */
-    public function testGetPath(string $uri, string $expectedPath)
-    {
-        $this->assertSame($expectedPath, (Uri::create($uri))->getPath());
+    public function testGetPathGetQueryGetFragment(
+        string $uri,
+        string $expectedPath,
+        string $expectedQuery,
+        string $expectedFragment
+    ) {
+        $uriObject = Uri::create($uri);
+
+        $this->assertSame($expectedPath, $uriObject->getPath());
+        $this->assertSame($expectedQuery, $uriObject->getQuery());
+        $this->assertSame($expectedFragment, $uriObject->getFragment());
     }
 
-    public function getPathDataProvider(): array
+    public function getPathGetQueryGetFragmentDataProvider(): array
     {
         return [
+            'empty' => [
+                'uri' => '',
+                'expectedPath' => '',
+                'expectedQuery' => '',
+                'expectedFragment' => '',
+            ],
             'relative path' => [
                 'uri' => 'path',
                 'expectedPath' => 'path',
+                'expectedQuery' => '',
+                'expectedFragment' => '',
             ],
             'absolute path' => [
                 'uri' => '/path',
                 'expectedPath' => '/path',
+                'expectedQuery' => '',
+                'expectedFragment' => '',
             ],
-            'absolute path, query' => [
-                'uri' => '/path?foo',
+            'query' => [
+                'uri' => '?query',
+                'expectedPath' => '',
+                'expectedQuery' => 'query',
+                'expectedFragment' => '',
+            ],
+            'fragment' => [
+                'uri' => '#fragment',
+                'expectedPath' => '',
+                'expectedQuery' => '',
+                'expectedFragment' => 'fragment',
+            ],
+            'full url' => [
+                'uri' => 'http://example.com/path?query#fragment',
                 'expectedPath' => '/path',
-            ],
-            'absolute path, query, fragment' => [
-                'uri' => '/path?foo#bar',
-                'expectedPath' => '/path',
-            ],
-            'scheme, host, absolute path, query, fragment' => [
-                'uri' => 'http://example.com/path?foo#bar',
-                'expectedPath' => '/path',
-            ],
-            'percent-encode spaces' => [
-                'uri' => '/pa th',
-                'expectedPath' => '/pa%20th',
-            ],
-            'percent-encode multi-byte characters' => [
-                'uri' => '/€?€#€',
-                'expectedPath' => '/%E2%82%AC',
-            ],
-            'do not double encode' => [
-                'uri' => '/pa%20th',
-                'expectedPath' => '/pa%20th',
-            ],
-            'percent-encode invalid percent encodings' => [
-                'uri' => '/pa%2-th',
-                'expectedPath' => '/pa%252-th',
-            ],
-            'do not encode path separators' => [
-                'uri' => '/pa/th//two',
-                'expectedPath' => '/pa/th//two',
-            ],
-            'do not encode unreserved characters' => [
-                'uri' => '/' . self::UNRESERVED_CHARACTERS,
-                'expectedPath' => '/' . self::UNRESERVED_CHARACTERS,
-            ],
-            'encoded unreserved characters are not decoded' => [
-                'uri' => '/p%61th',
-                'expectedPath' => '/p%61th',
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider getQueryDataProvider
-     *
-     * @param string $uri
-     * @param string $expectedQuery
-     */
-    public function testGetQuery(string $uri, string $expectedQuery)
-    {
-        $this->assertSame($expectedQuery, (Uri::create($uri))->getQuery());
-    }
-
-    public function getQueryDataProvider(): array
-    {
-        return [
-            'percent-encode spaces' => [
-                'uri' => '/?f o=b r',
-                'expectedQuery' => 'f%20o=b%20r',
-            ],
-            'do not encode plus' => [
-                'uri' => '/?f+o=b+r',
-                'expectedQuery' => 'f+o=b+r',
-            ],
-            'percent-encode multi-byte characters' => [
-                'uri' => '/?€=€',
-                'expectedQuery' => '%E2%82%AC=%E2%82%AC',
-            ],
-            'do not double encode' => [
-                'uri' => '/?f%20o=b%20r',
-                'expectedQuery' => 'f%20o=b%20r',
-            ],
-            'percent-encode invalid percent encodings' => [
-                'uri' => '/?f%2o=b%2r',
-                'expectedQuery' => 'f%252o=b%252r',
-            ],
-            'do not encode path separators' => [
-                'uri' => '?q=va/lue',
-                'expectedQuery' => 'q=va/lue',
-            ],
-            'do not encode unreserved characters' => [
-                'uri' => '/?' . self::UNRESERVED_CHARACTERS,
-                'expectedQuery' => self::UNRESERVED_CHARACTERS,
-            ],
-            'encoded unreserved characters are not decoded' => [
-                'uri' => '/?f%61r=b%61r',
-                'expectedQuery' => 'f%61r=b%61r',
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider getFragmentDataProvider
-     *
-     * @param string $uri
-     * @param string $expectedFragment
-     */
-    public function testGetFragment(string $uri, string $expectedFragment)
-    {
-        $this->assertSame($expectedFragment, (Uri::create($uri))->getFragment());
-    }
-
-    public function getFragmentDataProvider(): array
-    {
-        return [
-            'percent-encode spaces' => [
-                'uri' => '/#f o',
-                'expectedQuery' => 'f%20o',
-            ],
-            'do not encode plus' => [
-                'uri' => '/#f+o',
-                'expectedQuery' => 'f+o',
-            ],
-            'percent-encode multi-byte characters' => [
-                'uri' => '/#€',
-                'expectedQuery' => '%E2%82%AC',
-            ],
-            'do not double encode' => [
-                'uri' => '/#f%20o',
-                'expectedQuery' => 'f%20o',
-            ],
-            'percent-encode invalid percent encodings' => [
-                'uri' => '/#f%2o',
-                'expectedQuery' => 'f%252o',
-            ],
-            'do not encode path separators' => [
-                'uri' => '#f/o',
-                'expectedQuery' => 'f/o',
-            ],
-            'do not encode unreserved characters' => [
-                'uri' => '/#' . self::UNRESERVED_CHARACTERS,
-                'expectedQuery' => self::UNRESERVED_CHARACTERS,
-            ],
-            'encoded unreserved characters are not decoded' => [
-                'uri' => '/#f%61r',
-                'expectedQuery' => 'f%61r',
+                'expectedQuery' => 'query',
+                'expectedFragment' => 'fragment',
             ],
         ];
     }
@@ -466,30 +350,13 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('', $uriWithRemovedHost->getHost());
     }
 
-    /**
-     * @dataProvider withPortInvalidPortDataProvider
-     *
-     * @param int $port
-     */
-    public function testWithPortInvalidPort(int $port)
+    public function testWithPortInvalidPort()
     {
-        $uri = Uri::create('http://example.co/');
+        $uri = Uri::create('http://example.com/');
 
         $this->expectException(\InvalidArgumentException::class);
 
-        $uri->withPort($port);
-    }
-
-    public function withPortInvalidPortDataProvider(): array
-    {
-        return [
-            'less than min' => [
-                'port' => Uri::MIN_PORT - 1,
-            ],
-            'greater than max' => [
-                'port' => Uri::MAX_PORT + 1,
-            ],
-        ];
+        $uri->withPort(Filter::MIN_PORT - 1);
     }
 
     public function testWithPort()
