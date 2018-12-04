@@ -1,6 +1,6 @@
 <?php
 
-namespace webignition\Url\Path;
+namespace webignition\Url;
 
 class Path
 {
