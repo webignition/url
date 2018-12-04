@@ -20,8 +20,8 @@ class ParserTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @dataProvider parseDataProvider
-     * dataProvider normalizeWhitespaceDataProvider
-     * dataProvider invalidPortDataProvider
+     * @dataProvider normalizeWhitespaceDataProvider
+     * @dataProvider invalidPortDataProvider
      *
      * @param string $url
      * @param array $expectedParts
