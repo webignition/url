@@ -2,34 +2,18 @@
 
 namespace webignition\Url\Tests;
 
+use webignition\Url\Filter;
 use webignition\Url\Uri;
 
 class UriTest extends \PHPUnit\Framework\TestCase
 {
     const UNRESERVED_CHARACTERS = 'a-zA-Z0-9.-_~!$&\'()*+,;=:@';
 
-    /**
-     * @dataProvider createWithInvalidPortDataProvider
-     *
-     * @param string $url
-     */
-    public function testCreateWithInvalidPort(string $url)
+    public function testCreateWithInvalidPort()
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        Uri::create($url);
-    }
-
-    public function createWithInvalidPortDataProvider(): array
-    {
-        return [
-            'less than min' => [
-                'url' => 'http://example.com:' . (Uri::MIN_PORT - 1),
-            ],
-            'greater than max' => [
-                'url' => 'http://example.com:' . (Uri::MAX_PORT + 1),
-            ],
-        ];
+        Uri::create('http://example.com:' . (Filter::MIN_PORT - 1));
     }
 
     /**
@@ -466,30 +450,13 @@ class UriTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('', $uriWithRemovedHost->getHost());
     }
 
-    /**
-     * @dataProvider withPortInvalidPortDataProvider
-     *
-     * @param int $port
-     */
-    public function testWithPortInvalidPort(int $port)
+    public function testWithPortInvalidPort()
     {
-        $uri = Uri::create('http://example.co/');
+        $uri = Uri::create('http://example.com/');
 
         $this->expectException(\InvalidArgumentException::class);
 
-        $uri->withPort($port);
-    }
-
-    public function withPortInvalidPortDataProvider(): array
-    {
-        return [
-            'less than min' => [
-                'port' => Uri::MIN_PORT - 1,
-            ],
-            'greater than max' => [
-                'port' => Uri::MAX_PORT + 1,
-            ],
-        ];
+        $uri->withPort(Filter::MIN_PORT - 1);
     }
 
     public function testWithPort()
