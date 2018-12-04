@@ -2,55 +2,45 @@
 
 namespace webignition\Url\Path;
 
-use webignition\Url\PercentEncoder;
-
-/**
- * Represents the path part of a URL
- */
 class Path
 {
     const PATH_PART_SEPARATOR = '/';
+
+    private static $charUnreserved = 'a-zA-Z0-9_\-\.~';
+    private static $charSubDelims = '!\$&\'\(\)\*\+,;=';
 
     /**
      * @var string
      */
     private $path = '';
 
-    public function __construct(?string $path)
+    public function __construct(string $path)
     {
-        $path = PercentEncoder::encodeUnreservedCharacters($path);
-
-        $this->set($path);
+        $this->path = $this->filter($path);
     }
 
     public function isRelative(): bool
     {
-        return !$this->isAbsolute();
+        return '' === $this->path
+            ? true
+            : self::PATH_PART_SEPARATOR !== $this->path[0];
     }
 
     public function isAbsolute(): bool
     {
-        return substr($this->path, 0, 1) === self::PATH_PART_SEPARATOR;
-    }
-
-    public function get(): string
-    {
-        return $this->path;
-    }
-
-    public function set(?string $path)
-    {
-        $this->path = trim($path);
+        return '' === $this->path
+            ? false
+            : self::PATH_PART_SEPARATOR === $this->path[0];
     }
 
     public function __toString(): string
     {
-        return $this->get();
+        return $this->path;
     }
 
     public function hasFilename(): bool
     {
-        if (substr($this->path, strlen($this->path) - 1) == '/') {
+        if ('' === $this->path || self::PATH_PART_SEPARATOR === $this->path[-1]) {
             return false;
         }
 
@@ -69,6 +59,22 @@ class Path
 
     public function hasTrailingSlash(): bool
     {
-        return substr($this->get(), strlen($this->get()) - 1) == '/';
+        return '' === $this->path
+            ? false
+            : self::PATH_PART_SEPARATOR === $this->path[-1];
+    }
+
+    private function filter(string $path): string
+    {
+        return preg_replace_callback(
+            '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
+            [$this, 'rawurlencodeMatchZero'],
+            $path
+        );
+    }
+
+    private function rawurlencodeMatchZero(array $match)
+    {
+        return rawurlencode($match[0]);
     }
 }
