@@ -6,10 +6,28 @@ use Psr\Http\Message\UriInterface;
 
 class Normalizer
 {
+    const DEFAULT_SCHEME = 'http'; // needs to be configurable
+
     const SCHEME_HTTP = 'http';
     const SCHEME_HTTPS = 'https';
 
     const PATH_SEPARATOR = '/';
+
+    const APPLY_DEFAULT_SCHEME_IF_NO_SCHEME = 1;
+    const FORCE_HTTP = 2;
+    const FORCE_HTTPS = 4;
+    const REMOVE_USER_INFO = 8;
+    const CONVERT_HOST_UNICODE_TO_PUNYCODE = 16;
+    const REMOVE_FRAGMENT = 32;
+    const REMOVE_WWW = 64;
+    const REMOVE_DEFAULT_FILES_PATTERNS = 128;
+    const REMOVE_PATH_DOT_SEGMENTS = 256;
+    const ADD_PATH_TRAILING_SLASH = 512;
+    const SORT_QUERY_PARAMETERS = 1024;
+
+    const PRESERVING_NORMALIZATIONS = 256;
+
+    const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
 
     /**
      * @var PunycodeEncoder
@@ -21,45 +39,59 @@ class Normalizer
         $this->punycodeEncoder = new PunycodeEncoder();
     }
 
-    public function normalize(UriInterface $uri, array $options): UriInterface
+    public function normalize(UriInterface $uri, int $flags = self::PRESERVING_NORMALIZATIONS): UriInterface
     {
-        $optionsObject = new NormalizerOptions($options);
+        $optionsObject = new NormalizerOptions([]);
 
-        if ('' === $uri->getScheme() && $optionsObject->getApplyDefaultSchemeIfNoScheme()) {
+        if ($flags & self::APPLY_DEFAULT_SCHEME_IF_NO_SCHEME && '' === $uri->getScheme()) {
             $uri = $uri->withScheme($optionsObject->getDefaultScheme());
         }
 
-        if ($optionsObject->getForceHttp()) {
+        if ($flags & self::FORCE_HTTP && self::SCHEME_HTTP !== $uri->getScheme()) {
             $uri = $uri->withScheme(self::SCHEME_HTTP);
         }
 
-        if ($optionsObject->getForceHttps()) {
+        if ($flags & self::FORCE_HTTPS && self::SCHEME_HTTPS !== $uri->getScheme()) {
             $uri = $uri->withScheme(self::SCHEME_HTTPS);
         }
 
-        if ($optionsObject->getRemoveUserInfo()) {
+        if ($flags & self::REMOVE_USER_INFO && '' !== $uri->getUserInfo()) {
             $uri = $uri->withUserInfo('');
         }
 
-        if ($optionsObject->getRemoveFragment()) {
+        if ($flags & self::REMOVE_FRAGMENT && '' !== $uri->getFragment()) {
             $uri = $uri->withFragment('');
         }
 
         if ('' !== $uri->getHost()) {
-            $uri = $this->normalizeHost($uri, $optionsObject);
+            $host = $uri->getHost();
 
-            if ($optionsObject->getRemoveWww()) {
-                $uri = $this->removeWww($uri);
+            if ($flags & self::CONVERT_HOST_UNICODE_TO_PUNYCODE) {
+                $host = $this->punycodeEncoder->encode($host);
+            }
+
+            if ($flags & self::REMOVE_WWW) {
+                if (preg_match(self::HOST_STARTS_WITH_WWW_PATTERN, $host) > 0) {
+                    $host = preg_replace(self::HOST_STARTS_WITH_WWW_PATTERN, '', $host);
+                }
+            }
+
+            if ($host !== $uri->getHost()) {
+                $uri = $uri->withHost($host);
             }
         }
 
-        if (!empty($optionsObject->getRemoveDefaultFilesPatterns())) {
-            $uri = $this->removeDefaultFiles($uri, $optionsObject);
+//        if (!empty($optionsObject->getRemoveDefaultFilesPatterns())) {
+//            $uri = $this->removeDefaultFiles($uri, $optionsObject);
+//        }
+
+        if ($flags & self::REMOVE_PATH_DOT_SEGMENTS) {
+            $uri = $this->removePathDotSegments($uri);
         }
 
-        $uri = $this->normalizePath($uri, $optionsObject);
+//        $uri = $this->normalizePath($uri, $optionsObject);
 
-        if ($optionsObject->getSortQueryParameters()) {
+        if ($flags & self::SORT_QUERY_PARAMETERS) {
             $uri = $this->sortQueryParameters($uri);
         }
 
