@@ -20,7 +20,7 @@ class NormalizerOptionsTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($normalizerOptions->getRemovePathDotSegments());
         $this->assertFalse($normalizerOptions->getRemoveUserInfo());
         $this->assertFalse($normalizerOptions->getRemoveWww());
-        $this->assertFalse($normalizerOptions->getSetDefaultSchemeIfNoScheme());
+        $this->assertFalse($normalizerOptions->getApplyDefaultSchemeIfNoScheme());
         $this->assertFalse($normalizerOptions->getSortQueryParameters());
     }
 }

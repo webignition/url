@@ -25,7 +25,7 @@ class Normalizer
     {
         $optionsObject = new NormalizerOptions($options);
 
-        if ('' === $uri->getScheme() && $optionsObject->getSetDefaultSchemeIfNoScheme()) {
+        if ('' === $uri->getScheme() && $optionsObject->getApplyDefaultSchemeIfNoScheme()) {
             $uri = $uri->withScheme($optionsObject->getDefaultScheme());
         }
 
