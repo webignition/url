@@ -102,12 +102,8 @@ class Uri implements UriInterface
         if (isset($uriParts[Parser::PART_PORT])) {
             $port = $uriParts[Parser::PART_PORT];
 
-            if (ctype_digit($port)) {
+            if (ctype_digit($port) || is_int($port)) {
                 $port = (int) $port;
-            }
-
-            if (!is_int($port)) {
-                $port = null;
             }
         }
 
