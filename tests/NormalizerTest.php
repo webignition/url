@@ -49,31 +49,31 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
     public function schemeNormalizationDataProvider(): array
     {
         return [
-            'setDefaultSchemeIfNoScheme=false, no scheme' => [
+            'applyDefaultSchemeIfNoScheme=false, no scheme' => [
                 'url' => Url::create('example.com/foo/bar'),
                 'options' => [
-                    NormalizerOptions::OPTION_SET_DEFAULT_SCHEME_IF_NO_SCHEME => false,
+                    NormalizerOptions::OPTION_APPLY_DEFAULT_SCHEME_IF_NO_SCHEME => false,
                 ],
                 'expectedUrl' => 'example.com/foo/bar',
             ],
-            'setDefaultSchemeIfNoScheme=false, no scheme, protocol-relative' => [
+            'applyDefaultSchemeIfNoScheme=false, no scheme, protocol-relative' => [
                 'url' => Url::create('//example.com/foo/bar'),
                 'options' => [
-                    NormalizerOptions::OPTION_SET_DEFAULT_SCHEME_IF_NO_SCHEME => false,
+                    NormalizerOptions::OPTION_APPLY_DEFAULT_SCHEME_IF_NO_SCHEME => false,
                 ],
                 'expectedUrl' => '//example.com/foo/bar',
             ],
-            'setDefaultSchemeIfNoScheme=true, no scheme (example.com is treated as path)' => [
+            'applyDefaultSchemeIfNoScheme=true, no scheme (example.com is treated as path)' => [
                 'url' => Url::create('example.com/foo/bar'),
                 'options' => [
-                    NormalizerOptions::OPTION_SET_DEFAULT_SCHEME_IF_NO_SCHEME => true,
+                    NormalizerOptions::OPTION_APPLY_DEFAULT_SCHEME_IF_NO_SCHEME => true,
                 ],
                 'expectedUrl' => 'http:example.com/foo/bar',
             ],
-            'setDefaultSchemeIfNoScheme=true, no scheme, protocol-relative' => [
+            'applyDefaultSchemeIfNoScheme=true, no scheme, protocol-relative' => [
                 'url' => Url::create('//example.com/foo/bar'),
                 'options' => [
-                    NormalizerOptions::OPTION_SET_DEFAULT_SCHEME_IF_NO_SCHEME => true,
+                    NormalizerOptions::OPTION_APPLY_DEFAULT_SCHEME_IF_NO_SCHEME => true,
                 ],
                 'expectedUrl' => 'http://example.com/foo/bar',
             ],

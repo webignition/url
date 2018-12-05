@@ -5,7 +5,7 @@ namespace webignition\Url;
 class NormalizerOptions
 {
     const OPTION_DEFAULT_SCHEME = 'default-scheme';
-    const OPTION_SET_DEFAULT_SCHEME_IF_NO_SCHEME = 'set-default-scheme-if-no-scheme';
+    const OPTION_APPLY_DEFAULT_SCHEME_IF_NO_SCHEME = 'apply-default-scheme-if-no-scheme';
     const OPTION_FORCE_HTTP = 'force-http';
     const OPTION_FORCE_HTTPS = 'force-https';
     const OPTION_REMOVE_USER_INFO = 'remove-user-info';
@@ -18,7 +18,7 @@ class NormalizerOptions
     const OPTION_SORT_QUERY_PARAMETERS = 'sort-query-parameters';
 
     const DEFAULT_SCHEME = Normalizer::SCHEME_HTTP;
-    const DEFAULT_SET_SCHEME_IF_NO_SCHEME = false;
+    const DEFAULT_APPLY_SCHEME_IF_NO_SCHEME = false;
     const DEFAULT_FORCE_HTTP = false;
     const DEFAULT_FORCE_HTTPS = false;
     const DEFAULT_REMOVE_USER_INFO = false;
@@ -40,7 +40,7 @@ class NormalizerOptions
     /**
      * @var bool
      */
-    private $setDefaultSchemeIfNoScheme;
+    private $applyDefaultSchemeIfNoScheme;
 
     /**
      * @var bool
@@ -97,9 +97,9 @@ class NormalizerOptions
         $this->defaultScheme = $options[self::OPTION_DEFAULT_SCHEME] ?? self::DEFAULT_SCHEME;
         $this->defaultScheme = trim($this->defaultScheme);
 
-        $this->setDefaultSchemeIfNoScheme =
-            $options[self::OPTION_SET_DEFAULT_SCHEME_IF_NO_SCHEME] ?? self::DEFAULT_SET_SCHEME_IF_NO_SCHEME;
-        $this->setDefaultSchemeIfNoScheme = (bool) $this->setDefaultSchemeIfNoScheme;
+        $this->applyDefaultSchemeIfNoScheme =
+            $options[self::OPTION_APPLY_DEFAULT_SCHEME_IF_NO_SCHEME] ?? self::DEFAULT_APPLY_SCHEME_IF_NO_SCHEME;
+        $this->applyDefaultSchemeIfNoScheme = (bool) $this->applyDefaultSchemeIfNoScheme;
 
         $this->forceHttp = $options[self::OPTION_FORCE_HTTP] ?? self::DEFAULT_FORCE_HTTP;
         if (null !== $this->forceHttp) {
@@ -148,9 +148,9 @@ class NormalizerOptions
         return $this->defaultScheme;
     }
 
-    public function getSetDefaultSchemeIfNoScheme(): bool
+    public function getApplyDefaultSchemeIfNoScheme(): bool
     {
-        return $this->setDefaultSchemeIfNoScheme;
+        return $this->applyDefaultSchemeIfNoScheme;
     }
 
     public function getForceHttp(): bool
