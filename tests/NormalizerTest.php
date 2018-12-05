@@ -31,7 +31,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
      * dataProvider removeDefaultFilesPatternsDataProvider
      * dataProvider reduceMultipleTrailingSlashesDataProvider
      * @dataProvider removeDotPathSegmentsDataProvider
-     * dataProvider addTrailingSlashDataProvider
+     * @dataProvider addTrailingSlashDataProvider
      * @dataProvider sortQueryParametersDataProvider
      * dataProvider defaultOptionsDataProvider
      * @dataProvider reduceDuplicatePathSlashesDataProvider
@@ -446,37 +446,27 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
         return [
             'addTrailingSlash: no path, no trailing slash' => [
                 'url' => Url::create('http://example.com'),
-                'flags' => [
-                    NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
-                ],
+                'flags' => Normalizer::ADD_PATH_TRAILING_SLASH,
                 'expectedUrl' => Url::create('http://example.com/'),
             ],
             'addTrailingSlash: has path, no trailing slash' => [
                 'url' => Url::create('http://example.com/foo'),
-                'flags' => [
-                    NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
-                ],
+                'flags' => Normalizer::ADD_PATH_TRAILING_SLASH,
                 'expectedUrl' => Url::create('http://example.com/foo/'),
             ],
             'addTrailingSlash: empty path, has trailing slash' => [
                 'url' => Url::create('http://example.com/'),
-                'flags' => [
-                    NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
-                ],
+                'flags' => Normalizer::ADD_PATH_TRAILING_SLASH,
                 'expectedUrl' => Url::create('http://example.com/'),
             ],
             'addTrailingSlash: has path, has trailing slash' => [
                 'url' => Url::create('http://example.com/foo/'),
-                'flags' => [
-                    NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
-                ],
+                'flags' => Normalizer::ADD_PATH_TRAILING_SLASH,
                 'expectedUrl' => Url::create('http://example.com/foo/'),
             ],
             'addTrailingSlash: has filename' => [
                 'url' => Url::create('http://example.com/index.html'),
-                'flags' => [
-                    NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
-                ],
+                'flags' => Normalizer::ADD_PATH_TRAILING_SLASH,
                 'expectedUrl' => Url::create('http://example.com/index.html'),
             ],
         ];

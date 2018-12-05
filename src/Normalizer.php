@@ -92,6 +92,10 @@ class Normalizer
             $uri->withPath(preg_replace('#//++#', '/', $uri->getPath()));
         }
 
+        if ($flags & self::ADD_PATH_TRAILING_SLASH) {
+            $uri = $this->addPathTrailingSlash($uri);
+        }
+
 //        $uri = $this->normalizePath($uri, $optionsObject);
 
         if ($flags & self::SORT_QUERY_PARAMETERS) {
