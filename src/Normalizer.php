@@ -98,8 +98,10 @@ class Normalizer
 
 //        $uri = $this->normalizePath($uri, $optionsObject);
 
-        if ($flags & self::SORT_QUERY_PARAMETERS) {
-            $uri = $this->sortQueryParameters($uri);
+        if ($flags & self::SORT_QUERY_PARAMETERS && '' !== $uri->getQuery()) {
+            $queryKeyValues = explode('&', $uri->getQuery());
+            sort($queryKeyValues);
+            $uri = $uri->withQuery(implode('&', $queryKeyValues));
         }
 
         return $uri;
@@ -136,19 +138,6 @@ class Normalizer
             $updatedPath = implode(self::PATH_SEPARATOR, $pathParts);
 
             $uri = $uri->withPath($updatedPath);
-        }
-
-        return $uri;
-    }
-
-    private function normalizePath(UriInterface $uri, NormalizerOptions $options): UriInterface
-    {
-        if ($options->getRemovePathDotSegments()) {
-            $uri = $this->removePathDotSegments($uri);
-        }
-
-        if ($options->getAddPathTrailingSlash()) {
-            $uri = $this->addPathTrailingSlash($uri);
         }
 
         return $uri;
@@ -212,18 +201,5 @@ class Normalizer
         }
 
         return $uri;
-    }
-
-    private function sortQueryParameters(UriInterface $uri): UriInterface
-    {
-        $query = $uri->getQuery();
-        if ('' === $query) {
-            return $uri;
-        }
-
-        $queryKeyValues = explode('&', $query);
-        sort($queryKeyValues);
-
-        return $uri->withQuery(implode('&', $queryKeyValues));
     }
 }
