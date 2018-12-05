@@ -4,7 +4,7 @@ namespace webignition\Url;
 
 use Psr\Http\Message\UriInterface;
 
-class Uri implements UriInterface
+class Url implements UriInterface
 {
     private $schemeToPortMap = [
         'http'  => 80,
@@ -167,7 +167,7 @@ class Uri implements UriInterface
             return $this;
         }
 
-        return new Uri($scheme, $this->userInfo, $this->host, $this->port, $this->path, $this->query, $this->fragment);
+        return new Url($scheme, $this->userInfo, $this->host, $this->port, $this->path, $this->query, $this->fragment);
     }
 
     public function withUserInfo($user, $password = null)
@@ -178,7 +178,7 @@ class Uri implements UriInterface
             return $this;
         }
 
-        return new Uri($this->scheme, $userInfo, $this->host, $this->port, $this->path, $this->query, $this->fragment);
+        return new Url($this->scheme, $userInfo, $this->host, $this->port, $this->path, $this->query, $this->fragment);
     }
 
     public function withHost($host)
@@ -189,7 +189,7 @@ class Uri implements UriInterface
             return $this;
         }
 
-        return new Uri($this->scheme, $this->userInfo, $host, $this->port, $this->path, $this->query, $this->fragment);
+        return new Url($this->scheme, $this->userInfo, $host, $this->port, $this->path, $this->query, $this->fragment);
     }
 
     public function withPort($port)
@@ -202,7 +202,7 @@ class Uri implements UriInterface
             return $this;
         }
 
-        return new Uri($this->scheme, $this->userInfo, $this->host, $port, $this->path, $this->query, $this->fragment);
+        return new Url($this->scheme, $this->userInfo, $this->host, $port, $this->path, $this->query, $this->fragment);
     }
 
     public function withPath($path)
@@ -213,7 +213,7 @@ class Uri implements UriInterface
             return $this;
         }
 
-        return new Uri($this->scheme, $this->userInfo, $this->host, $this->port, $path, $this->query, $this->fragment);
+        return new Url($this->scheme, $this->userInfo, $this->host, $this->port, $path, $this->query, $this->fragment);
     }
 
     public function withQuery($query)
@@ -224,7 +224,7 @@ class Uri implements UriInterface
             return $this;
         }
 
-        return new Uri($this->scheme, $this->userInfo, $this->host, $this->port, $this->path, $query, $this->fragment);
+        return new Url($this->scheme, $this->userInfo, $this->host, $this->port, $this->path, $query, $this->fragment);
     }
 
     public function withFragment($fragment)
@@ -235,7 +235,7 @@ class Uri implements UriInterface
             return $this;
         }
 
-        return new Uri($this->scheme, $this->userInfo, $this->host, $this->port, $this->path, $this->query, $fragment);
+        return new Url($this->scheme, $this->userInfo, $this->host, $this->port, $this->path, $this->query, $fragment);
     }
 
     public function __toString()

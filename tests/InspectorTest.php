@@ -5,7 +5,7 @@ namespace webignition\Url\Tests;
 use IpUtils\Exception\InvalidExpressionException;
 use Psr\Http\Message\UriInterface;
 use webignition\Url\Inspector;
-use webignition\Url\Uri;
+use webignition\Url\Url;
 
 class InspectorTest extends \PHPUnit\Framework\TestCase
 {
@@ -28,27 +28,27 @@ class InspectorTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'no host' => [
-                'url' => Uri::create('example'),
+                'url' => Url::create('example'),
                 'expectedIsPubliclyRoutable' => false,
             ],
             'host not publicly routable' => [
-                'url' => Uri::create('http://127.0.0.1'),
+                'url' => Url::create('http://127.0.0.1'),
                 'expectedIsPubliclyRoutable' => false,
             ],
             'host lacks dots' => [
-                'url' => Uri::create('http://example'),
+                'url' => Url::create('http://example'),
                 'expectedIsPubliclyRoutable' => false,
             ],
             'host starts with dot' => [
-                'url' => Uri::create('http://.example'),
+                'url' => Url::create('http://.example'),
                 'expectedIsPubliclyRoutable' => false,
             ],
             'host ends with dot' => [
-                'url' => Uri::create('http://example.'),
+                'url' => Url::create('http://example.'),
                 'expectedIsPubliclyRoutable' => false,
             ],
             'valid' => [
-                'url' => Uri::create('http://example.com'),
+                'url' => Url::create('http://example.com'),
                 'expectedIsPubliclyRoutable' => true,
             ],
         ];
