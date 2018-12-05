@@ -53,6 +53,10 @@ class PathTest extends \PHPUnit\Framework\TestCase
     public function isRelativeDataProvider(): array
     {
         return [
+            'empty path is relative' => [
+                'pathString' => '',
+                'expectedIsRelative' => true,
+            ],
             'foo is relative' => [
                 'pathString' => 'foo',
                 'expectedIsRelative' => true,
@@ -80,6 +84,10 @@ class PathTest extends \PHPUnit\Framework\TestCase
     public function isAbsoluteDataProvider(): array
     {
         return [
+            'empty path is not absolute' => [
+                'pathString' => '',
+                'expectedIsAbsolute' => false,
+            ],
             'foo is not absolute' => [
                 'pathString' => 'foo',
                 'expectedIsAbsolute' => false,
@@ -144,6 +152,37 @@ class PathTest extends \PHPUnit\Framework\TestCase
                 'expectedHasFilename' => false,
                 'expectedFilename' => '',
                 'expectedDirectory' => '/example/file.txt/',
+                'expectedHasTrailingSlash' => true,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider hasTrailingSlashDataProvider
+     *
+     * @param string $pathString
+     * @param bool $expectedHasTrailingSlash
+     */
+    public function testHasTrailingSlash(string $pathString, bool $expectedHasTrailingSlash)
+    {
+        $path = new Path($pathString);
+
+        $this->assertSame($expectedHasTrailingSlash, $path->hasTrailingSlash());
+    }
+
+    public function hasTrailingSlashDataProvider(): array
+    {
+        return [
+            'empty path does not have trailing slash' => [
+                'pathString' => '',
+                'expectedHasTrailingSlash' => false,
+            ],
+            'does not have trailing slash' => [
+                'pathString' => '/path',
+                'expectedHasTrailingSlash' => false,
+            ],
+            'has trailing slash' => [
+                'pathString' => '/path/',
                 'expectedHasTrailingSlash' => true,
             ],
         ];
