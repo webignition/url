@@ -29,7 +29,6 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
      * @dataProvider removeFragmentDataProvider
      * @dataProvider removeWwwDataProvider
      * dataProvider removeDefaultFilesPatternsDataProvider
-     * dataProvider reduceMultipleTrailingSlashesDataProvider
      * @dataProvider removeDotPathSegmentsDataProvider
      * @dataProvider addTrailingSlashDataProvider
      * @dataProvider sortQueryParametersDataProvider
@@ -371,52 +370,6 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 ],
                 'options' => [],
                 'expectedUrl' => Url::create('http://example.com'),
-            ],
-        ];
-    }
-
-    public function reduceMultipleTrailingSlashesDataProvider(): array
-    {
-        return [
-            'removeMultipleTrailingSlashes: no trailing slash' => [
-                'url' => Url::create('http://example.com'),
-                'flags' => [],
-                'expectedUrl' => Url::create('http://example.com'),
-            ],
-            'removeMultipleTrailingSlashes: empty path, double trailing slash' => [
-                'url' => Url::create('http://example.com//'),
-                'flags' => [],
-                'expectedUrl' => Url::create('http://example.com/'),
-            ],
-            'removeMultipleTrailingSlashes: empty path, triple trailing slash' => [
-                'url' => Url::create('http://example.com///'),
-                'flags' => [],
-                'expectedUrl' => Url::create('http://example.com/'),
-            ],
-            'removeMultipleTrailingSlashes: double trailing slash' => [
-                'url' => Url::create('http://example.com/one/two//'),
-                'flags' => [],
-                'expectedUrl' => Url::create('http://example.com/one/two/'),
-            ],
-            'removeMultipleTrailingSlashes: triple trailing slash' => [
-                'url' => Url::create('http://example.com/one/two///'),
-                'flags' => [],
-                'expectedUrl' => Url::create('http://example.com/one/two/'),
-            ],
-            'removeMultipleTrailingSlashes: leading double slash, mid double slash, trailing double slash' => [
-                'url' => Url::create('http://example.com//one//two//'),
-                'flags' => [],
-                'expectedUrl' => Url::create('http://example.com//one//two/'),
-            ],
-            'removeMultipleTrailingSlashes: leading triple slash, mid triple slash, trailing triple slash' => [
-                'url' => Url::create('http://example.com///one///two///'),
-                'flags' => [],
-                'expectedUrl' => Url::create('http://example.com///one///two/'),
-            ],
-            'removeMultipleTrailingSlashes: double mid slash, no trailing slash' => [
-                'url' => Url::create('http://example.com/one//two'),
-                'flags' => [],
-                'expectedUrl' => Url::create('http://example.com/one//two'),
             ],
         ];
     }
