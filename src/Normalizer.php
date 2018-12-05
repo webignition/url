@@ -14,7 +14,12 @@ class Normalizer
     const OPTION_DEFAULT_SCHEME = 'default-scheme';
     const OPTION_REMOVE_PATH_FILES_PATTERNS = 'remove-path-files-patterns';
 
-    const PRESERVING_NORMALIZATIONS = 256;
+    /**
+     * Semantically-lossless normalizations
+     *
+     * self::REMOVE_PATH_DOT_SEGMENTS
+     */
+    const PRESERVING_NORMALIZATIONS = 128;
 
     const APPLY_DEFAULT_SCHEME_IF_NO_SCHEME = 1;
     const FORCE_HTTP = 2;
@@ -44,7 +49,7 @@ class Normalizer
     public function normalize(
         UriInterface $uri,
         int $flags = self::PRESERVING_NORMALIZATIONS,
-        array $options = []
+        ?array $options = []
     ): UriInterface {
         if ($flags & self::APPLY_DEFAULT_SCHEME_IF_NO_SCHEME && '' === $uri->getScheme()) {
             $uri = $uri->withScheme($options[self::OPTION_DEFAULT_SCHEME] ?? '');
@@ -97,8 +102,6 @@ class Normalizer
         if ($flags & self::ADD_PATH_TRAILING_SLASH) {
             $uri = $this->addPathTrailingSlash($uri);
         }
-
-//        $uri = $this->normalizePath($uri, $optionsObject);
 
         if ($flags & self::SORT_QUERY_PARAMETERS && '' !== $uri->getQuery()) {
             $queryKeyValues = explode('&', $uri->getQuery());
