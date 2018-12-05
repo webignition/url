@@ -11,7 +11,7 @@ class NormalizerOptionsTest extends \PHPUnit\Framework\TestCase
         $normalizerOptions = new NormalizerOptions();
 
         $this->assertFalse($normalizerOptions->getAddPathTrailingSlash());
-        $this->assertTrue($normalizerOptions->getConvertUnicodeToPunycode());
+        $this->assertTrue($normalizerOptions->getConvertHostUnicodeToPunycode());
         $this->assertSame('http', $normalizerOptions->getDefaultScheme());
         $this->assertFalse($normalizerOptions->getForceHttp());
         $this->assertFalse($normalizerOptions->getForceHttps());

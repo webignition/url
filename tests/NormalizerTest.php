@@ -187,45 +187,45 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 'options' => [],
                 'expectedUrl' => Url::create('https://example.com/foo'),
             ],
-            'host convertUnicodeToPunycode=false: is normal host' => [
+            'host convertHostUnicodeToPunycode=false: is normal host' => [
                 'url' => Url::create('https://example.com'),
                 'options' => [
-                    NormalizerOptions::OPTION_CONVERT_UNICODE_TO_PUNYCODE => false,
+                    NormalizerOptions::OPTION_CONVERT_HOST_UNICODE_TO_PUNYCODE => false,
                 ],
                 'expectedUrl' => Url::create('https://example.com'),
             ],
-            'host convertUnicodeToPunycode=false: is punycode host' => [
+            'host convertHostUnicodeToPunycode=false: is punycode host' => [
                 'url' => Url::create('https://artesan.xn--a-iga.com'),
                 'options' => [
-                    NormalizerOptions::OPTION_CONVERT_UNICODE_TO_PUNYCODE => false,
+                    NormalizerOptions::OPTION_CONVERT_HOST_UNICODE_TO_PUNYCODE => false,
                 ],
                 'expectedUrl' => Url::create('https://artesan.xn--a-iga.com'),
             ],
-            'host convertUnicodeToPunycode=false: is unicode host' => [
+            'host convertHostUnicodeToPunycode=false: is unicode host' => [
                 'url' => Url::create('https://artesan.ía.com'),
                 'options' => [
-                    NormalizerOptions::OPTION_CONVERT_UNICODE_TO_PUNYCODE => false,
+                    NormalizerOptions::OPTION_CONVERT_HOST_UNICODE_TO_PUNYCODE => false,
                 ],
                 'expectedUrl' => Url::create('https://artesan.ía.com'),
             ],
-            'host convertUnicodeToPunycode=true: is normal host' => [
+            'host convertHostUnicodeToPunycode=true: is normal host' => [
                 'url' => Url::create('https://example.com'),
                 'options' => [
-                    NormalizerOptions::OPTION_CONVERT_UNICODE_TO_PUNYCODE => true,
+                    NormalizerOptions::OPTION_CONVERT_HOST_UNICODE_TO_PUNYCODE => true,
                 ],
                 'expectedUrl' => Url::create('https://example.com'),
             ],
-            'host convertUnicodeToPunycode=true: is punycode host' => [
+            'host convertHostUnicodeToPunycode=true: is punycode host' => [
                 'url' => Url::create('https://artesan.xn--a-iga.com'),
                 'options' => [
-                    NormalizerOptions::OPTION_CONVERT_UNICODE_TO_PUNYCODE => true,
+                    NormalizerOptions::OPTION_CONVERT_HOST_UNICODE_TO_PUNYCODE => true,
                 ],
                 'expectedUrl' => Url::create('https://artesan.xn--a-iga.com'),
             ],
-            'host convertUnicodeToPunycode=true: is unicode host' => [
+            'host convertHostUnicodeToPunycode=true: is unicode host' => [
                 'url' => Url::create('https://artesan.ía.com'),
                 'options' => [
-                    NormalizerOptions::OPTION_CONVERT_UNICODE_TO_PUNYCODE => true,
+                    NormalizerOptions::OPTION_CONVERT_HOST_UNICODE_TO_PUNYCODE => true,
                 ],
                 'expectedUrl' => Url::create('https://artesan.xn--a-iga.com'),
             ],

@@ -87,7 +87,7 @@ class Normalizer
     {
         $host = $uri->getHost();
 
-        if ($options->getConvertUnicodeToPunycode()) {
+        if ($options->getConvertHostUnicodeToPunycode()) {
             $host = $this->punycodeEncoder->encode($host);
         }
 
