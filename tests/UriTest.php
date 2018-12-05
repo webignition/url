@@ -3,7 +3,7 @@
 namespace webignition\Url\Tests;
 
 use webignition\Url\Filter;
-use webignition\Url\Uri;
+use webignition\Url\Url;
 
 class UriTest extends \PHPUnit\Framework\TestCase
 {
@@ -15,7 +15,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        Uri::create('http://example.com:' . (Filter::MIN_PORT - 1));
+        Url::create('http://example.com:' . (Filter::MIN_PORT - 1));
     }
 
     /**
@@ -26,7 +26,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetScheme(string $scheme, string $expectedScheme)
     {
-        $uri = new Uri($scheme, '', '', null, '', '', '');
+        $uri = new Url($scheme, '', '', null, '', '', '');
 
         $this->assertEquals($expectedScheme, $uri->getScheme());
     }
@@ -61,7 +61,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetAuthority(string $uri, string $expectedAuthority)
     {
-        $this->assertSame($expectedAuthority, (Uri::create($uri))->getAuthority());
+        $this->assertSame($expectedAuthority, (Url::create($uri))->getAuthority());
     }
 
     public function getAuthorityDataProvider(): array
@@ -110,7 +110,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetUserInfo(string $uri, string $expectedUserInfo)
     {
-        $this->assertSame($expectedUserInfo, (Uri::create($uri))->getUserInfo());
+        $this->assertSame($expectedUserInfo, (Url::create($uri))->getUserInfo());
     }
 
     public function getUserInfoDataProvider(): array
@@ -159,7 +159,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetHost(string $uri, string $expectedHost)
     {
-        $this->assertSame($expectedHost, (Uri::create($uri))->getHost());
+        $this->assertSame($expectedHost, (Url::create($uri))->getHost());
     }
 
     public function getHostDataProvider(): array
@@ -196,7 +196,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetPort(string $uri, ?int $expectedPort)
     {
-        $this->assertSame($expectedPort, (Uri::create($uri))->getPort());
+        $this->assertSame($expectedPort, (Url::create($uri))->getPort());
     }
 
     public function getPortDataProvider(): array
@@ -239,7 +239,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
         string $expectedQuery,
         string $expectedFragment
     ) {
-        $uriObject = Uri::create($uri);
+        $uriObject = Url::create($uri);
 
         $this->assertSame($expectedPath, $uriObject->getPath());
         $this->assertSame($expectedQuery, $uriObject->getQuery());
@@ -290,7 +290,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
 
     public function testWithScheme()
     {
-        $httpUrl = Uri::create('http://example.com');
+        $httpUrl = Url::create('http://example.com');
         $this->assertSame('http', $httpUrl->getScheme());
 
         $httpsUrl = $httpUrl->withScheme('https');
@@ -301,7 +301,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
 
     public function testWithSchemeRemovesDefaultPort()
     {
-        $httpUrl = Uri::create('http://example.com:443');
+        $httpUrl = Url::create('http://example.com:443');
         $this->assertSame(443, $httpUrl->getPort());
 
         $httpsUrl = $httpUrl->withScheme('https');
@@ -310,7 +310,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
 
     public function testWithUserInfo()
     {
-        $uriWithoutUserInfo = Uri::create('http://example.com');
+        $uriWithoutUserInfo = Url::create('http://example.com');
         $this->assertSame('', $uriWithoutUserInfo->getUserInfo());
 
         $uriWithUserOnly = $uriWithoutUserInfo->withUserInfo('user');
@@ -334,7 +334,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
 
     public function testWithHost()
     {
-        $uriWithOnlyPath = Uri::create('/path');
+        $uriWithOnlyPath = Url::create('/path');
         $this->assertSame('', $uriWithOnlyPath->getHost());
 
         $uriWithPathAndHost = $uriWithOnlyPath->withHost('example.com');
@@ -354,7 +354,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
 
     public function testWithPortInvalidPort()
     {
-        $uri = Uri::create('http://example.com/');
+        $uri = Url::create('http://example.com/');
 
         $this->expectException(\InvalidArgumentException::class);
 
@@ -363,7 +363,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
 
     public function testWithPort()
     {
-        $httpUriWithoutPort = Uri::create('http://example.com');
+        $httpUriWithoutPort = Url::create('http://example.com');
         $this->assertNull($httpUriWithoutPort->getPort());
 
         $httpUriWithDefaultPortAdded = $httpUriWithoutPort->withPort(80);
@@ -383,7 +383,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
 
     public function testWithPath()
     {
-        $uriWithoutPath = Uri::create('http://example.com');
+        $uriWithoutPath = Url::create('http://example.com');
         $this->assertSame('', $uriWithoutPath->getPath());
 
         $uriWithPathAdded = $uriWithoutPath->withPath('/path');
@@ -400,7 +400,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
 
     public function testWithQuery()
     {
-        $uriWithoutQuery = Uri::create('http://example.com');
+        $uriWithoutQuery = Url::create('http://example.com');
         $this->assertSame('', $uriWithoutQuery->getQuery());
 
         $uriWithQueryAdded = $uriWithoutQuery->withQuery('foo=bar');
@@ -417,7 +417,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
 
     public function testWithFragment()
     {
-        $uriWithoutFragment = Uri::create('http://example.com');
+        $uriWithoutFragment = Url::create('http://example.com');
         $this->assertSame('', $uriWithoutFragment->getFragment());
 
         $uriWithFragmentAdded = $uriWithoutFragment->withFragment('fragment');
@@ -432,10 +432,10 @@ class UriTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider toStringWithMutationDataProvider
      *
-     * @param Uri $uri
+     * @param Url $uri
      * @param string $expectedUri
      */
-    public function testToStringWithMutation(Uri $uri, string $expectedUri)
+    public function testToStringWithMutation(Url $uri, string $expectedUri)
     {
         $this->assertSame($expectedUri, (string) $uri);
     }
@@ -444,23 +444,23 @@ class UriTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'fragment only' => [
-                'uri' => new Uri('', '', '', null, '', '', 'fragment'),
+                'uri' => new Url('', '', '', null, '', '', 'fragment'),
                 'expectedUrl' => '#fragment',
             ],
             'query only' => [
-                'uri' => new Uri('', '', '', null, '', 'query', ''),
+                'uri' => new Url('', '', '', null, '', 'query', ''),
                 'expectedUrl' => '?query',
             ],
             'path only' => [
-                'uri' => new Uri('', '', '', null, '/path', '', ''),
+                'uri' => new Url('', '', '', null, '/path', '', ''),
                 'expectedUrl' => '/path',
             ],
             'path only, starts with //' => [
-                'uri' => new Uri('', '', '', null, '//path', '', ''),
+                'uri' => new Url('', '', '', null, '//path', '', ''),
                 'expectedUrl' => '/path',
             ],
             'path and host, path does not start with /' => [
-                'uri' => new Uri('', '', 'example.com', null, 'path', '', ''),
+                'uri' => new Url('', '', 'example.com', null, 'path', '', ''),
                 'expectedUrl' => '//example.com/path',
             ],
         ];
@@ -473,7 +473,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
      */
     public function testToString(string $uri)
     {
-        $this->assertSame($uri, (string) Uri::create($uri));
+        $this->assertSame($uri, (string) Url::create($uri));
     }
 
     public function toStringDataProvider(): array
@@ -523,7 +523,7 @@ class UriTest extends \PHPUnit\Framework\TestCase
         string $expectedQuery,
         string $expectedFragment
     ) {
-        $uriObject = Uri::create($uri);
+        $uriObject = Url::create($uri);
 
         $this->assertSame($expectedPath, $uriObject->getPath());
         $this->assertSame($expectedQuery, $uriObject->getQuery());
