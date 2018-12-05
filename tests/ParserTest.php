@@ -279,12 +279,30 @@ class ParserTest extends \PHPUnit\Framework\TestCase
     public function invalidPortDataProvider(): array
     {
         return [
+            'invalid port (not an integer), no path' => [
+                'url' => 'http://example.com:foo',
+                'expectedParts' => [],
+            ],
             'invalid port (too small), no path' => [
                 'url' => 'http://example.com:0',
                 'expectedParts' => [
                     Parser::PART_SCHEME => 'http',
                     Parser::PART_HOST => 'example.com',
                     Parser::PART_PORT => '0',
+                ],
+            ],
+            'invalid port (too small), protocol-relative, no path' => [
+                'url' => '//example.com:0',
+                'expectedParts' => [
+                    Parser::PART_HOST => 'example.com',
+                    Parser::PART_PORT => '0',
+                ],
+            ],
+            'invalid port (too small), path only' => [
+                'url' => ':0/path',
+                'expectedParts' => [
+                    Parser::PART_PORT => '0',
+                    Parser::PART_PATH => '/path',
                 ],
             ],
             'invalid port (too large), no path' => [
