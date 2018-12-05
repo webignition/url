@@ -28,7 +28,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
      * @dataProvider hostNormalizationDataProvider
      * @dataProvider removeFragmentDataProvider
      * @dataProvider removeWwwDataProvider
-     * dataProvider removeDefaultFilesPatternsDataProvider
+     * @dataProvider removePathFilesDataProvider
      * @dataProvider removeDotPathSegmentsDataProvider
      * @dataProvider addTrailingSlashDataProvider
      * @dataProvider sortQueryParametersDataProvider
@@ -275,100 +275,63 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    public function removeDefaultFilesPatternsDataProvider(): array
+    public function removePathFilesDataProvider(): array
     {
-        $removeDefaultFilesPatterns = [
-            NormalizerOptions::REMOVE_INDEX_FILE_PATTERN,
-            NormalizerOptions::REMOVE_DEFAULT_FILE_PATTERN,
+        $patterns = [
+            Normalizer::REMOVE_INDEX_FILE_PATTERN,
+        ];
+
+        $options = [
+            Normalizer::OPTION_REMOVE_PATH_FILES_PATTERNS => $patterns,
         ];
 
         return [
-            'removeDefaultFilesPatterns=[], no filename' => [
+            'removePathFilesPatterns=[], no filename' => [
                 'url' => Url::create('http://example.com'),
-                'flags' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => [],
-                ],
+                'flags' => 0,
                 'options' => [],
                 'expectedUrl' => Url::create('http://example.com'),
             ],
-            'removeDefaultFilesPatterns=[], index.html filename' => [
+            'removePathFilesPatterns=[], index.html filename' => [
                 'url' => Url::create('http://example.com/index.html'),
-                'flags' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => [],
-                ],
+                'flags' => 0,
                 'options' => [],
                 'expectedUrl' => Url::create('http://example.com/index.html'),
             ],
-            'removeDefaultFilesPatterns=non-empty, empty path' => [
+            'removePathFilesPatterns=non-empty, empty path' => [
                 'url' => Url::create('http://example.com'),
-                'flags' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
-                'options' => [],
+                'flags' => 0,
+                'options' => $options,
                 'expectedUrl' => Url::create('http://example.com'),
             ],
-            'removeDefaultFilesPatterns=non-empty, no filename' => [
+            'removePathFilesPatterns=non-empty, no filename' => [
                 'url' => Url::create('http://example.com/'),
-                'flags' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
-                'options' => [],
+                'flags' => 0,
+                'options' => $options,
                 'expectedUrl' => Url::create('http://example.com/'),
             ],
-            'removeDefaultFilesPatterns=non-empty, foo-index.html filename' => [
+            'removePathFilesPatterns=non-empty, foo-index.html filename' => [
                 'url' => Url::create('http://example.com/foo-index.html'),
-                'flags' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
-                'options' => [],
+                'flags' => 0,
+                'options' => $options,
                 'expectedUrl' => Url::create('http://example.com/foo-index.html'),
             ],
-            'removeDefaultFilesPatterns=non-empty, index-foo.html filename' => [
+            'removePathFilesPatterns=non-empty, index-foo.html filename' => [
                 'url' => Url::create('http://example.com/index-foo.html'),
-                'flags' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
-                'options' => [],
+                'flags' => 0,
+                'options' => $options,
                 'expectedUrl' => Url::create('http://example.com/index-foo.html'),
             ],
-            'removeDefaultFilesPatterns=non-empty, index.html filename' => [
+            'removePathFilesPatterns=non-empty, index.html filename' => [
                 'url' => Url::create('http://example.com/index.html'),
-                'flags' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
-                'options' => [],
+                'flags' => 0,
+                'options' => $options,
                 'expectedUrl' => Url::create('http://example.com'),
             ],
-            'removeDefaultFilesPatterns=non-empty, index.js filename' => [
+            'removePathFilesPatterns=non-empty, index.js filename' => [
                 'url' => Url::create('http://example.com/index.js'),
-                'flags' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
-                'options' => [],
-                'expectedUrl' => Url::create('http://example.com'),
-            ],
-            'removeDefaultFilesPatterns=non-empty, default.asp filename' => [
-                'url' => Url::create('http://example.com/default.asp'),
-                'flags' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
-                'options' => [],
-                'expectedUrl' => Url::create('http://example.com'),
-            ],
-            'removeDefaultFilesPatterns=non-empty, Default.asp filename' => [
-                'url' => Url::create('http://example.com/Default.asp'),
-                'flags' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
-                'options' => [],
-                'expectedUrl' => Url::create('http://example.com'),
-            ],
-            'removeDefaultFilesPatterns=non-empty, default.aspx filename' => [
-                'url' => Url::create('http://example.com/default.aspx'),
-                'flags' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
-                'options' => [],
+                'flags' => 0,
+                'options' => $options,
                 'expectedUrl' => Url::create('http://example.com'),
             ],
         ];

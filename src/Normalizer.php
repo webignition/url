@@ -12,6 +12,7 @@ class Normalizer
     const PATH_SEPARATOR = '/';
 
     const OPTION_DEFAULT_SCHEME = 'default-scheme';
+    const OPTION_REMOVE_PATH_FILES_PATTERNS = 'remove-path-files-patterns';
 
     const PRESERVING_NORMALIZATIONS = 256;
 
@@ -22,13 +23,13 @@ class Normalizer
     const CONVERT_HOST_UNICODE_TO_PUNYCODE = 16;
     const REMOVE_FRAGMENT = 32;
     const REMOVE_WWW = 64;
-    const REMOVE_DEFAULT_FILES_PATTERNS = 128;
-    const REMOVE_PATH_DOT_SEGMENTS = 256;
-    const ADD_PATH_TRAILING_SLASH = 512;
-    const SORT_QUERY_PARAMETERS = 1024;
-    const REDUCE_DUPLICATE_PATH_SLASHES = 2048;
+    const REMOVE_PATH_DOT_SEGMENTS = 128;
+    const ADD_PATH_TRAILING_SLASH = 256;
+    const SORT_QUERY_PARAMETERS = 512;
+    const REDUCE_DUPLICATE_PATH_SLASHES = 1024;
 
     const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
+    const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
 
     /**
      * @var PunycodeEncoder
@@ -81,9 +82,9 @@ class Normalizer
             $uri = $uri->withHost($host);
         }
 
-//        if (!empty($optionsObject->getRemoveDefaultFilesPatterns())) {
-//            $uri = $this->removeDefaultFiles($uri, $optionsObject);
-//        }
+        if (isset($options[self::OPTION_REMOVE_PATH_FILES_PATTERNS])) {
+            $uri = $this->removePathFiles($uri, $options[self::OPTION_REMOVE_PATH_FILES_PATTERNS]);
+        }
 
         if ($flags & self::REMOVE_PATH_DOT_SEGMENTS) {
             $uri = $this->removePathDotSegments($uri);
@@ -108,7 +109,7 @@ class Normalizer
         return $uri;
     }
 
-    private function removeDefaultFiles(UriInterface $uri, NormalizerOptions $options): UriInterface
+    private function removePathFiles(UriInterface $uri, array $patterns): UriInterface
     {
         $path = $uri->getPath();
         if ('' === $path) {
@@ -121,11 +122,10 @@ class Normalizer
         }
 
         $filename = $pathObject->getFilename();
-        $filePatterns = $options->getRemoveDefaultFilesPatterns();
 
         $hasFilenameToRemove = false;
-        foreach ($filePatterns as $filePattern) {
-            if (preg_match($filePattern, $filename) > 0) {
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $filename) > 0) {
                 $hasFilenameToRemove = true;
             }
         }
