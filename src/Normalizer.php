@@ -24,6 +24,7 @@ class Normalizer
     const REMOVE_PATH_DOT_SEGMENTS = 256;
     const ADD_PATH_TRAILING_SLASH = 512;
     const SORT_QUERY_PARAMETERS = 1024;
+    const REDUCE_DUPLICATE_PATH_SLASHES = 2048;
 
     const PRESERVING_NORMALIZATIONS = 256;
 
@@ -76,9 +77,7 @@ class Normalizer
                 }
             }
 
-            if ($host !== $uri->getHost()) {
-                $uri = $uri->withHost($host);
-            }
+            $uri = $uri->withHost($host);
         }
 
 //        if (!empty($optionsObject->getRemoveDefaultFilesPatterns())) {
@@ -87,6 +86,10 @@ class Normalizer
 
         if ($flags & self::REMOVE_PATH_DOT_SEGMENTS) {
             $uri = $this->removePathDotSegments($uri);
+        }
+
+        if ($flags & self::REDUCE_DUPLICATE_PATH_SLASHES) {
+            $uri->withPath(preg_replace('#//++#', '/', $uri->getPath()));
         }
 
 //        $uri = $this->normalizePath($uri, $optionsObject);
@@ -185,8 +188,6 @@ class Normalizer
 
     private function normalizePath(UriInterface $uri, NormalizerOptions $options): UriInterface
     {
-        $uri = $this->reducePathTrailingSlashes($uri);
-
         if ($options->getRemovePathDotSegments()) {
             $uri = $this->removePathDotSegments($uri);
         }
@@ -196,23 +197,6 @@ class Normalizer
         }
 
         return $uri;
-    }
-
-    private function reducePathTrailingSlashes(UriInterface $uri): UriInterface
-    {
-        $path = $uri->getPath();
-        if ('' === $path) {
-            return $uri;
-        }
-
-        $lastCharacter = $path[-1];
-        if ('/' !== $lastCharacter) {
-            return $uri;
-        }
-
-        $path = rtrim($path, '/') . '/';
-
-        return $uri->withPath($path);
     }
 
     private function removePathDotSegments(UriInterface $uri): UriInterface

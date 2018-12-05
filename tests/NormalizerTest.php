@@ -34,6 +34,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
      * dataProvider addTrailingSlashDataProvider
      * @dataProvider sortQueryParametersDataProvider
      * dataProvider defaultOptionsDataProvider
+     * @dataProvider reduceDuplicatePathSlashesDataProvider
      *
      * @param UriInterface $url
      * @param int $flags
@@ -508,6 +509,42 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 'url' => Url::create('http://example.com?key2&key1=value1'),
                 'flags' => Normalizer::SORT_QUERY_PARAMETERS,
                 'expectedUrl' => Url::create('http://example.com?key1=value1&key2'),
+            ],
+        ];
+    }
+
+    public function reduceDuplicatePathSlashesDataProvider(): array
+    {
+        return [
+            'reduceDuplicatePathSlashes=false; no path' => [
+                'url' => Url::create('http://example.com'),
+                'flags' => 0,
+                'expectedUrl' => Url::create('http://example.com'),
+            ],
+            'reduceDuplicatePathSlashes=false; no duplicate slashes' => [
+                'url' => Url::create('http://example.com/path'),
+                'flags' => 0,
+                'expectedUrl' => Url::create('http://example.com/path'),
+            ],
+            'reduceDuplicatePathSlashes=false; has duplicate slashes' => [
+                'url' => Url::create('http://example.com//path//'),
+                'flags' => 0,
+                'expectedUrl' => Url::create('http://example.com//path//'),
+            ],
+            'reduceDuplicatePathSlashes=true; no path' => [
+                'url' => Url::create('http://example.com'),
+                'flags' => Normalizer::REDUCE_DUPLICATE_PATH_SLASHES,
+                'expectedUrl' => Url::create('http://example.com'),
+            ],
+            'reduceDuplicatePathSlashes=true; no duplicate slashes' => [
+                'url' => Url::create('http://example.com/path'),
+                'flags' => Normalizer::REDUCE_DUPLICATE_PATH_SLASHES,
+                'expectedUrl' => Url::create('http://example.com/path'),
+            ],
+            'reduceDuplicatePathSlashes=true; has duplicate slashes' => [
+                'url' => Url::create('http://example.com//path//'),
+                'flags' => Normalizer::REDUCE_DUPLICATE_PATH_SLASHES,
+                'expectedUrl' => Url::create('http://example.com//path//'),
             ],
         ];
     }
