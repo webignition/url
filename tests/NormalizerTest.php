@@ -8,6 +8,10 @@ use webignition\Url\Url;
 
 class NormalizerTest extends \PHPUnit\Framework\TestCase
 {
+    const ALPHA_CHARACTERS = 'abcdefghijklmnopqrstuvwxyz';
+    const NUMERIC_CHARACTERS = '0123456789';
+    const UNRESERVED_NON_ALPHA_NUMERIC_CHARACTERS = '-._~';
+
     /**
      * @var Normalizer
      */
@@ -32,6 +36,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
      * @dataProvider addTrailingSlashDataProvider
      * @dataProvider sortQueryParametersDataProvider
      * @dataProvider reduceDuplicatePathSlashesDataProvider
+     * @dataProvider decodeUnreservedCharactersDataProvider
      * @dataProvider defaultsDataProvider
      *
      * @param UriInterface $url
@@ -358,8 +363,44 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    public function decodeUnreservedCharactersDataProvider() : array
+    {
+        $characters = $this->createUnreservedCharactersString();
+        $percentEncodedCharacters = $this->percentEncodeString($characters);
+
+        return [
+            'decodeUnreservedCharacters: ' => [
+                'url' => Url::create('http://example.com/' . $percentEncodedCharacters),
+                'expectedUrl' => Url::create('http://example.com/' . $characters),
+                'flags' => Normalizer::DECODE_UNRESERVED_CHARACTERS,
+            ],
+        ];
+    }
+
+    private function createUnreservedCharactersString(): string
+    {
+        return strtoupper(self::ALPHA_CHARACTERS)
+            . self::ALPHA_CHARACTERS
+            . self::NUMERIC_CHARACTERS
+            . self::UNRESERVED_NON_ALPHA_NUMERIC_CHARACTERS;
+    }
+
+    private function percentEncodeString(string $value): string
+    {
+        $charactersAsArray = str_split($value);
+
+        array_walk($charactersAsArray, function (string &$character) {
+            $character = '%' . dechex(ord($character));
+        });
+
+        return implode('', $charactersAsArray);
+    }
+
     public function defaultsDataProvider(): array
     {
+        $unreservedCharacters = $this->createUnreservedCharactersString();
+        $percentEncodedUnreservedCharacters = $this->percentEncodeString($unreservedCharacters);
+
         return [
             'default: default scheme is not set if missing' => [
                 'url' => Url::create('//example.com'),
@@ -404,6 +445,10 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
             'default: query parameters are not sorted' => [
                 'url' => Url::create('http://example.com?b=2&a=1'),
                 'expectedUrl' => Url::create('http://example.com?b=2&a=1'),
+            ],
+            'default: unreserved characters are decoded' => [
+                'url' => Url::create('http://example.com/' . $percentEncodedUnreservedCharacters),
+                'expectedUrl' => Url::create('http://example.com/' . $unreservedCharacters),
             ],
         ];
     }
