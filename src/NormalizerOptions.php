@@ -9,7 +9,7 @@ class NormalizerOptions
     const OPTION_FORCE_HTTP = 'force-http';
     const OPTION_FORCE_HTTPS = 'force-https';
     const OPTION_REMOVE_USER_INFO = 'remove-user-info';
-    const OPTION_CONVERT_UNICODE_TO_PUNYCODE = 'convert-unicode-to-punycode';
+    const OPTION_CONVERT_HOST_UNICODE_TO_PUNYCODE = 'convert-host-unicode-to-punycode';
     const OPTION_REMOVE_FRAGMENT = 'remove-fragment';
     const OPTION_REMOVE_WWW = 'remove-www';
     const OPTION_REMOVE_DEFAULT_FILES_PATTERNS = 'remove-default-files-patterns';
@@ -22,7 +22,7 @@ class NormalizerOptions
     const DEFAULT_FORCE_HTTP = false;
     const DEFAULT_FORCE_HTTPS = false;
     const DEFAULT_REMOVE_USER_INFO = false;
-    const DEFAULT_CONVERT_UNICODE_TO_PUNYCODE = true;
+    const DEFAULT_CONVERT_HOST_UNICODE_TO_PUNYCODE = true;
     const DEFAULT_REMOVE_FRAGMENT = false;
     const DEFAULT_REMOVE_WWW = false;
     const DEFAULT_REMOVE_PATH_DOT_SEGMENTS = false;
@@ -60,7 +60,7 @@ class NormalizerOptions
     /**
      * @var bool
      */
-    private $convertUnicodeToPunycode;
+    private $convertHostUnicodeToPunycode;
 
     /**
      * @var bool
@@ -114,9 +114,9 @@ class NormalizerOptions
         $this->removeUserInfo = $options[self::OPTION_REMOVE_USER_INFO] ?? self::DEFAULT_REMOVE_USER_INFO;
         $this->removeUserInfo = (bool) $this->removeUserInfo;
 
-        $this->convertUnicodeToPunycode =
-            $options[self::OPTION_CONVERT_UNICODE_TO_PUNYCODE] ?? self::DEFAULT_CONVERT_UNICODE_TO_PUNYCODE;
-        $this->convertUnicodeToPunycode = (bool) $this->convertUnicodeToPunycode;
+        $this->convertHostUnicodeToPunycode =
+            $options[self::OPTION_CONVERT_HOST_UNICODE_TO_PUNYCODE] ?? self::DEFAULT_CONVERT_HOST_UNICODE_TO_PUNYCODE;
+        $this->convertHostUnicodeToPunycode = (bool) $this->convertHostUnicodeToPunycode;
 
         $this->removeFragment = $options[self::OPTION_REMOVE_FRAGMENT] ?? self::DEFAULT_REMOVE_FRAGMENT;
         $this->removeFragment = (bool) $this->removeFragment;
@@ -168,9 +168,9 @@ class NormalizerOptions
         return $this->removeUserInfo;
     }
 
-    public function getConvertUnicodeToPunycode(): bool
+    public function getConvertHostUnicodeToPunycode(): bool
     {
-        return $this->convertUnicodeToPunycode;
+        return $this->convertHostUnicodeToPunycode;
     }
 
     public function getRemoveFragment(): bool
