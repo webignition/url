@@ -6,12 +6,14 @@ use Psr\Http\Message\UriInterface;
 
 class Normalizer
 {
-    const DEFAULT_SCHEME = 'http'; // needs to be configurable
-
     const SCHEME_HTTP = 'http';
     const SCHEME_HTTPS = 'https';
 
     const PATH_SEPARATOR = '/';
+
+    const OPTION_DEFAULT_SCHEME = 'default-scheme';
+
+    const PRESERVING_NORMALIZATIONS = 256;
 
     const APPLY_DEFAULT_SCHEME_IF_NO_SCHEME = 1;
     const FORCE_HTTP = 2;
@@ -26,8 +28,6 @@ class Normalizer
     const SORT_QUERY_PARAMETERS = 1024;
     const REDUCE_DUPLICATE_PATH_SLASHES = 2048;
 
-    const PRESERVING_NORMALIZATIONS = 256;
-
     const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
 
     /**
@@ -40,12 +40,13 @@ class Normalizer
         $this->punycodeEncoder = new PunycodeEncoder();
     }
 
-    public function normalize(UriInterface $uri, int $flags = self::PRESERVING_NORMALIZATIONS): UriInterface
-    {
-        $optionsObject = new NormalizerOptions([]);
-
+    public function normalize(
+        UriInterface $uri,
+        int $flags = self::PRESERVING_NORMALIZATIONS,
+        array $options = []
+    ): UriInterface {
         if ($flags & self::APPLY_DEFAULT_SCHEME_IF_NO_SCHEME && '' === $uri->getScheme()) {
-            $uri = $uri->withScheme($optionsObject->getDefaultScheme());
+            $uri = $uri->withScheme($options[self::OPTION_DEFAULT_SCHEME] ?? '');
         }
 
         if ($flags & self::FORCE_HTTP && self::SCHEME_HTTP !== $uri->getScheme()) {
