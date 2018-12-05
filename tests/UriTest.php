@@ -506,6 +506,9 @@ class UriTest extends \PHPUnit\Framework\TestCase
             'scheme, user, password, host, port, path, query, fragment' => [
                 'uri' => 'http://user:password@example.com:8080/path?query#fragment',
             ],
+            'scheme, user, password, unicode host, port, path, query, fragment' => [
+                'uri' => 'http://user:password@♥.example.com:8080/path?query#fragment',
+            ],
         ];
     }
 
