@@ -101,55 +101,6 @@ class Normalizer
         return $uri;
     }
 
-    /**
-     * Host normalization
-     * - ascii version of IDN format
-     * - trailing dot removal
-     *
-     * If host has trailing dots and there is no path, trim the trailing dots
-     * e.g http://example.com. is interpreted as host=example.com. path=
-     *     and needs to be understood as host=example.com and path=
-     *
-     *     http://example.com.. is interpreted as host=example.com.. path=
-     *     and needs to be understood as host=example.com and path=
-     *
-     * @param UriInterface $uri
-     * @param NormalizerOptions $options
-     *
-     * @return UriInterface
-     */
-    private function normalizeHost(UriInterface $uri, NormalizerOptions $options): UriInterface
-    {
-        $host = $uri->getHost();
-
-        if ($options->getConvertHostUnicodeToPunycode()) {
-            $host = $this->punycodeEncoder->encode($host);
-        }
-
-        $hostHasTrailingDots = preg_match('/\.+$/', $host) > 0;
-        if ($hostHasTrailingDots) {
-            $host = rtrim($host, '.');
-        }
-
-        $uri = $uri->withHost($host);
-
-        return $uri;
-    }
-
-    private function removeWww(UriInterface $uri): UriInterface
-    {
-        $wwwPattern = '/^www\./';
-        $host = $uri->getHost();
-
-        if (preg_match($wwwPattern, $host) > 0) {
-            $host = preg_replace($wwwPattern, '', $host);
-
-            $uri = $uri->withHost($host);
-        }
-
-        return $uri;
-    }
-
     private function removeDefaultFiles(UriInterface $uri, NormalizerOptions $options): UriInterface
     {
         $path = $uri->getPath();
