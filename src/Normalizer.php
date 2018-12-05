@@ -14,11 +14,6 @@ class Normalizer
     const OPTION_DEFAULT_SCHEME = 'default-scheme';
     const OPTION_REMOVE_PATH_FILES_PATTERNS = 'remove-path-files-patterns';
 
-    /**
-     * Semantically-lossless normalizations
-     *
-     * self::DECODE_UNRESERVED_CHARACTERS | self::REMOVE_PATH_DOT_SEGMENTS
-     */
     const PRESERVING_NORMALIZATIONS =
         self::DECODE_UNRESERVED_CHARACTERS |
         self::REMOVE_PATH_DOT_SEGMENTS;
