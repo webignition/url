@@ -14,12 +14,9 @@ class Normalizer
     const OPTION_DEFAULT_SCHEME = 'default-scheme';
     const OPTION_REMOVE_PATH_FILES_PATTERNS = 'remove-path-files-patterns';
 
-    /**
-     * Semantically-lossless normalizations
-     *
-     * self::REMOVE_PATH_DOT_SEGMENTS
-     */
-    const PRESERVING_NORMALIZATIONS = 128;
+    const PRESERVING_NORMALIZATIONS =
+        self::DECODE_UNRESERVED_CHARACTERS |
+        self::REMOVE_PATH_DOT_SEGMENTS;
 
     const APPLY_DEFAULT_SCHEME_IF_NO_SCHEME = 1;
     const FORCE_HTTP = 2;
@@ -32,6 +29,7 @@ class Normalizer
     const ADD_PATH_TRAILING_SLASH = 256;
     const SORT_QUERY_PARAMETERS = 512;
     const REDUCE_DUPLICATE_PATH_SLASHES = 1024;
+    const DECODE_UNRESERVED_CHARACTERS = 2048;
 
     const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
     const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
@@ -107,6 +105,10 @@ class Normalizer
             $queryKeyValues = explode('&', $uri->getQuery());
             sort($queryKeyValues);
             $uri = $uri->withQuery(implode('&', $queryKeyValues));
+        }
+
+        if ($flags & self::DECODE_UNRESERVED_CHARACTERS) {
+            $uri = $this->decodeUnreservedCharacters($uri);
         }
 
         return $uri;
@@ -205,5 +207,21 @@ class Normalizer
         }
 
         return $uri;
+    }
+
+    private function decodeUnreservedCharacters(UriInterface $uri)
+    {
+        $regex = '/%(?:2D|2E|5F|7E|3[0-9]|[46][1-9A-F]|[57][0-9A])/i';
+
+        $callback = function (array $match) {
+            return rawurldecode($match[0]);
+        };
+
+        return
+            $uri->withPath(
+                preg_replace_callback($regex, $callback, $uri->getPath())
+            )->withQuery(
+                preg_replace_callback($regex, $callback, $uri->getQuery())
+            );
     }
 }
