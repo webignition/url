@@ -19,8 +19,8 @@ class NormalizerOptions
 
     const DEFAULT_SCHEME = Normalizer::SCHEME_HTTP;
     const DEFAULT_SET_SCHEME_IF_NO_SCHEME = false;
-    const DEFAULT_FORCE_HTTP = null;
-    const DEFAULT_FORCE_HTTPS = null;
+    const DEFAULT_FORCE_HTTP = false;
+    const DEFAULT_FORCE_HTTPS = false;
     const DEFAULT_REMOVE_USER_INFO = false;
     const DEFAULT_CONVERT_UNICODE_TO_PUNYCODE = true;
     const DEFAULT_REMOVE_FRAGMENT = false;
@@ -92,12 +92,8 @@ class NormalizerOptions
      */
     private $sortQueryParameters;
 
-    public function __construct(?array $options)
+    public function __construct(array $options = [])
     {
-        if (!is_array($options)) {
-            $options = [];
-        }
-
         $this->defaultScheme = $options[self::OPTION_DEFAULT_SCHEME] ?? self::DEFAULT_SCHEME;
         $this->defaultScheme = trim($this->defaultScheme);
 
@@ -105,12 +101,12 @@ class NormalizerOptions
             $options[self::OPTION_SET_DEFAULT_SCHEME_IF_NO_SCHEME] ?? self::DEFAULT_SET_SCHEME_IF_NO_SCHEME;
         $this->setDefaultSchemeIfNoScheme = (bool) $this->setDefaultSchemeIfNoScheme;
 
-        $this->forceHttp = $options[self::OPTION_FORCE_HTTP] ?? null;
+        $this->forceHttp = $options[self::OPTION_FORCE_HTTP] ?? self::DEFAULT_FORCE_HTTP;
         if (null !== $this->forceHttp) {
             $this->forceHttp = (bool) $this->forceHttp;
         }
 
-        $this->forceHttps = $options[self::OPTION_FORCE_HTTPS] ?? null;
+        $this->forceHttps = $options[self::OPTION_FORCE_HTTPS] ?? self::DEFAULT_FORCE_HTTPS;
         if (null !== $this->forceHttps) {
             $this->forceHttps = (bool) $this->forceHttps;
         }
@@ -157,12 +153,12 @@ class NormalizerOptions
         return $this->setDefaultSchemeIfNoScheme;
     }
 
-    public function getForceHttp(): ?bool
+    public function getForceHttp(): bool
     {
         return $this->forceHttp;
     }
 
-    public function getForceHttps(): ?bool
+    public function getForceHttps(): bool
     {
         return $this->forceHttps;
     }

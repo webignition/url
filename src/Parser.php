@@ -37,9 +37,6 @@ class Parser
         }
 
         $parts = $this->parseParts($url);
-        if (false === $parts) {
-            return [];
-        }
 
         if (strlen($url) && self::FRAGMENT_DELIMITER === $url[-1]) {
             $parts[self::PART_FRAGMENT] = '';

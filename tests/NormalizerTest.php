@@ -33,6 +33,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
      * @dataProvider removeDotPathSegmentsDataProvider
      * @dataProvider addTrailingSlashDataProvider
      * @dataProvider sortQueryParametersDataProvider
+     * @dataProvider defaultOptionsDataProvider
      *
      * @param UriInterface $url
      * @param array $options
@@ -321,6 +322,20 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 ],
                 'expectedUrl' => Uri::create('http://example.com/index.html'),
             ],
+            'removeDefaultFilesPatterns=non-empty, empty path' => [
+                'url' => Uri::create('http://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
+                ],
+                'expectedUrl' => Uri::create('http://example.com'),
+            ],
+            'removeDefaultFilesPatterns=non-empty, no filename' => [
+                'url' => Uri::create('http://example.com/'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
+                ],
+                'expectedUrl' => Uri::create('http://example.com/'),
+            ],
             'removeDefaultFilesPatterns=non-empty, foo-index.html filename' => [
                 'url' => Uri::create('http://example.com/foo-index.html'),
                 'options' => [
@@ -422,6 +437,20 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
     public function removeDotPathSegmentsDataProvider(): array
     {
         return [
+            'removeDotPathSegments=true, no path' => [
+                'url' => Uri::create('http://example.com'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
+                ],
+                'expectedUrl' => Uri::create('http://example.com'),
+            ],
+            'removeDotPathSegments=true, / path' => [
+                'url' => Uri::create('http://example.com/'),
+                'options' => [
+                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
+                ],
+                'expectedUrl' => Uri::create('http://example.com/'),
+            ],
             'removeDotPathSegments=true, single dot' => [
                 'url' => Uri::create('http://example.com/.'),
                 'options' => [
@@ -512,6 +541,13 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 ],
                 'expectedUrl' => Uri::create('http://example.com/foo/'),
             ],
+            'addTrailingSlash: has filename' => [
+                'url' => Uri::create('http://example.com/index.html'),
+                'options' => [
+                    NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
+                ],
+                'expectedUrl' => Uri::create('http://example.com/index.html'),
+            ],
         ];
     }
 
@@ -552,6 +588,62 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                     NormalizerOptions::OPTION_SORT_QUERY_PARAMETERS => true,
                 ],
                 'expectedUrl' => Uri::create('http://example.com?key1=value1&key2'),
+            ],
+        ];
+    }
+
+    public function defaultOptionsDataProvider(): array
+    {
+        return [
+            'default: default scheme is not set if missing' => [
+                'url' => Uri::create('//example.com'),
+                'options' => [],
+                'expectedUrl' => Uri::create('//example.com'),
+            ],
+            'default: http is not forced' => [
+                'url' => Uri::create('https://example.com'),
+                'options' => [],
+                'expectedUrl' => Uri::create('https://example.com'),
+            ],
+            'default: https is not forced' => [
+                'url' => Uri::create('http://example.com'),
+                'options' => [],
+                'expectedUrl' => Uri::create('http://example.com'),
+            ],
+            'default: user info is not removed' => [
+                'url' => Uri::create('http://user:password@example.com'),
+                'options' => [],
+                'expectedUrl' => Uri::create('http://user:password@example.com'),
+            ],
+            'default: unicode in domain is converted to punycode' => [
+                'url' => Uri::create('http://♥.example.com'),
+                'options' => [],
+                'expectedUrl' => Uri::create('http://xn--g6h.example.com'),
+            ],
+            'default: fragment is not removed' => [
+                'url' => Uri::create('http://example.com#fragment'),
+                'options' => [],
+                'expectedUrl' => Uri::create('http://example.com#fragment'),
+            ],
+            'default: www is not removed' => [
+                'url' => Uri::create('http://www.example.com'),
+                'options' => [],
+                'expectedUrl' => Uri::create('http://www.example.com'),
+            ],
+            'default: path dot segments are not removed' => [
+                'url' => Uri::create('http://example.com/././.'),
+                'options' => [],
+                'expectedUrl' => Uri::create('http://example.com/././.'),
+            ],
+            'default: path trailing slash is not added' => [
+                'url' => Uri::create('http://example.com/path'),
+                'options' => [],
+                'expectedUrl' => Uri::create('http://example.com/path'),
+            ],
+            'default: query parameters are not sorted' => [
+                'url' => Uri::create('http://example.com?b=2&a=1'),
+                'options' => [],
+                'expectedUrl' => Uri::create('http://example.com?b=2&a=1'),
             ],
         ];
     }
