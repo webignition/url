@@ -4,7 +4,6 @@ namespace webignition\Url\Tests;
 
 use Psr\Http\Message\UriInterface;
 use webignition\Url\Normalizer;
-use webignition\Url\NormalizerOptions;
 use webignition\Url\Url;
 
 class NormalizerTest extends \PHPUnit\Framework\TestCase
@@ -22,60 +21,53 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @dataProvider schemeNormalizationDataProvider
+     * @dataProvider applyDefaultSchemeIfNoSchemeDataProvider
      * @dataProvider forceHttpForceHttpsDataProvider
      * @dataProvider removeUserInfoDataProvider
      * @dataProvider hostNormalizationDataProvider
      * @dataProvider removeFragmentDataProvider
      * @dataProvider removeWwwDataProvider
-     * @dataProvider removeDefaultFilesPatternsDataProvider
-     * @dataProvider reduceMultipleTrailingSlashesDataProvider
+     * @dataProvider removePathFilesDataProvider
      * @dataProvider removeDotPathSegmentsDataProvider
      * @dataProvider addTrailingSlashDataProvider
      * @dataProvider sortQueryParametersDataProvider
-     * @dataProvider defaultOptionsDataProvider
+     * @dataProvider reduceDuplicatePathSlashesDataProvider
+     * @dataProvider defaultsDataProvider
      *
      * @param UriInterface $url
+     * @param int $flags
      * @param array $options
      * @param string $expectedUrl
      */
-    public function testNormalize(UriInterface $url, array $options, string $expectedUrl)
-    {
-        $normalizedUrl = $this->normalizer->normalize($url, $options);
+    public function testNormalize(
+        UriInterface $url,
+        string $expectedUrl,
+        int $flags = Normalizer::PRESERVING_NORMALIZATIONS,
+        ?array $options = []
+    ) {
+        $normalizedUrl = $this->normalizer->normalize($url, $flags, $options);
 
         $this->assertEquals((string) $expectedUrl, (string) $normalizedUrl);
     }
 
-    public function schemeNormalizationDataProvider(): array
+    public function applyDefaultSchemeIfNoSchemeDataProvider(): array
     {
         return [
-            'applyDefaultSchemeIfNoScheme=false, no scheme' => [
+            'applyDefaultSchemeIfNoScheme: no scheme (example.com is treated as path)' => [
                 'url' => Url::create('example.com/foo/bar'),
-                'options' => [
-                    NormalizerOptions::OPTION_APPLY_DEFAULT_SCHEME_IF_NO_SCHEME => false,
-                ],
-                'expectedUrl' => 'example.com/foo/bar',
-            ],
-            'applyDefaultSchemeIfNoScheme=false, no scheme, protocol-relative' => [
-                'url' => Url::create('//example.com/foo/bar'),
-                'options' => [
-                    NormalizerOptions::OPTION_APPLY_DEFAULT_SCHEME_IF_NO_SCHEME => false,
-                ],
-                'expectedUrl' => '//example.com/foo/bar',
-            ],
-            'applyDefaultSchemeIfNoScheme=true, no scheme (example.com is treated as path)' => [
-                'url' => Url::create('example.com/foo/bar'),
-                'options' => [
-                    NormalizerOptions::OPTION_APPLY_DEFAULT_SCHEME_IF_NO_SCHEME => true,
-                ],
                 'expectedUrl' => 'http:example.com/foo/bar',
-            ],
-            'applyDefaultSchemeIfNoScheme=true, no scheme, protocol-relative' => [
-                'url' => Url::create('//example.com/foo/bar'),
+                'flags' => Normalizer::APPLY_DEFAULT_SCHEME_IF_NO_SCHEME,
                 'options' => [
-                    NormalizerOptions::OPTION_APPLY_DEFAULT_SCHEME_IF_NO_SCHEME => true,
+                    Normalizer::OPTION_DEFAULT_SCHEME => 'http',
                 ],
+            ],
+            'applyDefaultSchemeIfNoScheme: no scheme, protocol-relative' => [
+                'url' => Url::create('//example.com/foo/bar'),
                 'expectedUrl' => 'http://example.com/foo/bar',
+                'flags' => Normalizer::APPLY_DEFAULT_SCHEME_IF_NO_SCHEME,
+                'options' => [
+                    Normalizer::OPTION_DEFAULT_SCHEME => 'http',
+                ],
             ],
         ];
     }
@@ -85,47 +77,33 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
         return [
             'forceHttp: http url' => [
                 'url' => Url::create('http://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_FORCE_HTTP => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com'),
+                'flags' => Normalizer::FORCE_HTTP,
             ],
             'forceHttp: https url' => [
                 'url' => Url::create('https://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_FORCE_HTTP => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com'),
+                'flags' => Normalizer::FORCE_HTTP,
             ],
             'forceHttps: http url' => [
                 'url' => Url::create('http://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_FORCE_HTTPS => true,
-                ],
                 'expectedUrl' => Url::create('https://example.com'),
+                'flags' => Normalizer::FORCE_HTTPS,
             ],
             'forceHttps: https url' => [
                 'url' => Url::create('https://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_FORCE_HTTPS => true,
-                ],
                 'expectedUrl' => Url::create('https://example.com'),
+                'flags' => Normalizer::FORCE_HTTPS,
             ],
             'forceHttp and forceHttps: http url' => [
                 'url' => Url::create('http://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_FORCE_HTTP => true,
-                    NormalizerOptions::OPTION_FORCE_HTTPS => true,
-                ],
                 'expectedUrl' => Url::create('https://example.com'),
+                'flags' => Normalizer::FORCE_HTTP | Normalizer::FORCE_HTTPS,
             ],
             'forceHttp and forceHttps: https url' => [
                 'url' => Url::create('https://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_FORCE_HTTP => true,
-                    NormalizerOptions::OPTION_FORCE_HTTPS => true,
-                ],
                 'expectedUrl' => Url::create('https://example.com'),
+                'flags' => Normalizer::FORCE_HTTP | Normalizer::FORCE_HTTPS,
             ],
         ];
     }
@@ -133,33 +111,15 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
     public function removeUserInfoDataProvider(): array
     {
         return [
-            'removeUserInfo=false: no user info' => [
+            'removeUserInfo: no user info' => [
                 'url' => Url::create('https://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_USER_INFO => false,
-                ],
                 'expectedUrl' => Url::create('https://example.com'),
+                'flags' => Normalizer::REMOVE_USER_INFO,
             ],
-            'removeUserInfo=false: has user info' => [
+            'removeUserInfo: has user info' => [
                 'url' => Url::create('https://user:password@example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_USER_INFO => false,
-                ],
-                'expectedUrl' => Url::create('https://user:password@example.com'),
-            ],
-            'removeUserInfo=true: no user info' => [
-                'url' => Url::create('https://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_USER_INFO => true,
-                ],
                 'expectedUrl' => Url::create('https://example.com'),
-            ],
-            'removeUserInfo=true: has user info' => [
-                'url' => Url::create('https://user:password@example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_USER_INFO => true,
-                ],
-                'expectedUrl' => Url::create('https://example.com'),
+                'flags' => Normalizer::REMOVE_USER_INFO,
             ],
         ];
     }
@@ -167,67 +127,20 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
     public function hostNormalizationDataProvider(): array
     {
         return [
-            'host dot removal, single dot, no path' => [
-                'url' => Url::create('https://example.com.'),
-                'options' => [],
-                'expectedUrl' => Url::create('https://example.com'),
-            ],
-            'host dot removal, double dot, no path' => [
-                'url' => Url::create('https://example.com..'),
-                'options' => [],
-                'expectedUrl' => Url::create('https://example.com'),
-            ],
-            'host dot removal, single dot, has path' => [
-                'url' => Url::create('https://example.com./foo'),
-                'options' => [],
-                'expectedUrl' => Url::create('https://example.com/foo'),
-            ],
-            'host dot removal, double dot, has path' => [
-                'url' => Url::create('https://example.com../foo'),
-                'options' => [],
-                'expectedUrl' => Url::create('https://example.com/foo'),
-            ],
-            'host convertHostUnicodeToPunycode=false: is normal host' => [
+            'convertHostUnicodeToPunycode: normal host' => [
                 'url' => Url::create('https://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_CONVERT_HOST_UNICODE_TO_PUNYCODE => false,
-                ],
                 'expectedUrl' => Url::create('https://example.com'),
+                'flags' => Normalizer::CONVERT_HOST_UNICODE_TO_PUNYCODE,
             ],
-            'host convertHostUnicodeToPunycode=false: is punycode host' => [
+            'convertHostUnicodeToPunycode: punycode host' => [
                 'url' => Url::create('https://artesan.xn--a-iga.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_CONVERT_HOST_UNICODE_TO_PUNYCODE => false,
-                ],
                 'expectedUrl' => Url::create('https://artesan.xn--a-iga.com'),
+                'flags' => Normalizer::CONVERT_HOST_UNICODE_TO_PUNYCODE,
             ],
-            'host convertHostUnicodeToPunycode=false: is unicode host' => [
+            'convertHostUnicodeToPunycode: unicode host' => [
                 'url' => Url::create('https://artesan.ía.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_CONVERT_HOST_UNICODE_TO_PUNYCODE => false,
-                ],
-                'expectedUrl' => Url::create('https://artesan.ía.com'),
-            ],
-            'host convertHostUnicodeToPunycode=true: is normal host' => [
-                'url' => Url::create('https://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_CONVERT_HOST_UNICODE_TO_PUNYCODE => true,
-                ],
-                'expectedUrl' => Url::create('https://example.com'),
-            ],
-            'host convertHostUnicodeToPunycode=true: is punycode host' => [
-                'url' => Url::create('https://artesan.xn--a-iga.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_CONVERT_HOST_UNICODE_TO_PUNYCODE => true,
-                ],
                 'expectedUrl' => Url::create('https://artesan.xn--a-iga.com'),
-            ],
-            'host convertHostUnicodeToPunycode=true: is unicode host' => [
-                'url' => Url::create('https://artesan.ía.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_CONVERT_HOST_UNICODE_TO_PUNYCODE => true,
-                ],
-                'expectedUrl' => Url::create('https://artesan.xn--a-iga.com'),
+                'flags' => Normalizer::CONVERT_HOST_UNICODE_TO_PUNYCODE,
             ],
         ];
     }
@@ -235,33 +148,15 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
     public function removeFragmentDataProvider(): array
     {
         return [
-            'removeFragment=false, no fragment' => [
+            'removeFragment:, no fragment' => [
                 'url' => Url::create('http://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_FRAGMENT => false,
-                ],
                 'expectedUrl' => Url::create('http://example.com'),
+                'flags' => Normalizer::REMOVE_FRAGMENT,
             ],
-            'removeFragment=false, has fragment' => [
+            'removeFragment:, has fragment' => [
                 'url' => Url::create('http://example.com#foo'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_FRAGMENT => false,
-                ],
-                'expectedUrl' => Url::create('http://example.com#foo'),
-            ],
-            'removeFragment=true, no fragment' => [
-                'url' => Url::create('http://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_FRAGMENT => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com'),
-            ],
-            'removeFragment=true, has fragment' => [
-                'url' => Url::create('http://example.com#foo'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_FRAGMENT => true,
-                ],
-                'expectedUrl' => Url::create('http://example.com'),
+                'flags' => Normalizer::REMOVE_FRAGMENT,
             ],
         ];
     }
@@ -269,167 +164,67 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
     public function removeWwwDataProvider(): array
     {
         return [
-            'removeWww=false, no www' => [
+            'removeWww: no www' => [
                 'url' => Url::create('http://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_WWW => false,
-                ],
                 'expectedUrl' => Url::create('http://example.com'),
+
+                'flags' => Normalizer::REMOVE_WWW,
             ],
-            'removeWww=false, has www' => [
+            'removeWww: has www' => [
                 'url' => Url::create('http://www.example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_WWW => false,
-                ],
-                'expectedUrl' => Url::create('http://www.example.com'),
-            ],
-            'removeWww=true, no www' => [
-                'url' => Url::create('http://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_WWW => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com'),
-            ],
-            'removeWww=true, has www' => [
-                'url' => Url::create('http://www.example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_WWW => true,
-                ],
-                'expectedUrl' => Url::create('http://example.com'),
+
+                'flags' => Normalizer::REMOVE_WWW,
             ],
         ];
     }
 
-    public function removeDefaultFilesPatternsDataProvider(): array
+    public function removePathFilesDataProvider(): array
     {
-        $removeDefaultFilesPatterns = [
-            NormalizerOptions::REMOVE_INDEX_FILE_PATTERN,
-            NormalizerOptions::REMOVE_DEFAULT_FILE_PATTERN,
+        $patterns = [
+            Normalizer::REMOVE_INDEX_FILE_PATTERN,
+        ];
+
+        $options = [
+            Normalizer::OPTION_REMOVE_PATH_FILES_PATTERNS => $patterns,
         ];
 
         return [
-            'removeDefaultFilesPatterns=[], no filename' => [
+            'removePathFilesPatterns: empty path' => [
                 'url' => Url::create('http://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => [],
-                ],
                 'expectedUrl' => Url::create('http://example.com'),
+                'flags' => 0,
+                'options' => $options,
             ],
-            'removeDefaultFilesPatterns=[], index.html filename' => [
-                'url' => Url::create('http://example.com/index.html'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => [],
-                ],
-                'expectedUrl' => Url::create('http://example.com/index.html'),
-            ],
-            'removeDefaultFilesPatterns=non-empty, empty path' => [
-                'url' => Url::create('http://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
-                'expectedUrl' => Url::create('http://example.com'),
-            ],
-            'removeDefaultFilesPatterns=non-empty, no filename' => [
+            'removePathFilesPatterns: no filename' => [
                 'url' => Url::create('http://example.com/'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
                 'expectedUrl' => Url::create('http://example.com/'),
+                'flags' => 0,
+                'options' => $options,
             ],
-            'removeDefaultFilesPatterns=non-empty, foo-index.html filename' => [
+            'removePathFilesPatterns: foo-index.html' => [
                 'url' => Url::create('http://example.com/foo-index.html'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
                 'expectedUrl' => Url::create('http://example.com/foo-index.html'),
+                'flags' => 0,
+                'options' => $options,
             ],
-            'removeDefaultFilesPatterns=non-empty, index-foo.html filename' => [
+            'removePathFilesPatterns: index-foo.html' => [
                 'url' => Url::create('http://example.com/index-foo.html'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
                 'expectedUrl' => Url::create('http://example.com/index-foo.html'),
+                'flags' => 0,
+                'options' => $options,
             ],
-            'removeDefaultFilesPatterns=non-empty, index.html filename' => [
+            'removePathFilesPatterns: index.html' => [
                 'url' => Url::create('http://example.com/index.html'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
                 'expectedUrl' => Url::create('http://example.com'),
+                'flags' => 0,
+                'options' => $options,
             ],
-            'removeDefaultFilesPatterns=non-empty, index.js filename' => [
+            'removePathFilesPatterns: index.js' => [
                 'url' => Url::create('http://example.com/index.js'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
                 'expectedUrl' => Url::create('http://example.com'),
-            ],
-            'removeDefaultFilesPatterns=non-empty, default.asp filename' => [
-                'url' => Url::create('http://example.com/default.asp'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
-                'expectedUrl' => Url::create('http://example.com'),
-            ],
-            'removeDefaultFilesPatterns=non-empty, Default.asp filename' => [
-                'url' => Url::create('http://example.com/Default.asp'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
-                'expectedUrl' => Url::create('http://example.com'),
-            ],
-            'removeDefaultFilesPatterns=non-empty, default.aspx filename' => [
-                'url' => Url::create('http://example.com/default.aspx'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_DEFAULT_FILES_PATTERNS => $removeDefaultFilesPatterns,
-                ],
-                'expectedUrl' => Url::create('http://example.com'),
-            ],
-        ];
-    }
-
-    public function reduceMultipleTrailingSlashesDataProvider(): array
-    {
-        return [
-            'removeMultipleTrailingSlashes: no trailing slash' => [
-                'url' => Url::create('http://example.com'),
-                'options' => [],
-                'expectedUrl' => Url::create('http://example.com'),
-            ],
-            'removeMultipleTrailingSlashes: empty path, double trailing slash' => [
-                'url' => Url::create('http://example.com//'),
-                'options' => [],
-                'expectedUrl' => Url::create('http://example.com/'),
-            ],
-            'removeMultipleTrailingSlashes: empty path, triple trailing slash' => [
-                'url' => Url::create('http://example.com///'),
-                'options' => [],
-                'expectedUrl' => Url::create('http://example.com/'),
-            ],
-            'removeMultipleTrailingSlashes: double trailing slash' => [
-                'url' => Url::create('http://example.com/one/two//'),
-                'options' => [],
-                'expectedUrl' => Url::create('http://example.com/one/two/'),
-            ],
-            'removeMultipleTrailingSlashes: triple trailing slash' => [
-                'url' => Url::create('http://example.com/one/two///'),
-                'options' => [],
-                'expectedUrl' => Url::create('http://example.com/one/two/'),
-            ],
-            'removeMultipleTrailingSlashes: leading double slash, mid double slash, trailing double slash' => [
-                'url' => Url::create('http://example.com//one//two//'),
-                'options' => [],
-                'expectedUrl' => Url::create('http://example.com//one//two/'),
-            ],
-            'removeMultipleTrailingSlashes: leading triple slash, mid triple slash, trailing triple slash' => [
-                'url' => Url::create('http://example.com///one///two///'),
-                'options' => [],
-                'expectedUrl' => Url::create('http://example.com///one///two/'),
-            ],
-            'removeMultipleTrailingSlashes: double mid slash, no trailing slash' => [
-                'url' => Url::create('http://example.com/one//two'),
-                'options' => [],
-                'expectedUrl' => Url::create('http://example.com/one//two'),
+                'flags' => 0,
+                'options' => $options,
             ],
         ];
     }
@@ -437,75 +232,55 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
     public function removeDotPathSegmentsDataProvider(): array
     {
         return [
-            'removeDotPathSegments=true, no path' => [
+            'removeDotPathSegments: no path' => [
                 'url' => Url::create('http://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com'),
+                'flags' => Normalizer::REMOVE_PATH_DOT_SEGMENTS,
             ],
-            'removeDotPathSegments=true, / path' => [
+            'removeDotPathSegments: / path' => [
                 'url' => Url::create('http://example.com/'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com/'),
+                'flags' => Normalizer::REMOVE_PATH_DOT_SEGMENTS,
             ],
-            'removeDotPathSegments=true, single dot' => [
+            'removeDotPathSegments: single dot' => [
                 'url' => Url::create('http://example.com/.'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com/'),
+                'flags' => Normalizer::REMOVE_PATH_DOT_SEGMENTS,
             ],
-            'removeDotPathSegments=true, double dot' => [
+            'removeDotPathSegments: double dot' => [
                 'url' => Url::create('http://example.com/..'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com/'),
+                'flags' => Normalizer::REMOVE_PATH_DOT_SEGMENTS,
             ],
-            'removeDotPathSegments=true, rfc3986 5.2.4 example 1' => [
+            'removeDotPathSegments: rfc3986 5.2.4 example 1' => [
                 'url' => Url::create('http://example.com/a/b/c/./../../g'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com/a/g'),
+                'flags' => Normalizer::REMOVE_PATH_DOT_SEGMENTS,
             ],
-            'removeDotPathSegments=true, rfc3986 5.2.4 example 2' => [
+            'removeDotPathSegments: rfc3986 5.2.4 example 2' => [
                 'url' => Url::create('http://example.com/mid/content=5/../6'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com/mid/6'),
+                'flags' => Normalizer::REMOVE_PATH_DOT_SEGMENTS,
             ],
-            'removeDotPathSegments=true, many single dot' => [
+            'removeDotPathSegments: many single dot' => [
                 'url' => Url::create('http://example.com/././././././././././././././.'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com'),
+                'flags' => Normalizer::REMOVE_PATH_DOT_SEGMENTS,
             ],
-            'removeDotPathSegments=true, many single dot, trailing slash' => [
+            'removeDotPathSegments: many single dot, trailing slash' => [
                 'url' => Url::create('http://example.com/./././././././././././././././'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com/'),
+                'flags' => Normalizer::REMOVE_PATH_DOT_SEGMENTS,
             ],
-            'removeDotPathSegments=true, many double dot' => [
+            'removeDotPathSegments: many double dot' => [
                 'url' => Url::create('http://example.com/../../../../../..'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com'),
+                'flags' => Normalizer::REMOVE_PATH_DOT_SEGMENTS,
             ],
-            'removeDotPathSegments=true, many double dot, trailing slash' => [
+            'removeDotPathSegments: many double dot, trailing slash' => [
                 'url' => Url::create('http://example.com/../../../../../../'),
-                'options' => [
-                    NormalizerOptions::OPTION_REMOVE_PATH_DOT_SEGMENTS => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com/'),
+                'flags' => Normalizer::REMOVE_PATH_DOT_SEGMENTS,
             ],
         ];
     }
@@ -515,38 +290,28 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
         return [
             'addTrailingSlash: no path, no trailing slash' => [
                 'url' => Url::create('http://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com/'),
+                'flags' => Normalizer::ADD_PATH_TRAILING_SLASH,
             ],
             'addTrailingSlash: has path, no trailing slash' => [
                 'url' => Url::create('http://example.com/foo'),
-                'options' => [
-                    NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com/foo/'),
+                'flags' => Normalizer::ADD_PATH_TRAILING_SLASH,
             ],
             'addTrailingSlash: empty path, has trailing slash' => [
                 'url' => Url::create('http://example.com/'),
-                'options' => [
-                    NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com/'),
+                'flags' => Normalizer::ADD_PATH_TRAILING_SLASH,
             ],
             'addTrailingSlash: has path, has trailing slash' => [
                 'url' => Url::create('http://example.com/foo/'),
-                'options' => [
-                    NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com/foo/'),
+                'flags' => Normalizer::ADD_PATH_TRAILING_SLASH,
             ],
             'addTrailingSlash: has filename' => [
                 'url' => Url::create('http://example.com/index.html'),
-                'options' => [
-                    NormalizerOptions::OPTION_ADD_PATH_TRAILING_SLASH => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com/index.html'),
+                'flags' => Normalizer::ADD_PATH_TRAILING_SLASH,
             ],
         ];
     }
@@ -554,95 +319,90 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
     public function sortQueryParametersDataProvider(): array
     {
         return [
-            'sortQueryParameters=false; no query' => [
+            'sortQueryParameters: no query' => [
                 'url' => Url::create('http://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_SORT_QUERY_PARAMETERS => false,
-                ],
                 'expectedUrl' => Url::create('http://example.com'),
+                'flags' => Normalizer::SORT_QUERY_PARAMETERS,
             ],
-            'sortQueryParameters=false; has query' => [
+            'sortQueryParameters: has query' => [
                 'url' => Url::create('http://example.com?b=bear&a=apple&c=cow'),
-                'options' => [
-                    NormalizerOptions::OPTION_SORT_QUERY_PARAMETERS => false,
-                ],
-                'expectedUrl' => Url::create('http://example.com?b=bear&a=apple&c=cow'),
-            ],
-            'sortQueryParameters=true; no query' => [
-                'url' => Url::create('http://example.com'),
-                'options' => [
-                    NormalizerOptions::OPTION_SORT_QUERY_PARAMETERS => true,
-                ],
-                'expectedUrl' => Url::create('http://example.com'),
-            ],
-            'sortQueryParameters=true; has query' => [
-                'url' => Url::create('http://example.com?b=bear&a=apple&c=cow'),
-                'options' => [
-                    NormalizerOptions::OPTION_SORT_QUERY_PARAMETERS => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com?a=apple&b=bear&c=cow'),
+                'flags' => Normalizer::SORT_QUERY_PARAMETERS,
             ],
-            'sortQueryParameters=true; key without value' => [
+            'sortQueryParameters: key without value' => [
                 'url' => Url::create('http://example.com?key2&key1=value1'),
-                'options' => [
-                    NormalizerOptions::OPTION_SORT_QUERY_PARAMETERS => true,
-                ],
                 'expectedUrl' => Url::create('http://example.com?key1=value1&key2'),
+                'flags' => Normalizer::SORT_QUERY_PARAMETERS,
             ],
         ];
     }
 
-    public function defaultOptionsDataProvider(): array
+    public function reduceDuplicatePathSlashesDataProvider(): array
+    {
+        return [
+            'reduceDuplicatePathSlashes: no path' => [
+                'url' => Url::create('http://example.com'),
+                'expectedUrl' => Url::create('http://example.com'),
+                'flags' => Normalizer::REDUCE_DUPLICATE_PATH_SLASHES,
+            ],
+            'reduceDuplicatePathSlashes: no duplicate slashes' => [
+                'url' => Url::create('http://example.com/path'),
+                'expectedUrl' => Url::create('http://example.com/path'),
+                'flags' => Normalizer::REDUCE_DUPLICATE_PATH_SLASHES,
+            ],
+            'reduceDuplicatePathSlashes: has duplicate slashes' => [
+                'url' => Url::create('http://example.com//path//'),
+                'expectedUrl' => Url::create('http://example.com//path//'),
+                'flags' => Normalizer::REDUCE_DUPLICATE_PATH_SLASHES,
+            ],
+        ];
+    }
+
+    public function defaultsDataProvider(): array
     {
         return [
             'default: default scheme is not set if missing' => [
                 'url' => Url::create('//example.com'),
-                'options' => [],
                 'expectedUrl' => Url::create('//example.com'),
             ],
             'default: http is not forced' => [
                 'url' => Url::create('https://example.com'),
-                'options' => [],
                 'expectedUrl' => Url::create('https://example.com'),
             ],
             'default: https is not forced' => [
                 'url' => Url::create('http://example.com'),
-                'options' => [],
                 'expectedUrl' => Url::create('http://example.com'),
             ],
             'default: user info is not removed' => [
                 'url' => Url::create('http://user:password@example.com'),
-                'options' => [],
                 'expectedUrl' => Url::create('http://user:password@example.com'),
             ],
-            'default: unicode in domain is converted to punycode' => [
+            'default: unicode in domain is not converted to punycode' => [
                 'url' => Url::create('http://♥.example.com'),
-                'options' => [],
-                'expectedUrl' => Url::create('http://xn--g6h.example.com'),
+                'expectedUrl' => Url::create('http://♥.example.com'),
             ],
             'default: fragment is not removed' => [
                 'url' => Url::create('http://example.com#fragment'),
-                'options' => [],
                 'expectedUrl' => Url::create('http://example.com#fragment'),
             ],
             'default: www is not removed' => [
                 'url' => Url::create('http://www.example.com'),
-                'options' => [],
                 'expectedUrl' => Url::create('http://www.example.com'),
             ],
-            'default: path dot segments are not removed' => [
+            'default: path dot segments are removed' => [
                 'url' => Url::create('http://example.com/././.'),
-                'options' => [],
-                'expectedUrl' => Url::create('http://example.com/././.'),
+                'expectedUrl' => Url::create('http://example.com'),
             ],
             'default: path trailing slash is not added' => [
                 'url' => Url::create('http://example.com/path'),
-                'options' => [],
                 'expectedUrl' => Url::create('http://example.com/path'),
+            ],
+            'default: duplicate path slashes are not reduced' => [
+                'url' => Url::create('http://example.com//path//'),
+                'expectedUrl' => Url::create('http://example.com//path//'),
             ],
             'default: query parameters are not sorted' => [
                 'url' => Url::create('http://example.com?b=2&a=1'),
-                'options' => [],
                 'expectedUrl' => Url::create('http://example.com?b=2&a=1'),
             ],
         ];

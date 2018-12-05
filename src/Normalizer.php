@@ -11,6 +11,31 @@ class Normalizer
 
     const PATH_SEPARATOR = '/';
 
+    const OPTION_DEFAULT_SCHEME = 'default-scheme';
+    const OPTION_REMOVE_PATH_FILES_PATTERNS = 'remove-path-files-patterns';
+
+    /**
+     * Semantically-lossless normalizations
+     *
+     * self::REMOVE_PATH_DOT_SEGMENTS
+     */
+    const PRESERVING_NORMALIZATIONS = 128;
+
+    const APPLY_DEFAULT_SCHEME_IF_NO_SCHEME = 1;
+    const FORCE_HTTP = 2;
+    const FORCE_HTTPS = 4;
+    const REMOVE_USER_INFO = 8;
+    const CONVERT_HOST_UNICODE_TO_PUNYCODE = 16;
+    const REMOVE_FRAGMENT = 32;
+    const REMOVE_WWW = 64;
+    const REMOVE_PATH_DOT_SEGMENTS = 128;
+    const ADD_PATH_TRAILING_SLASH = 256;
+    const SORT_QUERY_PARAMETERS = 512;
+    const REDUCE_DUPLICATE_PATH_SLASHES = 1024;
+
+    const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
+    const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
+
     /**
      * @var PunycodeEncoder
      */
@@ -21,101 +46,73 @@ class Normalizer
         $this->punycodeEncoder = new PunycodeEncoder();
     }
 
-    public function normalize(UriInterface $uri, array $options): UriInterface
-    {
-        $optionsObject = new NormalizerOptions($options);
-
-        if ('' === $uri->getScheme() && $optionsObject->getApplyDefaultSchemeIfNoScheme()) {
-            $uri = $uri->withScheme($optionsObject->getDefaultScheme());
+    public function normalize(
+        UriInterface $uri,
+        int $flags = self::PRESERVING_NORMALIZATIONS,
+        ?array $options = []
+    ): UriInterface {
+        if ($flags & self::APPLY_DEFAULT_SCHEME_IF_NO_SCHEME && '' === $uri->getScheme()) {
+            $uri = $uri->withScheme($options[self::OPTION_DEFAULT_SCHEME] ?? '');
         }
 
-        if ($optionsObject->getForceHttp()) {
+        if ($flags & self::FORCE_HTTP && self::SCHEME_HTTP !== $uri->getScheme()) {
             $uri = $uri->withScheme(self::SCHEME_HTTP);
         }
 
-        if ($optionsObject->getForceHttps()) {
+        if ($flags & self::FORCE_HTTPS && self::SCHEME_HTTPS !== $uri->getScheme()) {
             $uri = $uri->withScheme(self::SCHEME_HTTPS);
         }
 
-        if ($optionsObject->getRemoveUserInfo()) {
+        if ($flags & self::REMOVE_USER_INFO && '' !== $uri->getUserInfo()) {
             $uri = $uri->withUserInfo('');
         }
 
-        if ($optionsObject->getRemoveFragment()) {
+        if ($flags & self::REMOVE_FRAGMENT && '' !== $uri->getFragment()) {
             $uri = $uri->withFragment('');
         }
 
         if ('' !== $uri->getHost()) {
-            $uri = $this->normalizeHost($uri, $optionsObject);
+            $host = $uri->getHost();
 
-            if ($optionsObject->getRemoveWww()) {
-                $uri = $this->removeWww($uri);
+            if ($flags & self::CONVERT_HOST_UNICODE_TO_PUNYCODE) {
+                $host = $this->punycodeEncoder->encode($host);
             }
-        }
 
-        if (!empty($optionsObject->getRemoveDefaultFilesPatterns())) {
-            $uri = $this->removeDefaultFiles($uri, $optionsObject);
-        }
-
-        $uri = $this->normalizePath($uri, $optionsObject);
-
-        if ($optionsObject->getSortQueryParameters()) {
-            $uri = $this->sortQueryParameters($uri);
-        }
-
-        return $uri;
-    }
-
-    /**
-     * Host normalization
-     * - ascii version of IDN format
-     * - trailing dot removal
-     *
-     * If host has trailing dots and there is no path, trim the trailing dots
-     * e.g http://example.com. is interpreted as host=example.com. path=
-     *     and needs to be understood as host=example.com and path=
-     *
-     *     http://example.com.. is interpreted as host=example.com.. path=
-     *     and needs to be understood as host=example.com and path=
-     *
-     * @param UriInterface $uri
-     * @param NormalizerOptions $options
-     *
-     * @return UriInterface
-     */
-    private function normalizeHost(UriInterface $uri, NormalizerOptions $options): UriInterface
-    {
-        $host = $uri->getHost();
-
-        if ($options->getConvertHostUnicodeToPunycode()) {
-            $host = $this->punycodeEncoder->encode($host);
-        }
-
-        $hostHasTrailingDots = preg_match('/\.+$/', $host) > 0;
-        if ($hostHasTrailingDots) {
-            $host = rtrim($host, '.');
-        }
-
-        $uri = $uri->withHost($host);
-
-        return $uri;
-    }
-
-    private function removeWww(UriInterface $uri): UriInterface
-    {
-        $wwwPattern = '/^www\./';
-        $host = $uri->getHost();
-
-        if (preg_match($wwwPattern, $host) > 0) {
-            $host = preg_replace($wwwPattern, '', $host);
+            if ($flags & self::REMOVE_WWW) {
+                if (preg_match(self::HOST_STARTS_WITH_WWW_PATTERN, $host) > 0) {
+                    $host = preg_replace(self::HOST_STARTS_WITH_WWW_PATTERN, '', $host);
+                }
+            }
 
             $uri = $uri->withHost($host);
         }
 
+        if (isset($options[self::OPTION_REMOVE_PATH_FILES_PATTERNS])) {
+            $uri = $this->removePathFiles($uri, $options[self::OPTION_REMOVE_PATH_FILES_PATTERNS]);
+        }
+
+        if ($flags & self::REMOVE_PATH_DOT_SEGMENTS) {
+            $uri = $this->removePathDotSegments($uri);
+        }
+
+        if ($flags & self::REDUCE_DUPLICATE_PATH_SLASHES) {
+            $uri->withPath(preg_replace('#//++#', '/', $uri->getPath()));
+        }
+
+        if ($flags & self::ADD_PATH_TRAILING_SLASH) {
+            $uri = $this->addPathTrailingSlash($uri);
+        }
+
+        if ($flags & self::SORT_QUERY_PARAMETERS && '' !== $uri->getQuery()) {
+            $queryKeyValues = explode('&', $uri->getQuery());
+            sort($queryKeyValues);
+            $uri = $uri->withQuery(implode('&', $queryKeyValues));
+        }
+
         return $uri;
     }
 
-    private function removeDefaultFiles(UriInterface $uri, NormalizerOptions $options): UriInterface
+    private function removePathFiles(UriInterface $uri, array $patterns): UriInterface
     {
         $path = $uri->getPath();
         if ('' === $path) {
@@ -128,11 +125,10 @@ class Normalizer
         }
 
         $filename = $pathObject->getFilename();
-        $filePatterns = $options->getRemoveDefaultFilesPatterns();
 
         $hasFilenameToRemove = false;
-        foreach ($filePatterns as $filePattern) {
-            if (preg_match($filePattern, $filename) > 0) {
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $filename) > 0) {
                 $hasFilenameToRemove = true;
             }
         }
@@ -149,38 +145,6 @@ class Normalizer
         }
 
         return $uri;
-    }
-
-    private function normalizePath(UriInterface $uri, NormalizerOptions $options): UriInterface
-    {
-        $uri = $this->reducePathTrailingSlashes($uri);
-
-        if ($options->getRemovePathDotSegments()) {
-            $uri = $this->removePathDotSegments($uri);
-        }
-
-        if ($options->getAddPathTrailingSlash()) {
-            $uri = $this->addPathTrailingSlash($uri);
-        }
-
-        return $uri;
-    }
-
-    private function reducePathTrailingSlashes(UriInterface $uri): UriInterface
-    {
-        $path = $uri->getPath();
-        if ('' === $path) {
-            return $uri;
-        }
-
-        $lastCharacter = $path[-1];
-        if ('/' !== $lastCharacter) {
-            return $uri;
-        }
-
-        $path = rtrim($path, '/') . '/';
-
-        return $uri->withPath($path);
     }
 
     private function removePathDotSegments(UriInterface $uri): UriInterface
@@ -241,18 +205,5 @@ class Normalizer
         }
 
         return $uri;
-    }
-
-    private function sortQueryParameters(UriInterface $uri): UriInterface
-    {
-        $query = $uri->getQuery();
-        if ('' === $query) {
-            return $uri;
-        }
-
-        $queryKeyValues = explode('&', $query);
-        sort($queryKeyValues);
-
-        return $uri->withQuery(implode('&', $queryKeyValues));
     }
 }
