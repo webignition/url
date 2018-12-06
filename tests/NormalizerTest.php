@@ -38,6 +38,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
      * @dataProvider reduceDuplicatePathSlashesDataProvider
      * @dataProvider decodeUnreservedCharactersDataProvider
      * @dataProvider removeDefaultPortDataProvider
+     * @dataProvider capitalizePercentEncodingDataProvider
      * @dataProvider defaultsDataProvider
      *
      * @param UriInterface $url
@@ -378,7 +379,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    public function removeDefaultPortDataProvider()
+    public function removeDefaultPortDataProvider(): array
     {
         return [
             'removeDefaultPort: http url with port 80' => [
@@ -394,23 +395,23 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-    private function createUnreservedCharactersString(): string
+    public function capitalizePercentEncodingDataProvider(): array
     {
-        return strtoupper(self::ALPHA_CHARACTERS)
-            . self::ALPHA_CHARACTERS
-            . self::NUMERIC_CHARACTERS
-            . self::UNRESERVED_NON_ALPHA_NUMERIC_CHARACTERS;
-    }
+        $characters = $this->createUnreservedCharactersString();
+        $percentEncodedCharacters = $this->percentEncodeString($characters);
 
-    private function percentEncodeString(string $value): string
-    {
-        $charactersAsArray = str_split($value);
-
-        array_walk($charactersAsArray, function (string &$character) {
-            $character = '%' . dechex(ord($character));
-        });
-
-        return implode('', $charactersAsArray);
+        return [
+            'capitalizePercentEncoding: lowercase' => [
+                'url' => Url::create('http://example.com/' . strtolower($percentEncodedCharacters)),
+                'expectedUrl' => Url::create('http://example.com/' . $percentEncodedCharacters),
+                'flags' => Normalizer::CAPITALIZE_PERCENT_ENCODING,
+            ],
+            'capitalizePercentEncoding: uppercase' => [
+                'url' => Url::create('http://example.com/' . $percentEncodedCharacters),
+                'expectedUrl' => Url::create('http://example.com/' . $percentEncodedCharacters),
+                'flags' => Normalizer::CAPITALIZE_PERCENT_ENCODING,
+            ],
+        ];
     }
 
     public function defaultsDataProvider(): array
@@ -471,7 +472,30 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 'url' => $this->setUrlPort(Url::create('http://example.com:80'), 80),
                 'expectedUrl' => Url::create('http://example.com'),
             ],
+            'default: percent encoding is capitalized' => [
+                'url' => Url::create('http://example.com?%2f'),
+                'expectedUrl' => Url::create('http://example.com?%2F'),
+            ],
         ];
+    }
+
+    private function createUnreservedCharactersString(): string
+    {
+        return strtoupper(self::ALPHA_CHARACTERS)
+            . self::ALPHA_CHARACTERS
+            . self::NUMERIC_CHARACTERS
+            . self::UNRESERVED_NON_ALPHA_NUMERIC_CHARACTERS;
+    }
+
+    private function percentEncodeString(string $value): string
+    {
+        $charactersAsArray = str_split($value);
+
+        array_walk($charactersAsArray, function (string &$character) {
+            $character = '%' . strtoupper(dechex(ord($character)));
+        });
+
+        return implode('', $charactersAsArray);
     }
 
     private function setUrlPort(Url $url, int $port): Url
