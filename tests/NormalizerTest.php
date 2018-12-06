@@ -39,6 +39,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
      * @dataProvider decodeUnreservedCharactersDataProvider
      * @dataProvider removeDefaultPortDataProvider
      * @dataProvider capitalizePercentEncodingDataProvider
+     * @dataProvider removeDefaultFileHostDataProvider
      * @dataProvider defaultsDataProvider
      *
      * @param UriInterface $url
@@ -430,6 +431,17 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    public function removeDefaultFileHostDataProvider(): array
+    {
+        return [
+            'removeDefaultFileHost: http' => [
+                'url' => Url::create('file://localhost/path'),
+                'expectedUrl' => Url::create('file:///path'),
+                'flags' => Normalizer::REMOVE_DEFAULT_FILE_HOST,
+            ],
+        ];
+    }
+
     public function defaultsDataProvider(): array
     {
         $unreservedCharacters = $this->createUnreservedCharactersString();
@@ -499,6 +511,10 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
             'default: empty https path is converted' => [
                 'url' => Url::create('https://example.com'),
                 'expectedUrl' => Url::create('https://example.com/'),
+            ],
+            'default: file localhost is removed' => [
+                'url' => Url::create('file://localhost/path'),
+                'expectedUrl' => Url::create('file:///path'),
             ],
         ];
     }
