@@ -14,6 +14,7 @@ class Normalizer
 
     const OPTION_DEFAULT_SCHEME = 'default-scheme';
     const OPTION_REMOVE_PATH_FILES_PATTERNS = 'remove-path-files-patterns';
+    const OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS = 'remove-query-parameters-patterns';
 
     const PRESERVING_NORMALIZATIONS =
         self::CAPITALIZE_PERCENT_ENCODING |
@@ -129,6 +130,14 @@ class Normalizer
         if ($flags & self::REMOVE_DEFAULT_FILE_HOST &&
             self::SCHEME_FILE === $uri->getScheme() && 'localhost' === $uri->getHost()) {
             $uri = $uri->withHost('');
+        }
+
+        if (isset($options[self::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS]) &&
+            is_array($options[self::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS])) {
+            $uri = $uri->withQuery($this->removeQueryParameters(
+                $uri->getQuery(),
+                $options[self::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS]
+            ));
         }
 
         return $uri;
@@ -259,5 +268,27 @@ class Normalizer
             )->withQuery(
                 preg_replace_callback($regex, $callback, $uri->getQuery())
             );
+    }
+
+    private function removeQueryParameters(string $query, array $patterns)
+    {
+        $queryKeyValues = explode('&', $query);
+
+        foreach ($patterns as $pattern) {
+            $queryKeyValues = array_filter(
+                $queryKeyValues,
+                function (string $keyValue) use ($pattern) {
+                    $firstEqualsPosition = strpos($keyValue, '=');
+
+                    $key = $firstEqualsPosition
+                        ? substr($keyValue, 0, $firstEqualsPosition)
+                        : $keyValue;
+
+                    return preg_match($pattern, $key) === 0;
+                }
+            );
+        }
+
+        return implode('&', $queryKeyValues);
     }
 }
