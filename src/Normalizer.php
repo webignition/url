@@ -17,6 +17,7 @@ class Normalizer
     const PRESERVING_NORMALIZATIONS =
         self::CAPITALIZE_PERCENT_ENCODING |
         self::DECODE_UNRESERVED_CHARACTERS |
+        self::CONVERT_EMPTY_HTTP_PATH |
         self::REMOVE_DEFAULT_PORT |
         self::REMOVE_PATH_DOT_SEGMENTS;
 
@@ -34,6 +35,7 @@ class Normalizer
     const DECODE_UNRESERVED_CHARACTERS = 2048;
     const REMOVE_DEFAULT_PORT = 4096;
     const CAPITALIZE_PERCENT_ENCODING = 8192;
+    const CONVERT_EMPTY_HTTP_PATH = 16384;
 
     const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
     const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
@@ -123,6 +125,12 @@ class Normalizer
 
         if ($flags & self::CAPITALIZE_PERCENT_ENCODING) {
             $uri = self::capitalizePercentEncoding($uri);
+        }
+
+        if ($flags & self::CONVERT_EMPTY_HTTP_PATH && $uri->getPath() === '' &&
+            (self::SCHEME_HTTP === $uri->getScheme() || self::SCHEME_HTTPS === $uri->getScheme())
+        ) {
+            $uri = $uri->withPath('/');
         }
 
         return $uri;

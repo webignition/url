@@ -414,6 +414,22 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    public function convertEmptyHttpPathDataProvider(): array
+    {
+        return [
+            'convertEmptyHttpPath: http' => [
+                'url' => Url::create('http://example.com'),
+                'expectedUrl' => Url::create('http://example.com/'),
+                'flags' => Normalizer::CONVERT_EMPTY_HTTP_PATH,
+            ],
+            'convertEmptyHttpPath: https' => [
+                'url' => Url::create('https://example.com'),
+                'expectedUrl' => Url::create('https://example.com/'),
+                'flags' => Normalizer::CONVERT_EMPTY_HTTP_PATH,
+            ],
+        ];
+    }
+
     public function defaultsDataProvider(): array
     {
         $unreservedCharacters = $this->createUnreservedCharactersString();
@@ -421,36 +437,36 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
 
         return [
             'default: default scheme is not set if missing' => [
-                'url' => Url::create('//example.com'),
-                'expectedUrl' => Url::create('//example.com'),
+                'url' => Url::create('//example.com/'),
+                'expectedUrl' => Url::create('//example.com/'),
             ],
             'default: http is not forced' => [
-                'url' => Url::create('https://example.com'),
-                'expectedUrl' => Url::create('https://example.com'),
+                'url' => Url::create('https://example.com/'),
+                'expectedUrl' => Url::create('https://example.com/'),
             ],
             'default: https is not forced' => [
-                'url' => Url::create('http://example.com'),
-                'expectedUrl' => Url::create('http://example.com'),
+                'url' => Url::create('http://example.com/'),
+                'expectedUrl' => Url::create('http://example.com/'),
             ],
             'default: user info is not removed' => [
-                'url' => Url::create('http://user:password@example.com'),
-                'expectedUrl' => Url::create('http://user:password@example.com'),
+                'url' => Url::create('http://user:password@example.com/'),
+                'expectedUrl' => Url::create('http://user:password@example.com/'),
             ],
             'default: unicode in domain is not converted to punycode' => [
-                'url' => Url::create('http://♥.example.com'),
-                'expectedUrl' => Url::create('http://♥.example.com'),
+                'url' => Url::create('http://♥.example.com/'),
+                'expectedUrl' => Url::create('http://♥.example.com/'),
             ],
             'default: fragment is not removed' => [
-                'url' => Url::create('http://example.com#fragment'),
-                'expectedUrl' => Url::create('http://example.com#fragment'),
+                'url' => Url::create('http://example.com/#fragment'),
+                'expectedUrl' => Url::create('http://example.com/#fragment'),
             ],
             'default: www is not removed' => [
-                'url' => Url::create('http://www.example.com'),
-                'expectedUrl' => Url::create('http://www.example.com'),
+                'url' => Url::create('http://www.example.com/'),
+                'expectedUrl' => Url::create('http://www.example.com/'),
             ],
             'default: path dot segments are removed' => [
                 'url' => Url::create('http://example.com/././.'),
-                'expectedUrl' => Url::create('http://example.com'),
+                'expectedUrl' => Url::create('http://example.com/'),
             ],
             'default: path trailing slash is not added' => [
                 'url' => Url::create('http://example.com/path'),
@@ -461,20 +477,28 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 'expectedUrl' => Url::create('http://example.com//path//'),
             ],
             'default: query parameters are not sorted' => [
-                'url' => Url::create('http://example.com?b=2&a=1'),
-                'expectedUrl' => Url::create('http://example.com?b=2&a=1'),
+                'url' => Url::create('http://example.com/?b=2&a=1'),
+                'expectedUrl' => Url::create('http://example.com/?b=2&a=1'),
             ],
             'default: unreserved characters are decoded' => [
                 'url' => Url::create('http://example.com/' . $percentEncodedUnreservedCharacters),
                 'expectedUrl' => Url::create('http://example.com/' . $unreservedCharacters),
             ],
             'default: default port is removed' => [
-                'url' => $this->setUrlPort(Url::create('http://example.com:80'), 80),
-                'expectedUrl' => Url::create('http://example.com'),
+                'url' => $this->setUrlPort(Url::create('http://example.com:80/'), 80),
+                'expectedUrl' => Url::create('http://example.com/'),
             ],
             'default: percent encoding is capitalized' => [
-                'url' => Url::create('http://example.com?%2f'),
-                'expectedUrl' => Url::create('http://example.com?%2F'),
+                'url' => Url::create('http://example.com/?%2f'),
+                'expectedUrl' => Url::create('http://example.com/?%2F'),
+            ],
+            'default: empty http path is converted' => [
+                'url' => Url::create('http://example.com'),
+                'expectedUrl' => Url::create('http://example.com/'),
+            ],
+            'default: empty https path is converted' => [
+                'url' => Url::create('https://example.com'),
+                'expectedUrl' => Url::create('https://example.com/'),
             ],
         ];
     }
