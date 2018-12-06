@@ -30,18 +30,17 @@ class Normalizer
     const REMOVE_DEFAULT_FILE_HOST = 8;
     const REMOVE_DEFAULT_PORT = 16;
     const REMOVE_PATH_DOT_SEGMENTS = 32;
+    const CONVERT_HOST_UNICODE_TO_PUNYCODE = 64;
 
-    // Potentially lossy normalizations
-    const REDUCE_DUPLICATE_PATH_SLASHES = 64;
-    const SORT_QUERY_PARAMETERS = 128;
+    // Potentially-lossy normalizations
+    const REDUCE_DUPLICATE_PATH_SLASHES = 128;
+    const SORT_QUERY_PARAMETERS = 256;
 
-    const REMOVE_USER_INFO = 256;
-    const CONVERT_HOST_UNICODE_TO_PUNYCODE = 512;
-    const REMOVE_FRAGMENT = 1024;
-    const REMOVE_WWW = 2048;
-    const ADD_PATH_TRAILING_SLASH = 4096;
-
-
+    // Lossy normalizations
+    const ADD_PATH_TRAILING_SLASH = 512;
+    const REMOVE_USER_INFO = 1024;
+    const REMOVE_FRAGMENT = 2048;
+    const REMOVE_WWW = 4096;
 
     const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
     const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
