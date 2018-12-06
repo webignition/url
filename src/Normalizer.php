@@ -8,6 +8,7 @@ class Normalizer
 {
     const SCHEME_HTTP = 'http';
     const SCHEME_HTTPS = 'https';
+    const SCHEME_FILE = 'file';
 
     const PATH_SEPARATOR = '/';
 
@@ -18,6 +19,7 @@ class Normalizer
         self::CAPITALIZE_PERCENT_ENCODING |
         self::DECODE_UNRESERVED_CHARACTERS |
         self::CONVERT_EMPTY_HTTP_PATH |
+        self::REMOVE_DEFAULT_FILE_HOST |
         self::REMOVE_DEFAULT_PORT |
         self::REMOVE_PATH_DOT_SEGMENTS;
 
@@ -36,6 +38,7 @@ class Normalizer
     const REMOVE_DEFAULT_PORT = 4096;
     const CAPITALIZE_PERCENT_ENCODING = 8192;
     const CONVERT_EMPTY_HTTP_PATH = 16384;
+    const REMOVE_DEFAULT_FILE_HOST = 32768;
 
     const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
     const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
@@ -131,6 +134,11 @@ class Normalizer
             (self::SCHEME_HTTP === $uri->getScheme() || self::SCHEME_HTTPS === $uri->getScheme())
         ) {
             $uri = $uri->withPath('/');
+        }
+
+        if ($flags & self::REMOVE_DEFAULT_FILE_HOST &&
+            self::SCHEME_FILE === $uri->getScheme() && 'localhost' === $uri->getHost()) {
+            $uri = $uri->withHost('');
         }
 
         return $uri;
