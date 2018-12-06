@@ -6,20 +6,6 @@ use Psr\Http\Message\UriInterface;
 
 class Url implements UriInterface
 {
-    private $schemeToPortMap = [
-        'http'  => 80,
-        'https' => 443,
-        'ftp' => 21,
-        'gopher' => 70,
-        'nntp' => 119,
-        'news' => 119,
-        'telnet' => 23,
-        'tn3270' => 23,
-        'imap' => 143,
-        'pop' => 110,
-        'ldap' => 389,
-    ];
-
     /**
      * @var string
      */
@@ -72,9 +58,7 @@ class Url implements UriInterface
         $this->fragment = Filter::filterQueryOrFragment($fragment);
 
         if (!empty($port)) {
-            $knownPort = $this->schemeToPortMap[$scheme] ?? null;
-
-            if ($knownPort && $port === $knownPort) {
+            if (DefaultPortIdentifier::isDefaultPort($this->scheme, $port)) {
                 $port = null;
             }
         }

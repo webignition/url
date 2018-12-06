@@ -16,6 +16,7 @@ class Normalizer
 
     const PRESERVING_NORMALIZATIONS =
         self::DECODE_UNRESERVED_CHARACTERS |
+        self::REMOVE_DEFAULT_PORT |
         self::REMOVE_PATH_DOT_SEGMENTS;
 
     const APPLY_DEFAULT_SCHEME_IF_NO_SCHEME = 1;
@@ -30,6 +31,7 @@ class Normalizer
     const SORT_QUERY_PARAMETERS = 512;
     const REDUCE_DUPLICATE_PATH_SLASHES = 1024;
     const DECODE_UNRESERVED_CHARACTERS = 2048;
+    const REMOVE_DEFAULT_PORT = 4096;
 
     const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
     const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
@@ -109,6 +111,12 @@ class Normalizer
 
         if ($flags & self::DECODE_UNRESERVED_CHARACTERS) {
             $uri = $this->decodeUnreservedCharacters($uri);
+        }
+
+        if ($flags & self::REMOVE_DEFAULT_PORT) {
+            if (DefaultPortIdentifier::isDefaultPort($uri->getScheme(), $uri->getPort())) {
+                $uri = $uri->withPort(null);
+            }
         }
 
         return $uri;
