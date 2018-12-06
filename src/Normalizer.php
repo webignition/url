@@ -36,20 +36,6 @@ class Normalizer
     const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
     const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
 
-    private $schemeToPortMap = [
-        'http'  => 80,
-        'https' => 443,
-        'ftp' => 21,
-        'gopher' => 70,
-        'nntp' => 119,
-        'news' => 119,
-        'telnet' => 23,
-        'tn3270' => 23,
-        'imap' => 143,
-        'pop' => 110,
-        'ldap' => 389,
-    ];
-
     /**
      * @var PunycodeEncoder
      */
@@ -127,17 +113,8 @@ class Normalizer
             $uri = $this->decodeUnreservedCharacters($uri);
         }
 
-        if ($flags & self::REMOVE_DEFAULT_PORT && null !== $uri->getScheme() && null !== $uri->getPort()) {
-            $scheme = $uri->getScheme();
-            $port = $uri->getPort();
-
-            $knownPort = $this->schemeToPortMap[$scheme] ?? null;
-
-            if ($knownPort && $port === $knownPort) {
-                $port = null;
-            }
-
-            if (null === $port) {
+        if ($flags & self::REMOVE_DEFAULT_PORT) {
+            if (DefaultPortIdentifier::isDefaultPort($uri->getScheme(), $uri->getPort())) {
                 $uri = $uri->withPort(null);
             }
         }
