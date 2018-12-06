@@ -406,7 +406,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
             ],
             'default: unicode in domain is not converted to punycode' => [
                 'url' => Url::create('http://♥.example.com/'),
-                'expectedUrl' => Url::create('http://♥.example.com/'),
+                'expectedUrl' => Url::create('http://xn--g6h.example.com/'),
             ],
             'default: fragment is not removed' => [
                 'url' => Url::create('http://example.com/#fragment'),

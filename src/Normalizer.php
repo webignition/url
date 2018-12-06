@@ -21,7 +21,8 @@ class Normalizer
         self::CONVERT_EMPTY_HTTP_PATH |
         self::REMOVE_DEFAULT_FILE_HOST |
         self::REMOVE_DEFAULT_PORT |
-        self::REMOVE_PATH_DOT_SEGMENTS;
+        self::REMOVE_PATH_DOT_SEGMENTS |
+        self::CONVERT_HOST_UNICODE_TO_PUNYCODE;
 
     // Semantically-lossless normalizations
     const CAPITALIZE_PERCENT_ENCODING = 1;
