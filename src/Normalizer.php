@@ -15,6 +15,7 @@ class Normalizer
     const OPTION_REMOVE_PATH_FILES_PATTERNS = 'remove-path-files-patterns';
 
     const PRESERVING_NORMALIZATIONS =
+        self::CAPITALIZE_PERCENT_ENCODING |
         self::DECODE_UNRESERVED_CHARACTERS |
         self::REMOVE_DEFAULT_PORT |
         self::REMOVE_PATH_DOT_SEGMENTS;
@@ -32,6 +33,7 @@ class Normalizer
     const REDUCE_DUPLICATE_PATH_SLASHES = 1024;
     const DECODE_UNRESERVED_CHARACTERS = 2048;
     const REMOVE_DEFAULT_PORT = 4096;
+    const CAPITALIZE_PERCENT_ENCODING = 8192;
 
     const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
     const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
@@ -117,6 +119,10 @@ class Normalizer
             if (DefaultPortIdentifier::isDefaultPort($uri->getScheme(), $uri->getPort())) {
                 $uri = $uri->withPort(null);
             }
+        }
+
+        if ($flags & self::CAPITALIZE_PERCENT_ENCODING) {
+            $uri = self::capitalizePercentEncoding($uri);
         }
 
         return $uri;
@@ -223,6 +229,22 @@ class Normalizer
 
         $callback = function (array $match) {
             return rawurldecode($match[0]);
+        };
+
+        return
+            $uri->withPath(
+                preg_replace_callback($regex, $callback, $uri->getPath())
+            )->withQuery(
+                preg_replace_callback($regex, $callback, $uri->getQuery())
+            );
+    }
+
+    private static function capitalizePercentEncoding(UriInterface $uri)
+    {
+        $regex = '/(?:%[A-Fa-f0-9]{2})++/';
+
+        $callback = function (array $match) {
+            return strtoupper($match[0]);
         };
 
         return
