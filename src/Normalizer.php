@@ -23,6 +23,7 @@ class Normalizer
         self::REMOVE_DEFAULT_PORT |
         self::REMOVE_PATH_DOT_SEGMENTS;
 
+    // Semantically-lossless normalizations
     const CAPITALIZE_PERCENT_ENCODING = 1;
     const DECODE_UNRESERVED_CHARACTERS = 2;
     const CONVERT_EMPTY_HTTP_PATH = 4;
@@ -30,13 +31,17 @@ class Normalizer
     const REMOVE_DEFAULT_PORT = 16;
     const REMOVE_PATH_DOT_SEGMENTS = 32;
 
-    const REMOVE_USER_INFO = 64;
-    const CONVERT_HOST_UNICODE_TO_PUNYCODE = 128;
-    const REMOVE_FRAGMENT = 256;
-    const REMOVE_WWW = 512;
-    const ADD_PATH_TRAILING_SLASH = 1024;
-    const SORT_QUERY_PARAMETERS = 2048;
-    const REDUCE_DUPLICATE_PATH_SLASHES = 4096;
+    // Potentially lossy normalizations
+    const REDUCE_DUPLICATE_PATH_SLASHES = 64;
+    const SORT_QUERY_PARAMETERS = 128;
+
+    const REMOVE_USER_INFO = 256;
+    const CONVERT_HOST_UNICODE_TO_PUNYCODE = 512;
+    const REMOVE_FRAGMENT = 1024;
+    const REMOVE_WWW = 2048;
+    const ADD_PATH_TRAILING_SLASH = 4096;
+
+
 
     const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
     const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
