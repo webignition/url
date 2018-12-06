@@ -11,6 +11,7 @@ class Normalizer
     const SCHEME_FILE = 'file';
 
     const PATH_SEPARATOR = '/';
+    const QUERY_KEY_VALUE_DELIMITER = '&';
 
     const OPTION_DEFAULT_SCHEME = 'default-scheme';
     const OPTION_REMOVE_PATH_FILES_PATTERNS = 'remove-path-files-patterns';
@@ -102,9 +103,11 @@ class Normalizer
         }
 
         if ($flags & self::SORT_QUERY_PARAMETERS && '' !== $uri->getQuery()) {
-            $queryKeyValues = explode('&', $uri->getQuery());
-            sort($queryKeyValues);
-            $uri = $uri->withQuery(implode('&', $queryKeyValues));
+            $query = $this->mutateQuery($uri->getQuery(), function (array &$queryKeyValues) {
+                sort($queryKeyValues);
+            });
+
+            $uri = $uri->withQuery($query);
         }
 
         if ($flags & self::DECODE_UNRESERVED_CHARACTERS) {
@@ -134,10 +137,13 @@ class Normalizer
 
         if (isset($options[self::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS]) &&
             is_array($options[self::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS])) {
-            $uri = $uri->withQuery($this->removeQueryParameters(
-                $uri->getQuery(),
-                $options[self::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS]
-            ));
+            $patterns = $options[self::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS];
+
+            $query = $this->mutateQuery($uri->getQuery(), function (array &$queryKeyValues) use ($patterns) {
+                $queryKeyValues = call_user_func([$this, 'removeQueryParameters'], $queryKeyValues, $patterns);
+            });
+
+            $uri = $uri->withQuery($query);
         }
 
         return $uri;
@@ -270,25 +276,36 @@ class Normalizer
             );
     }
 
-    private function removeQueryParameters(string $query, array $patterns)
+    private function removeQueryParameters(array $queryKeyValues, array $patterns): array
     {
-        $queryKeyValues = explode('&', $query);
-
         foreach ($patterns as $pattern) {
             $queryKeyValues = array_filter(
                 $queryKeyValues,
                 function (string $keyValue) use ($pattern) {
-                    $firstEqualsPosition = strpos($keyValue, '=');
-
-                    $key = $firstEqualsPosition
-                        ? substr($keyValue, 0, $firstEqualsPosition)
-                        : $keyValue;
-
-                    return preg_match($pattern, $key) === 0;
+                    return call_user_func([$this, 'queryKeyValueKeyMatchesPattern'], $keyValue, $pattern);
                 }
             );
         }
 
-        return implode('&', $queryKeyValues);
+        return $queryKeyValues;
+    }
+
+    private function queryKeyValueKeyMatchesPattern(string $keyValue, string $pattern): bool
+    {
+        $firstEqualsPosition = strpos($keyValue, '=');
+
+        $key = $firstEqualsPosition
+            ? substr($keyValue, 0, $firstEqualsPosition)
+            : $keyValue;
+
+        return preg_match($pattern, $key) === 0;
+    }
+
+    private function mutateQuery(string $query, callable $mutator): string
+    {
+        $queryKeyValues = explode(self::QUERY_KEY_VALUE_DELIMITER, $query);
+        $mutator($queryKeyValues);
+
+        return implode(self::QUERY_KEY_VALUE_DELIMITER, $queryKeyValues);
     }
 }
