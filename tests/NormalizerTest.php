@@ -38,6 +38,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
      * @dataProvider removeDefaultPortDataProvider
      * @dataProvider capitalizePercentEncodingDataProvider
      * @dataProvider removeDefaultFileHostDataProvider
+     * @dataProvider removeQueryParametersDataProvider
      * @dataProvider defaultsDataProvider
      *
      * @param UriInterface $url
@@ -378,6 +379,60 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 'url' => Url::create('file://localhost/path'),
                 'expectedUrl' => Url::create('file:///path'),
                 'flags' => Normalizer::REMOVE_DEFAULT_FILE_HOST,
+            ],
+        ];
+    }
+
+    public function removeQueryParametersDataProvider(): array
+    {
+        $url = 'http://example.com/?foo=bar&fizz=buzz&foobar&fizzbuzz';
+
+        return [
+            'removeQueryParameters: patterns not an array' => [
+                'url' => Url::create($url),
+                'expectedUrl' => Url::create($url),
+                'flags' => 0,
+                'options' => [
+                    Normalizer::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS => false,
+                ],
+            ],
+            'removeQueryParameters: empty patterns' => [
+                'url' => Url::create($url),
+                'expectedUrl' => Url::create($url),
+                'flags' => 0,
+                'options' => [
+                    Normalizer::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS => [],
+                ],
+            ],
+            'removeQueryParameters: non-empty patterns (1)' => [
+                'url' => Url::create($url),
+                'expectedUrl' => Url::create('http://example.com/'),
+                'flags' => 0,
+                'options' => [
+                    Normalizer::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS => [
+                        '/^f[a-z]+$/'
+                    ],
+                ],
+            ],
+            'removeQueryParameters: non-empty patterns (2)' => [
+                'url' => Url::create($url),
+                'expectedUrl' => Url::create('http://example.com/?fizz=buzz&fizzbuzz'),
+                'flags' => 0,
+                'options' => [
+                    Normalizer::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS => [
+                        '/^foo/'
+                    ],
+                ],
+            ],
+            'removeQueryParameters: non-empty patterns (3)' => [
+                'url' => Url::create($url),
+                'expectedUrl' => Url::create('http://example.com/?foobar&fizzbuzz'),
+                'flags' => 0,
+                'options' => [
+                    Normalizer::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS => [
+                        '/^(foo|fizz)$/'
+                    ],
+                ],
             ],
         ];
     }
