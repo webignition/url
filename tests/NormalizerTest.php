@@ -25,8 +25,6 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @dataProvider applyDefaultSchemeIfNoSchemeDataProvider
-     * @dataProvider forceHttpForceHttpsDataProvider
      * @dataProvider removeUserInfoDataProvider
      * @dataProvider hostNormalizationDataProvider
      * @dataProvider removeFragmentDataProvider
@@ -56,64 +54,6 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
         $normalizedUrl = $this->normalizer->normalize($url, $flags, $options);
 
         $this->assertEquals((string) $expectedUrl, (string) $normalizedUrl);
-    }
-
-    public function applyDefaultSchemeIfNoSchemeDataProvider(): array
-    {
-        return [
-            'applyDefaultSchemeIfNoScheme: no scheme (example.com is treated as path)' => [
-                'url' => Url::create('example.com/foo/bar'),
-                'expectedUrl' => 'http:example.com/foo/bar',
-                'flags' => Normalizer::APPLY_DEFAULT_SCHEME_IF_NO_SCHEME,
-                'options' => [
-                    Normalizer::OPTION_DEFAULT_SCHEME => 'http',
-                ],
-            ],
-            'applyDefaultSchemeIfNoScheme: no scheme, protocol-relative' => [
-                'url' => Url::create('//example.com/foo/bar'),
-                'expectedUrl' => 'http://example.com/foo/bar',
-                'flags' => Normalizer::APPLY_DEFAULT_SCHEME_IF_NO_SCHEME,
-                'options' => [
-                    Normalizer::OPTION_DEFAULT_SCHEME => 'http',
-                ],
-            ],
-        ];
-    }
-
-    public function forceHttpForceHttpsDataProvider(): array
-    {
-        return [
-            'forceHttp: http url' => [
-                'url' => Url::create('http://example.com'),
-                'expectedUrl' => Url::create('http://example.com'),
-                'flags' => Normalizer::FORCE_HTTP,
-            ],
-            'forceHttp: https url' => [
-                'url' => Url::create('https://example.com'),
-                'expectedUrl' => Url::create('http://example.com'),
-                'flags' => Normalizer::FORCE_HTTP,
-            ],
-            'forceHttps: http url' => [
-                'url' => Url::create('http://example.com'),
-                'expectedUrl' => Url::create('https://example.com'),
-                'flags' => Normalizer::FORCE_HTTPS,
-            ],
-            'forceHttps: https url' => [
-                'url' => Url::create('https://example.com'),
-                'expectedUrl' => Url::create('https://example.com'),
-                'flags' => Normalizer::FORCE_HTTPS,
-            ],
-            'forceHttp and forceHttps: http url' => [
-                'url' => Url::create('http://example.com'),
-                'expectedUrl' => Url::create('https://example.com'),
-                'flags' => Normalizer::FORCE_HTTP | Normalizer::FORCE_HTTPS,
-            ],
-            'forceHttp and forceHttps: https url' => [
-                'url' => Url::create('https://example.com'),
-                'expectedUrl' => Url::create('https://example.com'),
-                'flags' => Normalizer::FORCE_HTTP | Normalizer::FORCE_HTTPS,
-            ],
-        ];
     }
 
     public function removeUserInfoDataProvider(): array

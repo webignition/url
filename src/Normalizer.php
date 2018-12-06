@@ -23,22 +23,24 @@ class Normalizer
         self::REMOVE_DEFAULT_PORT |
         self::REMOVE_PATH_DOT_SEGMENTS;
 
-    const APPLY_DEFAULT_SCHEME_IF_NO_SCHEME = 1;
-    const FORCE_HTTP = 2;
-    const FORCE_HTTPS = 4;
-    const REMOVE_USER_INFO = 8;
-    const CONVERT_HOST_UNICODE_TO_PUNYCODE = 16;
-    const REMOVE_FRAGMENT = 32;
-    const REMOVE_WWW = 64;
-    const REMOVE_PATH_DOT_SEGMENTS = 128;
-    const ADD_PATH_TRAILING_SLASH = 256;
-    const SORT_QUERY_PARAMETERS = 512;
-    const REDUCE_DUPLICATE_PATH_SLASHES = 1024;
-    const DECODE_UNRESERVED_CHARACTERS = 2048;
-    const REMOVE_DEFAULT_PORT = 4096;
-    const CAPITALIZE_PERCENT_ENCODING = 8192;
-    const CONVERT_EMPTY_HTTP_PATH = 16384;
-    const REMOVE_DEFAULT_FILE_HOST = 32768;
+    // Semantically-lossless normalizations
+    const CAPITALIZE_PERCENT_ENCODING = 1;
+    const DECODE_UNRESERVED_CHARACTERS = 2;
+    const CONVERT_EMPTY_HTTP_PATH = 4;
+    const REMOVE_DEFAULT_FILE_HOST = 8;
+    const REMOVE_DEFAULT_PORT = 16;
+    const REMOVE_PATH_DOT_SEGMENTS = 32;
+    const CONVERT_HOST_UNICODE_TO_PUNYCODE = 64;
+
+    // Potentially-lossy normalizations
+    const REDUCE_DUPLICATE_PATH_SLASHES = 128;
+    const SORT_QUERY_PARAMETERS = 256;
+
+    // Lossy normalizations
+    const ADD_PATH_TRAILING_SLASH = 512;
+    const REMOVE_USER_INFO = 1024;
+    const REMOVE_FRAGMENT = 2048;
+    const REMOVE_WWW = 4096;
 
     const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
     const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
@@ -58,18 +60,6 @@ class Normalizer
         int $flags = self::PRESERVING_NORMALIZATIONS,
         ?array $options = []
     ): UriInterface {
-        if ($flags & self::APPLY_DEFAULT_SCHEME_IF_NO_SCHEME && '' === $uri->getScheme()) {
-            $uri = $uri->withScheme($options[self::OPTION_DEFAULT_SCHEME] ?? '');
-        }
-
-        if ($flags & self::FORCE_HTTP && self::SCHEME_HTTP !== $uri->getScheme()) {
-            $uri = $uri->withScheme(self::SCHEME_HTTP);
-        }
-
-        if ($flags & self::FORCE_HTTPS && self::SCHEME_HTTPS !== $uri->getScheme()) {
-            $uri = $uri->withScheme(self::SCHEME_HTTPS);
-        }
-
         if ($flags & self::REMOVE_USER_INFO && '' !== $uri->getUserInfo()) {
             $uri = $uri->withUserInfo('');
         }
