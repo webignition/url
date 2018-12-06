@@ -23,9 +23,6 @@ class Normalizer
         self::REMOVE_DEFAULT_PORT |
         self::REMOVE_PATH_DOT_SEGMENTS;
 
-    const APPLY_DEFAULT_SCHEME_IF_NO_SCHEME = 1;
-    const FORCE_HTTP = 2;
-    const FORCE_HTTPS = 4;
     const REMOVE_USER_INFO = 8;
     const CONVERT_HOST_UNICODE_TO_PUNYCODE = 16;
     const REMOVE_FRAGMENT = 32;
@@ -58,18 +55,6 @@ class Normalizer
         int $flags = self::PRESERVING_NORMALIZATIONS,
         ?array $options = []
     ): UriInterface {
-        if ($flags & self::APPLY_DEFAULT_SCHEME_IF_NO_SCHEME && '' === $uri->getScheme()) {
-            $uri = $uri->withScheme($options[self::OPTION_DEFAULT_SCHEME] ?? '');
-        }
-
-        if ($flags & self::FORCE_HTTP && self::SCHEME_HTTP !== $uri->getScheme()) {
-            $uri = $uri->withScheme(self::SCHEME_HTTP);
-        }
-
-        if ($flags & self::FORCE_HTTPS && self::SCHEME_HTTPS !== $uri->getScheme()) {
-            $uri = $uri->withScheme(self::SCHEME_HTTPS);
-        }
-
         if ($flags & self::REMOVE_USER_INFO && '' !== $uri->getUserInfo()) {
             $uri = $uri->withUserInfo('');
         }
