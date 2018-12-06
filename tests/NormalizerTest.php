@@ -37,6 +37,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
      * @dataProvider sortQueryParametersDataProvider
      * @dataProvider reduceDuplicatePathSlashesDataProvider
      * @dataProvider decodeUnreservedCharactersDataProvider
+     * @dataProvider removeDefaultPortDataProvider
      * @dataProvider defaultsDataProvider
      *
      * @param UriInterface $url
@@ -377,6 +378,22 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
+    public function removeDefaultPortDataProvider()
+    {
+        return [
+            'removeDefaultPort: http url with port 80' => [
+                'url' => $this->setUrlPort(Url::create('http://example.com:80'), 80),
+                'expectedUrl' => Url::create('http://example.com'),
+                'flags' => Normalizer::REMOVE_DEFAULT_PORT,
+            ],
+            'removeDefaultPort: https url with port 443' => [
+                'url' => $this->setUrlPort(Url::create('https://example.com:443'), 443),
+                'expectedUrl' => Url::create('https://example.com'),
+                'flags' => Normalizer::REMOVE_DEFAULT_PORT,
+            ],
+        ];
+    }
+
     private function createUnreservedCharactersString(): string
     {
         return strtoupper(self::ALPHA_CHARACTERS)
@@ -450,6 +467,23 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
                 'url' => Url::create('http://example.com/' . $percentEncodedUnreservedCharacters),
                 'expectedUrl' => Url::create('http://example.com/' . $unreservedCharacters),
             ],
+            'default: default port is removed' => [
+                'url' => $this->setUrlPort(Url::create('http://example.com:80'), 80),
+                'expectedUrl' => Url::create('http://example.com'),
+            ],
         ];
+    }
+
+    private function setUrlPort(Url $url, int $port): Url
+    {
+        try {
+            $reflector = new \ReflectionClass(Url::class);
+            $property = $reflector->getProperty('port');
+            $property->setAccessible(true);
+            $property->setValue($url, $port);
+        } catch (\ReflectionException $exception) {
+        }
+
+        return $url;
     }
 }

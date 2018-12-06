@@ -16,6 +16,7 @@ class Normalizer
 
     const PRESERVING_NORMALIZATIONS =
         self::DECODE_UNRESERVED_CHARACTERS |
+        self::REMOVE_DEFAULT_PORT |
         self::REMOVE_PATH_DOT_SEGMENTS;
 
     const APPLY_DEFAULT_SCHEME_IF_NO_SCHEME = 1;
@@ -30,9 +31,24 @@ class Normalizer
     const SORT_QUERY_PARAMETERS = 512;
     const REDUCE_DUPLICATE_PATH_SLASHES = 1024;
     const DECODE_UNRESERVED_CHARACTERS = 2048;
+    const REMOVE_DEFAULT_PORT = 4096;
 
     const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
     const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
+
+    private $schemeToPortMap = [
+        'http'  => 80,
+        'https' => 443,
+        'ftp' => 21,
+        'gopher' => 70,
+        'nntp' => 119,
+        'news' => 119,
+        'telnet' => 23,
+        'tn3270' => 23,
+        'imap' => 143,
+        'pop' => 110,
+        'ldap' => 389,
+    ];
 
     /**
      * @var PunycodeEncoder
@@ -109,6 +125,21 @@ class Normalizer
 
         if ($flags & self::DECODE_UNRESERVED_CHARACTERS) {
             $uri = $this->decodeUnreservedCharacters($uri);
+        }
+
+        if ($flags & self::REMOVE_DEFAULT_PORT && null !== $uri->getScheme() && null !== $uri->getPort()) {
+            $scheme = $uri->getScheme();
+            $port = $uri->getPort();
+
+            $knownPort = $this->schemeToPortMap[$scheme] ?? null;
+
+            if ($knownPort && $port === $knownPort) {
+                $port = null;
+            }
+
+            if (null === $port) {
+                $uri = $uri->withPort(null);
+            }
         }
 
         return $uri;
