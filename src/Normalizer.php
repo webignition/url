@@ -93,7 +93,7 @@ class Normalizer
         }
 
         if ($flags & self::ADD_PATH_TRAILING_SLASH) {
-            $uri = self::addPathTrailingSlash($uri);
+            $uri = $uri->withPath(self::addPathTrailingSlash($uri->getPath()));
         }
 
         if ($flags & self::SORT_QUERY_PARAMETERS && '' !== $uri->getQuery()) {
@@ -217,25 +217,23 @@ class Normalizer
         return $path;
     }
 
-    private static function addPathTrailingSlash(UriInterface $uri): UriInterface
+    private static function addPathTrailingSlash(string $path): string
     {
-        $path = $uri->getPath();
-
         if ('' === $path) {
-            return $uri->withPath('/');
+            return '/';
         }
 
         $pathObject = new Path($path);
 
         if ($pathObject->hasFilename()) {
-            return $uri;
+            return $path;
         }
 
         if (!$pathObject->hasTrailingSlash()) {
-            $uri = $uri->withPath($path. '/');
+            $path = $path . '/';
         }
 
-        return $uri;
+        return $path;
     }
 
     private static function decodeUnreservedCharacters(UriInterface $uri)
