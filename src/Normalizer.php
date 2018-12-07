@@ -48,7 +48,7 @@ class Normalizer
     const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
     const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
 
-    public function normalize(
+    public static function normalize(
         UriInterface $uri,
         int $flags = self::PRESERVING_NORMALIZATIONS,
         ?array $options = []
@@ -78,11 +78,11 @@ class Normalizer
         }
 
         if (isset($options[self::OPTION_REMOVE_PATH_FILES_PATTERNS])) {
-            $uri = $this->removePathFiles($uri, $options[self::OPTION_REMOVE_PATH_FILES_PATTERNS]);
+            $uri = self::removePathFiles($uri, $options[self::OPTION_REMOVE_PATH_FILES_PATTERNS]);
         }
 
         if ($flags & self::REMOVE_PATH_DOT_SEGMENTS) {
-            $uri = $this->removePathDotSegments($uri);
+            $uri = self::removePathDotSegments($uri);
         }
 
         if ($flags & self::REDUCE_DUPLICATE_PATH_SLASHES) {
@@ -90,11 +90,11 @@ class Normalizer
         }
 
         if ($flags & self::ADD_PATH_TRAILING_SLASH) {
-            $uri = $this->addPathTrailingSlash($uri);
+            $uri = self::addPathTrailingSlash($uri);
         }
 
         if ($flags & self::SORT_QUERY_PARAMETERS && '' !== $uri->getQuery()) {
-            $query = $this->mutateQuery($uri->getQuery(), function (array &$queryKeyValues) {
+            $query = self::mutateQuery($uri->getQuery(), function (array &$queryKeyValues) {
                 sort($queryKeyValues);
             });
 
@@ -102,7 +102,7 @@ class Normalizer
         }
 
         if ($flags & self::DECODE_UNRESERVED_CHARACTERS) {
-            $uri = $this->decodeUnreservedCharacters($uri);
+            $uri = self::decodeUnreservedCharacters($uri);
         }
 
         if ($flags & self::REMOVE_DEFAULT_PORT) {
@@ -130,8 +130,12 @@ class Normalizer
             is_array($options[self::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS])) {
             $patterns = $options[self::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS];
 
-            $query = $this->mutateQuery($uri->getQuery(), function (array &$queryKeyValues) use ($patterns) {
-                $queryKeyValues = call_user_func([$this, 'removeQueryParameters'], $queryKeyValues, $patterns);
+            $query = self::mutateQuery($uri->getQuery(), function (array &$queryKeyValues) use ($patterns) {
+                $queryKeyValues = call_user_func(
+                    [Normalizer::class, 'removeQueryParameters'],
+                    $queryKeyValues,
+                    $patterns
+                );
             });
 
             $uri = $uri->withQuery($query);
@@ -140,7 +144,7 @@ class Normalizer
         return $uri;
     }
 
-    private function removePathFiles(UriInterface $uri, array $patterns): UriInterface
+    private static function removePathFiles(UriInterface $uri, array $patterns): UriInterface
     {
         $path = $uri->getPath();
         if ('' === $path) {
@@ -175,7 +179,7 @@ class Normalizer
         return $uri;
     }
 
-    private function removePathDotSegments(UriInterface $uri): UriInterface
+    private static function removePathDotSegments(UriInterface $uri): UriInterface
     {
         $path = $uri->getPath();
         if ('' === $path || '/' === $path) {
@@ -214,7 +218,7 @@ class Normalizer
         return $uri->withPath($updatedPath);
     }
 
-    private function addPathTrailingSlash(UriInterface $uri): UriInterface
+    private static function addPathTrailingSlash(UriInterface $uri): UriInterface
     {
         $path = $uri->getPath();
 
@@ -235,7 +239,7 @@ class Normalizer
         return $uri;
     }
 
-    private function decodeUnreservedCharacters(UriInterface $uri)
+    private static function decodeUnreservedCharacters(UriInterface $uri)
     {
         $regex = '/%(?:2D|2E|5F|7E|3[0-9]|[46][1-9A-F]|[57][0-9A])/i';
 
@@ -267,13 +271,13 @@ class Normalizer
             );
     }
 
-    private function removeQueryParameters(array $queryKeyValues, array $patterns): array
+    private static function removeQueryParameters(array $queryKeyValues, array $patterns): array
     {
         foreach ($patterns as $pattern) {
             $queryKeyValues = array_filter(
                 $queryKeyValues,
                 function (string $keyValue) use ($pattern) {
-                    return call_user_func([$this, 'queryKeyValueKeyMatchesPattern'], $keyValue, $pattern);
+                    return call_user_func([Normalizer::class, 'queryKeyValueKeyMatchesPattern'], $keyValue, $pattern);
                 }
             );
         }
@@ -281,7 +285,7 @@ class Normalizer
         return $queryKeyValues;
     }
 
-    private function queryKeyValueKeyMatchesPattern(string $keyValue, string $pattern): bool
+    private static function queryKeyValueKeyMatchesPattern(string $keyValue, string $pattern): bool
     {
         $firstEqualsPosition = strpos($keyValue, '=');
 
@@ -292,7 +296,7 @@ class Normalizer
         return preg_match($pattern, $key) === 0;
     }
 
-    private function mutateQuery(string $query, callable $mutator): string
+    private static function mutateQuery(string $query, callable $mutator): string
     {
         $queryKeyValues = explode(self::QUERY_KEY_VALUE_DELIMITER, $query);
         $mutator($queryKeyValues);

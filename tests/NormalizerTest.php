@@ -13,18 +13,6 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
     const UNRESERVED_NON_ALPHA_NUMERIC_CHARACTERS = '-._~';
 
     /**
-     * @var Normalizer
-     */
-    private $normalizer;
-
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->normalizer = new Normalizer();
-    }
-
-    /**
      * @dataProvider removeUserInfoDataProvider
      * @dataProvider hostNormalizationDataProvider
      * @dataProvider removeFragmentDataProvider
@@ -52,7 +40,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
         int $flags = Normalizer::PRESERVING_NORMALIZATIONS,
         ?array $options = []
     ) {
-        $normalizedUrl = $this->normalizer->normalize($url, $flags, $options);
+        $normalizedUrl = Normalizer::normalize($url, $flags, $options);
 
         $this->assertEquals((string) $expectedUrl, (string) $normalizedUrl);
     }
