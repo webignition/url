@@ -234,11 +234,7 @@ class Normalizer
 
         $pathObject = new Path($path);
 
-        if ($pathObject->hasFilename()) {
-            return $path;
-        }
-
-        if (!$pathObject->hasTrailingSlash()) {
+        if (!$pathObject->hasFilename() && !$pathObject->hasTrailingSlash()) {
             $path = $path . '/';
         }
 
