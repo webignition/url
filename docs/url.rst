@@ -120,7 +120,7 @@ Non-Optional Normalization
 
     use webignition\Url\Url;
 
-    $url = new Url('HTTPS://user:password@EXAMPLE.com:443');
+    $url = new Url('HTTPS://EXAMPLE.com:443');
 
     $url->getScheme();
     // "https"
