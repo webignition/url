@@ -7,6 +7,19 @@ URL Documentation
 The `webginition/url <https://packagist.org/packages/webignition/url>`_ package models, normalizes, parses and
 compares URLs.
 
+.. toctree::
+   :hidden:
+   :caption: First Steps
+
+   getting-started
+
+.. toctree::
+    :caption: Usage
+    :maxdepth: 3
+
+    url
+    normalizer
+
 ---
 Url
 ---
@@ -45,21 +58,3 @@ Scope Comparer
 --------------
 
 The ``ScopeComparer`` examines whether two ``UriInterface`` instances are in the same scope.
-
-.. toctree::
-   :hidden:
-   :caption: First Steps
-
-   getting-started
-
-.. toctree::
-    :caption: Url
-    :maxdepth: 3
-
-    url
-
-.. toctree::
-    :caption: Normalizer
-    :maxdepth: 3
-
-    normalizer
