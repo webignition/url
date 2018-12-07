@@ -183,3 +183,26 @@ Reduces occurrences of multiple slashes in the path to single slashes.
 
     (string) $normalizedUrl;
     // "http://example.com/path/"
+
+.. _normalizations-sort-query-parameters:
+
+---------------------
+Sort Query Parameters
+---------------------
+
+Alphabetically sorts query parameters by key.
+
+Sorting is neither locale- nor unicode-aware. The purpose is to be able to compare URLs in a reproducible way.
+
+.. code-block:: php
+
+    <?php
+
+    use webignition\Url\Normalizer;
+    use webignition\Url\Url;
+
+    $url = new Url('http://example.com?c=cow&a=apple&b=bear');
+    $normalizedUrl = Normalizer::normalize($url, Normalizer::SORT_QUERY_PARAMETERS);
+
+    (string) $normalizedUrl;
+    // "http://example.com?a=apple&b=bear&c=cow"

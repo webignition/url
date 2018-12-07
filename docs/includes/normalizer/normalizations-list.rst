@@ -6,7 +6,7 @@
 - :ref:`remove path dot segments <normalizations-remove-path-dot-segments>`
 - :ref:`convert host unicode to punycode <normalizations-convert-host-unicode-to-punycode>`
 - :ref:`reduce duplicate path slashes <normalizations-reduce-duplicate-path-slashes>`
-- sort query parameters
+- :ref:`sort query parameters <normalizations-sort-query-parameters>`
 - add path trailing slash
 - remove user info
 - remove fragment
