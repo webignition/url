@@ -2,23 +2,10 @@
 
 namespace webignition\Url\Tests;
 
-use webignition\Url\Path;
 use webignition\Url\PunycodeEncoder;
 
 class PunycodeEncoderTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var PunycodeEncoder
-     */
-    private $punycodeEncoder;
-
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->punycodeEncoder = new PunycodeEncoder();
-    }
-
     /**
      * @dataProvider encodeDataProvider
      *
@@ -27,7 +14,7 @@ class PunycodeEncoderTest extends \PHPUnit\Framework\TestCase
      */
     public function testEncode(string $value, string $expectedValue)
     {
-        $this->assertSame($expectedValue, $this->punycodeEncoder->encode($value));
+        $this->assertSame($expectedValue, PunycodeEncoder::encode($value));
     }
 
     public function encodeDataProvider(): array
@@ -56,7 +43,7 @@ class PunycodeEncoderTest extends \PHPUnit\Framework\TestCase
      */
     public function testDecode(string $value, string $expectedValue)
     {
-        $this->assertSame($expectedValue, $this->punycodeEncoder->decode($value));
+        $this->assertSame($expectedValue, PunycodeEncoder::decode($value));
     }
 
     public function decodeDataProvider(): array

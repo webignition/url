@@ -58,15 +58,8 @@ class Host
      */
     private $parts = null;
 
-    /**
-     * @var PunycodeEncoder
-     */
-    private $punycodeEncoder;
-
     public function __construct(string $host)
     {
-        $this->punycodeEncoder = new PunycodeEncoder();
-
         $this->host = $host;
         $this->parts = explode(self::HOST_PART_SEPARATOR, $host);
     }
@@ -88,8 +81,8 @@ class Host
 
     public function isEquivalentTo(Host $comparator, array $excludedParts = []): bool
     {
-        $thisHost = new Host($this->punycodeEncoder->encode((string) $this));
-        $comparatorHost = new Host($this->punycodeEncoder->encode((string) $comparator));
+        $thisHost = new Host(PunycodeEncoder::encode((string) $this));
+        $comparatorHost = new Host(PunycodeEncoder::encode((string) $comparator));
 
         if (empty($excludedParts)) {
             return $thisHost->equals($comparatorHost);

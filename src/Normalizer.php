@@ -48,16 +48,6 @@ class Normalizer
     const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
     const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
 
-    /**
-     * @var PunycodeEncoder
-     */
-    private $punycodeEncoder;
-
-    public function __construct()
-    {
-        $this->punycodeEncoder = new PunycodeEncoder();
-    }
-
     public function normalize(
         UriInterface $uri,
         int $flags = self::PRESERVING_NORMALIZATIONS,
@@ -75,7 +65,7 @@ class Normalizer
             $host = $uri->getHost();
 
             if ($flags & self::CONVERT_HOST_UNICODE_TO_PUNYCODE) {
-                $host = $this->punycodeEncoder->encode($host);
+                $host = PunycodeEncoder::encode($host);
             }
 
             if ($flags & self::REMOVE_WWW) {
