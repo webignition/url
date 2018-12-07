@@ -105,7 +105,13 @@ class Normalizer
         }
 
         if ($flags & self::DECODE_UNRESERVED_CHARACTERS) {
-            $uri = self::decodeUnreservedCharacters($uri);
+            $uri = self::applyPregReplaceCallbackToPathAndQuery(
+                $uri,
+                '/%(?:2D|2E|5F|7E|3[0-9]|[46][1-9A-F]|[57][0-9A])/i',
+                function (array $match) {
+                    return rawurldecode($match[0]);
+                }
+            );
         }
 
         if ($flags & self::REMOVE_DEFAULT_PORT) {
@@ -115,7 +121,13 @@ class Normalizer
         }
 
         if ($flags & self::CAPITALIZE_PERCENT_ENCODING) {
-            $uri = self::capitalizePercentEncoding($uri);
+            $uri = self::applyPregReplaceCallbackToPathAndQuery(
+                $uri,
+                '/(?:%[A-Fa-f0-9]{2})++/',
+                function (array $match) {
+                    return strtoupper($match[0]);
+                }
+            );
         }
 
         if ($flags & self::CONVERT_EMPTY_HTTP_PATH && $uri->getPath() === '' &&
@@ -234,28 +246,6 @@ class Normalizer
         }
 
         return $path;
-    }
-
-    private static function decodeUnreservedCharacters(UriInterface $uri): UriInterface
-    {
-        return self::applyPregReplaceCallbackToPathAndQuery(
-            $uri,
-            '/%(?:2D|2E|5F|7E|3[0-9]|[46][1-9A-F]|[57][0-9A])/i',
-            function (array $match) {
-                return rawurldecode($match[0]);
-            }
-        );
-    }
-
-    private static function capitalizePercentEncoding(UriInterface $uri): UriInterface
-    {
-        return self::applyPregReplaceCallbackToPathAndQuery(
-            $uri,
-            '/(?:%[A-Fa-f0-9]{2})++/',
-            function (array $match) {
-                return strtoupper($match[0]);
-            }
-        );
     }
 
     private static function applyPregReplaceCallbackToPathAndQuery(
