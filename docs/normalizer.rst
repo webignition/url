@@ -52,3 +52,25 @@ Decodes encoded forms of: ``ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 
     (string) $normalizedUrl;
     // "http://example.com/url"
+
+.. _normalizations-convert-empty-http-path:
+
+-----------------------
+Convert Empty HTTP Path
+-----------------------
+
+Applies a path of ``/`` where the path is empty and the scheme is ``http`` or ``https``.
+
+.. code-block:: php
+
+    <?php
+
+    use webignition\Url\Normalizer;
+    use webignition\Url\Url;
+
+    $url = new Url('http://example.com');
+
+    $normalizedUrl = Normalizer::normalize($url, Normalizer::CONVERT_EMPTY_HTTP_PATH);
+
+    (string) $normalizedUrl;
+    // "http://example.com/"

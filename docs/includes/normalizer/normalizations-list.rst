@@ -1,6 +1,6 @@
 - :ref:`capitalize percent encoding <normalizations-capitalize-percent-encoding>`
 - :ref:`decode unreserved characters <normalizations-decode-unreserved-characters>`
-- convert empty http path
+- :ref:`convert empty http path <normalizations-convert-empty-http-path>`
 - remove default file host
 - remove default port
 - remove path dot segments
