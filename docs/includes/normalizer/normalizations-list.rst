@@ -1,0 +1,16 @@
+- capitalize percent encoding
+- decode unreserved characters
+- convert empty http path
+- remove default file host
+- remove default port
+- remove path dot segments
+- convert host unicode to punycode
+- reduce path slashes
+- sort query parameters
+- add path trailing slash
+- remove user info
+- remove fragment
+- remove www sub-domain
+- apply a default scheme if none is set
+- remove filenames from path by pattern
+- remove query parameters by pattern

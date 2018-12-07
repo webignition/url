@@ -1,20 +1,65 @@
-.. URL documentation master file, created by
-   sphinx-quickstart on Wed Dec  5 12:52:19 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. title:: URL Documentation
 
-Welcome to URL's documentation!
-===============================
+=================
+URL Documentation
+=================
+
+The `webginition/url <https://packagist.org/packages/webignition/url>`_ package models, normalizes, parses and
+compares URLs.
+
+---
+Url
+---
+
+.. include:: includes/url/introduction.rst
+.. include:: includes/url/example.rst
+
+Read the :doc:`Url usage </url>` guide for more detail.
+
+----------
+Normalizer
+----------
+
+.. rst-class:: precede-list
+.. include:: includes/normalizer/introduction.rst
+.. include:: includes/normalizer/example.rst
+.. include:: includes/normalizer/normalizations-list.rst
+
+Read the :doc:`Normalizer usage </normalizer>` guide for more detail.
+
+------
+Parser
+------
+
+.. include:: includes/parser/introduction.rst
+.. include:: includes/parser/example.rst
+
+---------
+Inspector
+---------
+
+The ``Inspector`` examines ``UriInterface`` instance.
+
+--------------
+Scope Comparer
+--------------
+
+The ``ScopeComparer`` examines whether two ``UriInterface`` instances are in the same scope.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :hidden:
+   :caption: First Steps
 
+   overview
 
+.. toctree::
+    :caption: URL
+    :maxdepth: 3
 
-Indices and tables
-==================
+    url
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. toctree::
+    :caption: Normalizer
+    :maxdepth: 3
+
+    normalizer
