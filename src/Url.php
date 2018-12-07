@@ -47,6 +47,7 @@ class Url implements UriInterface
 
         $scheme = $components[Parser::COMPONENT_SCHEME] ?? '';
         $host = $components[Parser::COMPONENT_HOST] ?? '';
+        $port = $components[Parser::COMPONENT_PORT] ?? null;
         $path = $components[Parser::COMPONENT_PATH] ?? '';
         $query = $components[Parser::COMPONENT_QUERY] ?? '';
         $fragment = $components[Parser::COMPONENT_FRAGMENT] ?? '';
@@ -54,15 +55,6 @@ class Url implements UriInterface
         $pass = $components[Parser::COMPONENT_PASS] ?? '';
 
         $userInfo = UserInfoFactory::create($user, $pass);
-
-        $port = null;
-        if (isset($components[Parser::COMPONENT_PORT])) {
-            $port = $components[Parser::COMPONENT_PORT];
-
-            if (ctype_digit($port) || is_int($port)) {
-                $port = (int) $port;
-            }
-        }
 
         self::applyComponents($this, $scheme, $userInfo, $host, $port, $path, $query, $fragment);
     }
