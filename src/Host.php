@@ -7,9 +7,6 @@ use IpUtils\Exception\InvalidExpressionException;
 use IpUtils\Expression\Subnet;
 use IpUtils\Factory as IpUtilsFactory;
 
-/**
- * Represents the host part of a URL
- */
 class Host
 {
     const HOST_PART_SEPARATOR = '.';

@@ -68,21 +68,21 @@ class Url implements UriInterface
 
     public static function create(string $uri)
     {
-        $uriParts = Parser::parse($uri);
+        $components = Parser::parse($uri);
 
-        $scheme = $uriParts[Parser::PART_SCHEME] ?? '';
-        $host = $uriParts[Parser::PART_HOST] ?? '';
-        $path = $uriParts[Parser::PART_PATH] ?? '';
-        $query = $uriParts[Parser::PART_QUERY] ?? '';
-        $fragment = $uriParts[Parser::PART_FRAGMENT] ?? '';
-        $user = $uriParts[Parser::PART_USER] ?? '';
-        $pass = $uriParts[Parser::PART_PASS] ?? '';
+        $scheme = $components[Parser::COMPONENT_SCHEME] ?? '';
+        $host = $components[Parser::COMPONENT_HOST] ?? '';
+        $path = $components[Parser::COMPONENT_PATH] ?? '';
+        $query = $components[Parser::COMPONENT_QUERY] ?? '';
+        $fragment = $components[Parser::COMPONENT_FRAGMENT] ?? '';
+        $user = $components[Parser::COMPONENT_USER] ?? '';
+        $pass = $components[Parser::COMPONENT_PASS] ?? '';
 
         $userInfo = UserInfoFactory::create($user, $pass);
 
         $port = null;
-        if (isset($uriParts[Parser::PART_PORT])) {
-            $port = $uriParts[Parser::PART_PORT];
+        if (isset($components[Parser::COMPONENT_PORT])) {
+            $port = $components[Parser::COMPONENT_PORT];
 
             if (ctype_digit($port) || is_int($port)) {
                 $port = (int) $port;
