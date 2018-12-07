@@ -23,7 +23,6 @@ case-insensitive.
     use webignition\Url\Url;
 
     $url = new Url('http://example.com/path%2fvalue');
-
     $normalizedUrl = Normalizer::normalize($url, Normalizer::CAPITALIZE_PERCENT_ENCODING);
 
     (string) $normalizedUrl;
@@ -47,7 +46,6 @@ Decodes encoded forms of: ``ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
     use webignition\Url\Url;
 
     $url = new Url('http://example.com/%75%72%6C');
-
     $normalizedUrl = Normalizer::normalize($url, Normalizer::DECODE_UNRESERVED_CHARACTERS);
 
     (string) $normalizedUrl;
@@ -69,8 +67,54 @@ Applies a path of ``/`` where the path is empty and the scheme is ``http`` or ``
     use webignition\Url\Url;
 
     $url = new Url('http://example.com');
-
     $normalizedUrl = Normalizer::normalize($url, Normalizer::CONVERT_EMPTY_HTTP_PATH);
 
     (string) $normalizedUrl;
     // "http://example.com/"
+
+.. _normalizations-remove-default-file-host:
+
+------------------------
+Remove Default File Host
+------------------------
+
+Removes the host of ``localhost`` from a ``file://`` url.
+
+.. code-block:: php
+
+    <?php
+
+    use webignition\Url\Normalizer;
+    use webignition\Url\Url;
+
+    $url = new Url('file://localhost/path');
+    $normalizedUrl = Normalizer::normalize($url, Normalizer::REMOVE_DEFAULT_FILE_HOST);
+
+    (string) $normalizedUrl;
+    // "file:///path"
+
+.. _normalizations-remove-default-port:
+
+-------------------
+Remove Default Port
+-------------------
+
+Removes the port if it matches the default port for the scheme.
+
+.. code-block:: php
+
+    <?php
+
+    use webignition\Url\Normalizer;
+    use webignition\Url\Url;
+
+    $url = new Url('http://example.com:80');
+    $normalizedUrl = Normalizer::normalize($url, Normalizer::REMOVE_DEFAULT_PORT);
+
+    (string) $normalizedUrl;
+    // "http://example.com"
+
+    $url = new Url('https://example.com:443');
+    $normalizedUrl = Normalizer::normalize($url, Normalizer::REMOVE_DEFAULT_PORT);
+    (string) $normalizedUrl;
+    // "https://example.com"
