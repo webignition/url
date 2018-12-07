@@ -78,7 +78,10 @@ class Normalizer
         }
 
         if (isset($options[self::OPTION_REMOVE_PATH_FILES_PATTERNS])) {
-            $uri = self::removePathFiles($uri, $options[self::OPTION_REMOVE_PATH_FILES_PATTERNS]);
+            $uri = $uri->withPath(self::removePathFiles(
+                $uri->getPath(),
+                $options[self::OPTION_REMOVE_PATH_FILES_PATTERNS]
+            ));
         }
 
         if ($flags & self::REMOVE_PATH_DOT_SEGMENTS) {
@@ -144,16 +147,15 @@ class Normalizer
         return $uri;
     }
 
-    private static function removePathFiles(UriInterface $uri, array $patterns): UriInterface
+    private static function removePathFiles(string $path, array $patterns): string
     {
-        $path = $uri->getPath();
         if ('' === $path) {
-            return $uri;
+            return $path;
         }
 
         $pathObject = new Path($path);
         if (!$pathObject->hasFilename()) {
-            return $uri;
+            return $path;
         }
 
         $filename = $pathObject->getFilename();
@@ -171,12 +173,10 @@ class Normalizer
 
             array_pop($pathParts);
 
-            $updatedPath = implode(self::PATH_SEPARATOR, $pathParts);
-
-            $uri = $uri->withPath($updatedPath);
+            $path = implode(self::PATH_SEPARATOR, $pathParts);
         }
 
-        return $uri;
+        return $path;
     }
 
     private static function removePathDotSegments(UriInterface $uri): UriInterface
