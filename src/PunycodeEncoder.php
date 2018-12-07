@@ -6,28 +6,18 @@ use Mso\IdnaConvert\IdnaConvert;
 
 class PunycodeEncoder
 {
-    /**
-     * @var IdnaConvert
-     */
-    private $idnaConverter;
-
-    public function __construct()
-    {
-        $this->idnaConverter = new IdnaConvert();
-    }
-
-    public function encode(string $value): string
+    public static function encode(string $value): string
     {
         try {
-            return $this->idnaConverter->encode($value);
+            return (new IdnaConvert())->encode($value);
         } catch (\InvalidArgumentException $invalidArgumentException) {
         }
 
         return $value;
     }
 
-    public function decode(string $value): string
+    public static function decode(string $value): string
     {
-        return $this->idnaConverter->decode($value);
+        return (new IdnaConvert())->decode($value);
     }
 }
