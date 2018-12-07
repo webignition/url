@@ -68,9 +68,7 @@ class Url implements UriInterface
 
     public static function create(string $uri)
     {
-        $parser = new Parser();
-
-        $uriParts = $parser->parse($uri);
+        $uriParts = Parser::parse($uri);
 
         $scheme = $uriParts[Parser::PART_SCHEME] ?? '';
         $host = $uriParts[Parser::PART_HOST] ?? '';

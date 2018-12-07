@@ -7,18 +7,6 @@ use webignition\Url\Parser;
 class ParserTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var Parser
-     */
-    private $parser;
-
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->parser = new Parser();
-    }
-
-    /**
      * @dataProvider parseDataProvider
      * @dataProvider normalizeWhitespaceDataProvider
      * @dataProvider invalidPortDataProvider
@@ -28,7 +16,7 @@ class ParserTest extends \PHPUnit\Framework\TestCase
      */
     public function testParse(string $url, array $expectedParts)
     {
-        $parts = $this->parser->parse($url);
+        $parts = Parser::parse($url);
 
         $this->assertEquals($expectedParts, $parts);
     }
