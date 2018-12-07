@@ -50,7 +50,7 @@ The ``ScopeComparer`` examines whether two ``UriInterface`` instances are in the
    :hidden:
    :caption: First Steps
 
-   overview
+   getting-started
 
 .. toctree::
     :caption: URL
