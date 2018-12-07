@@ -4,7 +4,7 @@
 
     use webignition\Url\Url;
 
-    $url = Url::create('http://example.com/path?query#fragment');
+    $url = new Url('http://example.com/path?query#fragment');
 
     $url->getScheme();
     // "http"

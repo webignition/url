@@ -4,7 +4,7 @@
 
     use webignition\Url\Normalizer;
 
-    $url = Url::create('http://example.com/path?c=cow&a=apple&b=bear#fragment');
+    $url = new Url('http://example.com/path?c=cow&a=apple&b=bear#fragment');
 
     $normalizedUrl = Normalizer::normalize(
         $url,

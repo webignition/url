@@ -53,7 +53,7 @@ The ``ScopeComparer`` examines whether two ``UriInterface`` instances are in the
    getting-started
 
 .. toctree::
-    :caption: URL
+    :caption: Url
     :maxdepth: 3
 
     url
