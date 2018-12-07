@@ -5,7 +5,7 @@
 - :ref:`remove port host <normalizations-remove-default-port>`
 - :ref:`remove path dot segments <normalizations-remove-path-dot-segments>`
 - :ref:`convert host unicode to punycode <normalizations-convert-host-unicode-to-punycode>`
-- reduce path slashes
+- :ref:`reduce duplicate path slashes <normalizations-reduce-duplicate-path-slashes>`
 - sort query parameters
 - add path trailing slash
 - remove user info

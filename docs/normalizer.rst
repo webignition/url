@@ -162,3 +162,24 @@ Unicode hosts containing non-ascii characters are converted to the
 
     (string) $normalizedUrl;
     // "http://xn--g6h.example.com/"
+
+.. _normalizations-reduce-duplicate-path-slashes:
+
+-----------------------------
+Reduce Duplicate Path Slashes
+-----------------------------
+
+Reduces occurrences of multiple slashes in the path to single slashes.
+
+.. code-block:: php
+
+    <?php
+
+    use webignition\Url\Normalizer;
+    use webignition\Url\Url;
+
+    $url = new Url('http://example.com///path//');
+    $normalizedUrl = Normalizer::normalize($url, Normalizer::REDUCE_DUPLICATE_PATH_SLASHES);
+
+    (string) $normalizedUrl;
+    // "http://example.com/path/"
