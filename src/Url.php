@@ -59,18 +59,6 @@ class Url implements UriInterface
         self::applyComponents($this, $scheme, $userInfo, $host, $port, $path, $query, $fragment);
     }
 
-    private static function fromComponents(
-        string $scheme,
-        string $userInfo,
-        string $host,
-        ?int $port,
-        string $path,
-        string $query,
-        string $fragment
-    ): UriInterface {
-        return self::applyComponents(new static(''), $scheme, $userInfo, $host, $port, $path, $query, $fragment);
-    }
-
     public function getScheme(): string
     {
         return $this->scheme;
@@ -311,5 +299,17 @@ class Url implements UriInterface
         $url->port = Filter::filterPort($port, $url->getScheme());
 
         return $url;
+    }
+
+    private static function fromComponents(
+        string $scheme,
+        string $userInfo,
+        string $host,
+        ?int $port,
+        string $path,
+        string $query,
+        string $fragment
+    ): UriInterface {
+        return self::applyComponents(new static(''), $scheme, $userInfo, $host, $port, $path, $query, $fragment);
     }
 }
