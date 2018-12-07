@@ -73,7 +73,7 @@ class Url implements UriInterface
         $this->port = Filter::filterPort($port, $this->scheme);
     }
 
-    public static function create(
+    public static function fromComponents(
         string $scheme,
         string $userInfo,
         string $host,
@@ -152,7 +152,7 @@ class Url implements UriInterface
             return $this;
         }
 
-        return self::create(
+        return self::fromComponents(
             $scheme,
             $this->userInfo,
             $this->host,
@@ -171,7 +171,7 @@ class Url implements UriInterface
             return $this;
         }
 
-        return self::create(
+        return self::fromComponents(
             $this->scheme,
             $userInfo,
             $this->host,
@@ -190,7 +190,7 @@ class Url implements UriInterface
             return $this;
         }
 
-        return self::create(
+        return self::fromComponents(
             $this->scheme,
             $this->userInfo,
             $host,
@@ -211,7 +211,7 @@ class Url implements UriInterface
             return $this;
         }
 
-        return self::create(
+        return self::fromComponents(
             $this->scheme,
             $this->userInfo,
             $this->host,
@@ -230,7 +230,7 @@ class Url implements UriInterface
             return $this;
         }
 
-        return self::create(
+        return self::fromComponents(
             $this->scheme,
             $this->userInfo,
             $this->host,
@@ -249,7 +249,7 @@ class Url implements UriInterface
             return $this;
         }
 
-        return self::create(
+        return self::fromComponents(
             $this->scheme,
             $this->userInfo,
             $this->host,
@@ -268,7 +268,7 @@ class Url implements UriInterface
             return $this;
         }
 
-        return self::create(
+        return self::fromComponents(
             $this->scheme,
             $this->userInfo,
             $this->host,
