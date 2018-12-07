@@ -64,13 +64,7 @@ class Url implements UriInterface
             }
         }
 
-        $this->scheme = strtolower($scheme);
-        $this->userInfo = $userInfo;
-        $this->host = strtolower($host);
-        $this->path = Filter::filterPath($path);
-        $this->query = Filter::filterQueryOrFragment($query);
-        $this->fragment = Filter::filterQueryOrFragment($fragment);
-        $this->port = Filter::filterPort($port, $this->scheme);
+        self::applyComponents($this, $scheme, $userInfo, $host, $port, $path, $query, $fragment);
     }
 
     public static function fromComponents(
@@ -81,18 +75,8 @@ class Url implements UriInterface
         string $path,
         string $query,
         string $fragment
-    ) {
-        $url = new static('');
-
-        $url->scheme = strtolower($scheme);
-        $url->userInfo = $userInfo;
-        $url->host = strtolower($host);
-        $url->path = Filter::filterPath($path);
-        $url->query = Filter::filterQueryOrFragment($query);
-        $url->fragment = Filter::filterQueryOrFragment($fragment);
-        $url->port = Filter::filterPort($port, $url->getScheme());
-
-        return $url;
+    ): UriInterface {
+        return self::applyComponents(new static(''), $scheme, $userInfo, $host, $port, $path, $query, $fragment);
     }
 
     public function getScheme(): string
@@ -314,5 +298,26 @@ class Url implements UriInterface
         }
 
         return $uri;
+    }
+
+    private static function applyComponents(
+        Url $url,
+        string $scheme,
+        string $userInfo,
+        string $host,
+        ?int $port,
+        string $path,
+        string $query,
+        string $fragment
+    ): UriInterface {
+        $url->scheme = strtolower($scheme);
+        $url->userInfo = $userInfo;
+        $url->host = strtolower($host);
+        $url->path = Filter::filterPath($path);
+        $url->query = Filter::filterQueryOrFragment($query);
+        $url->fragment = Filter::filterQueryOrFragment($fragment);
+        $url->port = Filter::filterPort($port, $url->getScheme());
+
+        return $url;
     }
 }
