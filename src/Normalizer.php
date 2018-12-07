@@ -197,11 +197,8 @@ class Normalizer
             return $path;
         }
 
-        $dotOnlyPaths = ['/..', '/.'];
-        foreach ($dotOnlyPaths as $dotOnlyPath) {
-            if ($dotOnlyPath === $path) {
-                return '/';
-            }
+        if (in_array($path, ['/..', '/.'])) {
+            return '/';
         }
 
         $lastCharacter = $path[-1];
