@@ -118,3 +118,25 @@ Removes the port if it matches the default port for the scheme.
     $normalizedUrl = Normalizer::normalize($url, Normalizer::REMOVE_DEFAULT_PORT);
     (string) $normalizedUrl;
     // "https://example.com"
+
+.. _normalizations-remove-path-dot-segments:
+
+------------------------
+Remove Path Dot Segments
+------------------------
+
+The ``.`` and ``..`` path segments have a special meaning. These segments are removed and the path
+is re-written to be equivalent.
+
+.. code-block:: php
+
+    <?php
+
+    use webignition\Url\Normalizer;
+    use webignition\Url\Url;
+
+    $url = new Url('http://example.com/a/b/c/./../../g');
+    $normalizedUrl = Normalizer::normalize($url, Normalizer::REMOVE_PATH_DOT_SEGMENTS);
+
+    (string) $normalizedUrl;
+    // "http://example.com/a/g"
