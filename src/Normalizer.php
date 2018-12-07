@@ -85,7 +85,7 @@ class Normalizer
         }
 
         if ($flags & self::REMOVE_PATH_DOT_SEGMENTS) {
-            $uri = self::removePathDotSegments($uri);
+            $uri = $uri->withPath(self::removePathDotSegments($uri->getPath()));
         }
 
         if ($flags & self::REDUCE_DUPLICATE_PATH_SLASHES) {
@@ -179,17 +179,16 @@ class Normalizer
         return $path;
     }
 
-    private static function removePathDotSegments(UriInterface $uri): UriInterface
+    private static function removePathDotSegments(string $path): string
     {
-        $path = $uri->getPath();
         if ('' === $path || '/' === $path) {
-            return $uri;
+            return $path;
         }
 
         $dotOnlyPaths = ['/..', '/.'];
         foreach ($dotOnlyPaths as $dotOnlyPath) {
             if ($dotOnlyPath === $path) {
-                return $uri->withPath('/');
+                return '/';
             }
         }
 
@@ -209,13 +208,13 @@ class Normalizer
             }
         }
 
-        $updatedPath = implode('/', $normalisedPathParts);
+        $path = implode('/', $normalisedPathParts);
 
-        if (empty($updatedPath) && '/' === $lastCharacter) {
-            $updatedPath = '/';
+        if (empty($path) && '/' === $lastCharacter) {
+            $path = '/';
         }
 
-        return $uri->withPath($updatedPath);
+        return $path;
     }
 
     private static function addPathTrailingSlash(UriInterface $uri): UriInterface
