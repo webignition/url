@@ -140,3 +140,25 @@ is re-written to be equivalent.
 
     (string) $normalizedUrl;
     // "http://example.com/a/g"
+
+.. _normalizations-convert-host-unicode-to-punycode:
+
+--------------------------------
+Convert Host Unicode to Punycode
+--------------------------------
+
+Unicode hosts containing non-ascii characters are converted to the
+`punycode <https://en.wikipedia.org/wiki/Punycode>`_ equivalent.
+
+.. code-block:: php
+
+    <?php
+
+    use webignition\Url\Normalizer;
+    use webignition\Url\Url;
+
+    $url = new Url('http://♥.example.com/');
+    $normalizedUrl = Normalizer::normalize($url, Normalizer::CONVERT_HOST_UNICODE_TO_PUNYCODE);
+
+    (string) $normalizedUrl;
+    // "http://xn--g6h.example.com/"

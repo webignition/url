@@ -4,7 +4,7 @@
 - :ref:`remove default file host <normalizations-remove-default-file-host>`
 - :ref:`remove port host <normalizations-remove-default-port>`
 - :ref:`remove path dot segments <normalizations-remove-path-dot-segments>`
-- convert host unicode to punycode
+- :ref:`convert host unicode to punycode <normalizations-convert-host-unicode-to-punycode>`
 - reduce path slashes
 - sort query parameters
 - add path trailing slash
