@@ -109,3 +109,24 @@ The ``Url::with*()`` are used to set components. A ``Url`` is immutable. The ret
     $url = $url->withFragment('');
     (string) $modifiedUrl;
     // "http://new.example.com"
+
+--------------------------
+Non-Optional Normalization
+--------------------------
+
+.. code-block:: php
+
+    <?php
+
+    use webignition\Url\Url;
+
+    $url = new Url('HTTPS://user:password@EXAMPLE.com:443');
+
+    $url->getScheme();
+    // "https"
+
+    $url->getHost();
+    // "example.com"
+
+    $url->getPort();
+    // null
