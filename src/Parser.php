@@ -11,14 +11,14 @@ class Parser
     const PROTOCOL_RELATIVE_START = '//';
     const PROTOCOL_RELATIVE_DUMMY_SCHEME = 'dummy';
 
-    const PART_SCHEME = 'scheme';
-    const PART_USER = 'user';
-    const PART_PASS = 'pass';
-    const PART_HOST = 'host';
-    const PART_PORT = 'port';
-    const PART_PATH = 'path';
-    const PART_QUERY = 'query';
-    const PART_FRAGMENT = 'fragment';
+    const COMPONENT_SCHEME = 'scheme';
+    const COMPONENT_USER = 'user';
+    const COMPONENT_PASS = 'pass';
+    const COMPONENT_HOST = 'host';
+    const COMPONENT_PORT = 'port';
+    const COMPONENT_PATH = 'path';
+    const COMPONENT_QUERY = 'query';
+    const COMPONENT_FRAGMENT = 'fragment';
 
     /**
      * Scheme names consist of a sequence of characters beginning with a
@@ -36,29 +36,29 @@ class Parser
             $url = self::PROTOCOL_RELATIVE_DUMMY_SCHEME . ':' . $url;
         }
 
-        $parts = self::parseParts($url);
+        $components = self::parseComponents($url);
 
         if (strlen($url) && self::FRAGMENT_DELIMITER === $url[-1]) {
-            $parts[self::PART_FRAGMENT] = '';
+            $components[self::COMPONENT_FRAGMENT] = '';
         }
 
-        $scheme = isset($parts[self::PART_SCHEME])
-            ? $parts[self::PART_SCHEME]
+        $scheme = isset($components[self::COMPONENT_SCHEME])
+            ? $components[self::COMPONENT_SCHEME]
             : null;
 
         if (self::PROTOCOL_RELATIVE_DUMMY_SCHEME === $scheme) {
-            unset($parts[self::PART_SCHEME]);
+            unset($components[self::COMPONENT_SCHEME]);
         }
 
-        if (isset($parts[self::PART_PORT])) {
-            $parts[self::PART_PORT] = (int)$parts[self::PART_PORT];
+        if (isset($components[self::COMPONENT_PORT])) {
+            $components[self::COMPONENT_PORT] = (int)$components[self::COMPONENT_PORT];
         }
 
-        if (isset($parts[self::PART_PATH]) && empty($parts[self::PART_PATH])) {
-            unset($parts[self::PART_PATH]);
+        if (isset($components[self::COMPONENT_PATH]) && empty($components[self::COMPONENT_PATH])) {
+            unset($components[self::COMPONENT_PATH]);
         }
 
-        return $parts;
+        return $components;
     }
 
     private static function normalizeWhitespace(string $url): string
@@ -76,22 +76,22 @@ class Parser
         return $url;
     }
 
-    private static function parseParts(string $url): array
+    private static function parseComponents(string $url): array
     {
-        $parts = parse_url($url);
+        $components = parse_url($url);
 
-        if (false !== $parts) {
-            return $parts;
+        if (false !== $components) {
+            return $components;
         }
 
-        $parts = self::parseUrlWithOnlyScheme($url);
-        if (!empty($parts)) {
-            return $parts;
+        $components = self::parseUrlWithOnlyScheme($url);
+        if (!empty($components)) {
+            return $components;
         }
 
-        $parts = self::parseUrlWithInvalidPort($url);
-        if (!empty($parts)) {
-            return $parts;
+        $components = self::parseUrlWithInvalidPort($url);
+        if (!empty($components)) {
+            return $components;
         }
 
         return [];
@@ -110,24 +110,24 @@ class Parser
 
     private static function parseUrlWithInvalidPort(string $url): array
     {
-        $parts = self::parseUrlWithInvalidPortWithPath($url);
-        if (!empty($parts)) {
-            return $parts;
+        $components = self::parseUrlWithInvalidPortWithPath($url);
+        if (!empty($components)) {
+            return $components;
         }
 
-        $parts = self::parseUrlWithInvalidPortWithoutPathWithQuery($url);
-        if (!empty($parts)) {
-            return $parts;
+        $components = self::parseUrlWithInvalidPortWithoutPathWithQuery($url);
+        if (!empty($components)) {
+            return $components;
         }
 
-        $parts = self::parseUrlWithInvalidPOrtWithoutPathWithoutQueryWithFragment($url);
-        if (!empty($parts)) {
-            return $parts;
+        $components = self::parseUrlWithInvalidPOrtWithoutPathWithoutQueryWithFragment($url);
+        if (!empty($components)) {
+            return $components;
         }
 
-        $parts = self::parseUrlEndingWithPortPattern($url);
-        if (!empty($parts)) {
-            return $parts;
+        $components = self::parseUrlEndingWithPortPattern($url);
+        if (!empty($components)) {
+            return $components;
         }
 
         return [];
@@ -197,10 +197,10 @@ class Parser
 
             $modifiedUrl .= $postPortSuffix;
 
-            $parts = parse_url($modifiedUrl);
-            $parts[self::PART_PORT] = $port;
+            $components = parse_url($modifiedUrl);
+            $components[self::COMPONENT_PORT] = $port;
 
-            return $parts;
+            return $components;
         }
 
         return [];
