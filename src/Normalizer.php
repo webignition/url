@@ -236,30 +236,33 @@ class Normalizer
         return $path;
     }
 
-    private static function decodeUnreservedCharacters(UriInterface $uri)
+    private static function decodeUnreservedCharacters(UriInterface $uri): UriInterface
     {
-        $regex = '/%(?:2D|2E|5F|7E|3[0-9]|[46][1-9A-F]|[57][0-9A])/i';
-
-        $callback = function (array $match) {
-            return rawurldecode($match[0]);
-        };
-
-        return
-            $uri->withPath(
-                preg_replace_callback($regex, $callback, $uri->getPath())
-            )->withQuery(
-                preg_replace_callback($regex, $callback, $uri->getQuery())
-            );
+        return self::applyPregReplaceCallbackToPathAndQuery(
+            $uri,
+            '/%(?:2D|2E|5F|7E|3[0-9]|[46][1-9A-F]|[57][0-9A])/i',
+            function (array $match) {
+                return rawurldecode($match[0]);
+            }
+        );
     }
 
-    private static function capitalizePercentEncoding(UriInterface $uri)
+    private static function capitalizePercentEncoding(UriInterface $uri): UriInterface
     {
-        $regex = '/(?:%[A-Fa-f0-9]{2})++/';
+        return self::applyPregReplaceCallbackToPathAndQuery(
+            $uri,
+            '/(?:%[A-Fa-f0-9]{2})++/',
+            function (array $match) {
+                return strtoupper($match[0]);
+            }
+        );
+    }
 
-        $callback = function (array $match) {
-            return strtoupper($match[0]);
-        };
-
+    private static function applyPregReplaceCallbackToPathAndQuery(
+        UriInterface $uri,
+        string $regex,
+        callable $callback
+    ): UriInterface {
         return
             $uri->withPath(
                 preg_replace_callback($regex, $callback, $uri->getPath())
