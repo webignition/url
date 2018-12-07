@@ -47,12 +47,12 @@ class Filter
 
     /**
      * @param int|null $port
+     * @param string $scheme
      *
      * @return int|null
      *
-     * @throws \InvalidArgumentException If the port is invalid.
      */
-    public static function filterPort(?int $port): ?int
+    public static function filterPort(?int $port, string $scheme = ''): ?int
     {
         if (null === $port) {
             return null;
@@ -64,6 +64,10 @@ class Filter
             throw new \InvalidArgumentException(
                 sprintf('Invalid port: %d. Must be between %d and %d', $port, self::MIN_PORT, self::MAX_PORT)
             );
+        }
+
+        if (DefaultPortIdentifier::isDefaultPort($scheme, $port)) {
+            $port = null;
         }
 
         return $port;

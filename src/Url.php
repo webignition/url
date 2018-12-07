@@ -41,34 +41,9 @@ class Url implements UriInterface
      */
     private $fragment = '';
 
-    public function __construct(
-        string $scheme,
-        string $userInfo,
-        string $host,
-        ?int $port,
-        string $path,
-        string $query,
-        string $fragment
-    ) {
-        $this->scheme = strtolower($scheme);
-        $this->userInfo = $userInfo;
-        $this->host = strtolower($host);
-        $this->path = Filter::filterPath($path);
-        $this->query = Filter::filterQueryOrFragment($query);
-        $this->fragment = Filter::filterQueryOrFragment($fragment);
-
-        if (!empty($port)) {
-            if (DefaultPortIdentifier::isDefaultPort($this->scheme, $port)) {
-                $port = null;
-            }
-        }
-
-        $this->port = Filter::filterPort($port);
-    }
-
-    public static function create(string $uri)
+    public function __construct(string $url)
     {
-        $components = Parser::parse($uri);
+        $components = Parser::parse($url);
 
         $scheme = $components[Parser::COMPONENT_SCHEME] ?? '';
         $host = $components[Parser::COMPONENT_HOST] ?? '';
@@ -89,7 +64,35 @@ class Url implements UriInterface
             }
         }
 
-        return new static($scheme, $userInfo, $host, $port, $path, $query, $fragment);
+        $this->scheme = strtolower($scheme);
+        $this->userInfo = $userInfo;
+        $this->host = strtolower($host);
+        $this->path = Filter::filterPath($path);
+        $this->query = Filter::filterQueryOrFragment($query);
+        $this->fragment = Filter::filterQueryOrFragment($fragment);
+        $this->port = Filter::filterPort($port, $this->scheme);
+    }
+
+    public static function create(
+        string $scheme,
+        string $userInfo,
+        string $host,
+        ?int $port,
+        string $path,
+        string $query,
+        string $fragment
+    ) {
+        $url = new static('');
+
+        $url->scheme = strtolower($scheme);
+        $url->userInfo = $userInfo;
+        $url->host = strtolower($host);
+        $url->path = Filter::filterPath($path);
+        $url->query = Filter::filterQueryOrFragment($query);
+        $url->fragment = Filter::filterQueryOrFragment($fragment);
+        $url->port = Filter::filterPort($port, $url->getScheme());
+
+        return $url;
     }
 
     public function getScheme(): string
@@ -149,7 +152,15 @@ class Url implements UriInterface
             return $this;
         }
 
-        return new Url($scheme, $this->userInfo, $this->host, $this->port, $this->path, $this->query, $this->fragment);
+        return self::create(
+            $scheme,
+            $this->userInfo,
+            $this->host,
+            $this->port,
+            $this->path,
+            $this->query,
+            $this->fragment
+        );
     }
 
     public function withUserInfo($user, $password = null)
@@ -160,7 +171,15 @@ class Url implements UriInterface
             return $this;
         }
 
-        return new Url($this->scheme, $userInfo, $this->host, $this->port, $this->path, $this->query, $this->fragment);
+        return self::create(
+            $this->scheme,
+            $userInfo,
+            $this->host,
+            $this->port,
+            $this->path,
+            $this->query,
+            $this->fragment
+        );
     }
 
     public function withHost($host)
@@ -171,7 +190,15 @@ class Url implements UriInterface
             return $this;
         }
 
-        return new Url($this->scheme, $this->userInfo, $host, $this->port, $this->path, $this->query, $this->fragment);
+        return self::create(
+            $this->scheme,
+            $this->userInfo,
+            $host,
+            $this->port,
+            $this->path,
+            $this->query,
+            $this->fragment
+        );
     }
 
     public function withPort($port)
@@ -184,7 +211,15 @@ class Url implements UriInterface
             return $this;
         }
 
-        return new Url($this->scheme, $this->userInfo, $this->host, $port, $this->path, $this->query, $this->fragment);
+        return self::create(
+            $this->scheme,
+            $this->userInfo,
+            $this->host,
+            $port,
+            $this->path,
+            $this->query,
+            $this->fragment
+        );
     }
 
     public function withPath($path)
@@ -195,7 +230,15 @@ class Url implements UriInterface
             return $this;
         }
 
-        return new Url($this->scheme, $this->userInfo, $this->host, $this->port, $path, $this->query, $this->fragment);
+        return self::create(
+            $this->scheme,
+            $this->userInfo,
+            $this->host,
+            $this->port,
+            $path,
+            $this->query,
+            $this->fragment
+        );
     }
 
     public function withQuery($query)
@@ -206,7 +249,15 @@ class Url implements UriInterface
             return $this;
         }
 
-        return new Url($this->scheme, $this->userInfo, $this->host, $this->port, $this->path, $query, $this->fragment);
+        return self::create(
+            $this->scheme,
+            $this->userInfo,
+            $this->host,
+            $this->port,
+            $this->path,
+            $query,
+            $this->fragment
+        );
     }
 
     public function withFragment($fragment)
@@ -217,7 +268,15 @@ class Url implements UriInterface
             return $this;
         }
 
-        return new Url($this->scheme, $this->userInfo, $this->host, $this->port, $this->path, $this->query, $fragment);
+        return self::create(
+            $this->scheme,
+            $this->userInfo,
+            $this->host,
+            $this->port,
+            $this->path,
+            $this->query,
+            $fragment
+        );
     }
 
     public function __toString()

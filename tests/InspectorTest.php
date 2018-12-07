@@ -28,27 +28,27 @@ class InspectorTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'no host' => [
-                'url' => Url::create('example'),
+                'url' => new Url('example'),
                 'expectedIsPubliclyRoutable' => false,
             ],
             'host not publicly routable' => [
-                'url' => Url::create('http://127.0.0.1'),
+                'url' => new Url('http://127.0.0.1'),
                 'expectedIsPubliclyRoutable' => false,
             ],
             'host lacks dots' => [
-                'url' => Url::create('http://example'),
+                'url' => new Url('http://example'),
                 'expectedIsPubliclyRoutable' => false,
             ],
             'host starts with dot' => [
-                'url' => Url::create('http://.example'),
+                'url' => new Url('http://.example'),
                 'expectedIsPubliclyRoutable' => false,
             ],
             'host ends with dot' => [
-                'url' => Url::create('http://example.'),
+                'url' => new Url('http://example.'),
                 'expectedIsPubliclyRoutable' => false,
             ],
             'valid' => [
-                'url' => Url::create('http://example.com'),
+                'url' => new Url('http://example.com'),
                 'expectedIsPubliclyRoutable' => true,
             ],
         ];
