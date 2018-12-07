@@ -28,15 +28,15 @@ class Parser
      */
     const SCHEME_ONLY_URL_PATTERN = '/^[a-z][a-z0-9+\.-]+:\/\/$/i';
 
-    public function parse(string $url): array
+    public static function parse(string $url): array
     {
-        $url = $this->normalizeWhitespace($url);
+        $url = self::normalizeWhitespace($url);
 
         if (self::PROTOCOL_RELATIVE_START === substr($url, 0, strlen(self::PROTOCOL_RELATIVE_START))) {
             $url = self::PROTOCOL_RELATIVE_DUMMY_SCHEME . ':' . $url;
         }
 
-        $parts = $this->parseParts($url);
+        $parts = self::parseParts($url);
 
         if (strlen($url) && self::FRAGMENT_DELIMITER === $url[-1]) {
             $parts[self::PART_FRAGMENT] = '';
@@ -61,7 +61,7 @@ class Parser
         return $parts;
     }
 
-    private function normalizeWhitespace(string $url): string
+    private static function normalizeWhitespace(string $url): string
     {
         // Unencoded leading or trailing whitespace is not allowed
         $url = trim($url);
@@ -76,7 +76,7 @@ class Parser
         return $url;
     }
 
-    private function parseParts(string $url): array
+    private static function parseParts(string $url): array
     {
         $parts = parse_url($url);
 
@@ -84,12 +84,12 @@ class Parser
             return $parts;
         }
 
-        $parts = $this->parseUrlWithOnlyScheme($url);
+        $parts = self::parseUrlWithOnlyScheme($url);
         if (!empty($parts)) {
             return $parts;
         }
 
-        $parts = $this->parseUrlWithInvalidPort($url);
+        $parts = self::parseUrlWithInvalidPort($url);
         if (!empty($parts)) {
             return $parts;
         }
@@ -97,7 +97,7 @@ class Parser
         return [];
     }
 
-    private function parseUrlWithOnlyScheme(string $url): array
+    private static function parseUrlWithOnlyScheme(string $url): array
     {
         if (preg_match(self::SCHEME_ONLY_URL_PATTERN, $url)) {
             return [
@@ -108,24 +108,24 @@ class Parser
         return [];
     }
 
-    private function parseUrlWithInvalidPort(string $url): array
+    private static function parseUrlWithInvalidPort(string $url): array
     {
-        $parts = $this->parseUrlWithInvalidPortWithPath($url);
+        $parts = self::parseUrlWithInvalidPortWithPath($url);
         if (!empty($parts)) {
             return $parts;
         }
 
-        $parts = $this->parseUrlWithInvalidPortWithoutPathWithQuery($url);
+        $parts = self::parseUrlWithInvalidPortWithoutPathWithQuery($url);
         if (!empty($parts)) {
             return $parts;
         }
 
-        $parts = $this->parseUrlWithInvalidPOrtWithoutPathWithoutQueryWithFragment($url);
+        $parts = self::parseUrlWithInvalidPOrtWithoutPathWithoutQueryWithFragment($url);
         if (!empty($parts)) {
             return $parts;
         }
 
-        $parts = $this->parseUrlEndingWithPortPattern($url);
+        $parts = self::parseUrlEndingWithPortPattern($url);
         if (!empty($parts)) {
             return $parts;
         }
@@ -133,7 +133,7 @@ class Parser
         return [];
     }
 
-    private function parseUrlWithInvalidPortWithPath(string $url): array
+    private static function parseUrlWithInvalidPortWithPath(string $url): array
     {
         $doubleSlashPosition = strpos($url, '//');
 
@@ -147,10 +147,10 @@ class Parser
             return [];
         }
 
-        return $this->parseUrlEndingWithPortPatternAndSuffix($url, $firstSlashPosition);
+        return self::parseUrlEndingWithPortPatternAndSuffix($url, $firstSlashPosition);
     }
 
-    private function parseUrlWithInvalidPortWithoutPathWithQuery(string $url): array
+    private static function parseUrlWithInvalidPortWithoutPathWithQuery(string $url): array
     {
         $queryDelimiterPosition = strpos($url, self::QUERY_DELIMITER);
 
@@ -164,10 +164,10 @@ class Parser
             return [];
         }
 
-        return $this->parseUrlEndingWithPortPatternAndSuffix($url, $queryDelimiterPosition);
+        return self::parseUrlEndingWithPortPatternAndSuffix($url, $queryDelimiterPosition);
     }
 
-    private function parseUrlWithInvalidPOrtWithoutPathWithoutQueryWithFragment(string $url): array
+    private static function parseUrlWithInvalidPOrtWithoutPathWithoutQueryWithFragment(string $url): array
     {
         $fragmentDelimiterPosition = strpos($url, self::FRAGMENT_DELIMITER);
 
@@ -175,18 +175,18 @@ class Parser
             return [];
         }
 
-        return $this->parseUrlEndingWithPortPatternAndSuffix($url, $fragmentDelimiterPosition);
+        return self::parseUrlEndingWithPortPatternAndSuffix($url, $fragmentDelimiterPosition);
     }
 
-    private function parseUrlEndingWithPortPatternAndSuffix(string $url, int $suffixPosition)
+    private static function parseUrlEndingWithPortPatternAndSuffix(string $url, int $suffixPosition)
     {
         $urlEndingWithPortPattern = substr($url, 0, $suffixPosition);
         $suffix = substr($url, $suffixPosition);
 
-        return $this->parseUrlEndingWithPortPattern($urlEndingWithPortPattern, $suffix);
+        return self::parseUrlEndingWithPortPattern($urlEndingWithPortPattern, $suffix);
     }
 
-    private function parseUrlEndingWithPortPattern(string $urlEndingWithPortPattern, string $postPortSuffix = '')
+    private static function parseUrlEndingWithPortPattern(string $urlEndingWithPortPattern, string $postPortSuffix = '')
     {
         $endsWithPortPattern = '/\:[0-9]+$/';
         $endsWithPortMatches = [];
