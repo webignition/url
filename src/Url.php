@@ -116,7 +116,8 @@ class Url implements UriInterface
             return $this;
         }
 
-        return self::fromComponents(
+        return self::applyComponents(
+            clone $this,
             $scheme,
             $this->userInfo,
             $this->host,
@@ -135,7 +136,8 @@ class Url implements UriInterface
             return $this;
         }
 
-        return self::fromComponents(
+        return self::applyComponents(
+            clone $this,
             $this->scheme,
             $userInfo,
             $this->host,
@@ -154,7 +156,8 @@ class Url implements UriInterface
             return $this;
         }
 
-        return self::fromComponents(
+        return self::applyComponents(
+            clone $this,
             $this->scheme,
             $this->userInfo,
             $host,
@@ -175,7 +178,8 @@ class Url implements UriInterface
             return $this;
         }
 
-        return self::fromComponents(
+        return self::applyComponents(
+            clone $this,
             $this->scheme,
             $this->userInfo,
             $this->host,
@@ -194,7 +198,8 @@ class Url implements UriInterface
             return $this;
         }
 
-        return self::fromComponents(
+        return self::applyComponents(
+            clone $this,
             $this->scheme,
             $this->userInfo,
             $this->host,
@@ -213,7 +218,8 @@ class Url implements UriInterface
             return $this;
         }
 
-        return self::fromComponents(
+        return self::applyComponents(
+            clone $this,
             $this->scheme,
             $this->userInfo,
             $this->host,
@@ -232,7 +238,8 @@ class Url implements UriInterface
             return $this;
         }
 
-        return self::fromComponents(
+        return self::applyComponents(
+            clone $this,
             $this->scheme,
             $this->userInfo,
             $this->host,
@@ -299,17 +306,5 @@ class Url implements UriInterface
         $url->port = Filter::filterPort($port, $url->getScheme());
 
         return $url;
-    }
-
-    private static function fromComponents(
-        string $scheme,
-        string $userInfo,
-        string $host,
-        ?int $port,
-        string $path,
-        string $query,
-        string $fragment
-    ): UriInterface {
-        return self::applyComponents(new static(''), $scheme, $userInfo, $host, $port, $path, $query, $fragment);
     }
 }
