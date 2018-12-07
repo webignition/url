@@ -59,7 +59,7 @@ class Url implements UriInterface
         self::applyComponents($this, $scheme, $userInfo, $host, $port, $path, $query, $fragment);
     }
 
-    public static function fromComponents(
+    private static function fromComponents(
         string $scheme,
         string $userInfo,
         string $host,

@@ -445,23 +445,23 @@ class UrlTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'fragment only' => [
-                'uri' => Url::fromComponents('', '', '', null, '', '', 'fragment'),
+                'uri' => (new Url(''))->withFragment('fragment'),
                 'expectedUrl' => '#fragment',
             ],
             'query only' => [
-                'uri' => Url::fromComponents('', '', '', null, '', 'query', ''),
+                'uri' => (new Url(''))->withQuery('query'),
                 'expectedUrl' => '?query',
             ],
             'path only' => [
-                'uri' => Url::fromComponents('', '', '', null, '/path', '', ''),
+                'uri' => (new Url(''))->withPath('/path'),
                 'expectedUrl' => '/path',
             ],
             'path only, starts with //' => [
-                'uri' => Url::fromComponents('', '', '', null, '//path', '', ''),
+                'uri' => (new Url(''))->withPath('//path'),
                 'expectedUrl' => '/path',
             ],
             'path and host, path does not start with /' => [
-                'uri' => Url::fromComponents('', '', 'example.com', null, 'path', '', ''),
+                'uri' => (new Url(''))->withHost('example.com')->withPath('path'),
                 'expectedUrl' => '//example.com/path',
             ],
         ];
