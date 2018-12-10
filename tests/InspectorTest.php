@@ -19,9 +19,7 @@ class InspectorTest extends \PHPUnit\Framework\TestCase
      */
     public function testIsNotPubliclyRoutable(UriInterface $url, bool $expectedIsPubliclyRoutable)
     {
-        $inspector = new Inspector();
-
-        $this->assertEquals($expectedIsPubliclyRoutable, $inspector->isNotPubliclyRoutable($url));
+        $this->assertEquals($expectedIsPubliclyRoutable, Inspector::isNotPubliclyRoutable($url));
     }
 
     public function isNotPubliclyRoutableDataProvider(): array
