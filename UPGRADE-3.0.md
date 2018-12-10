@@ -75,7 +75,6 @@ equivalent normalization.
 Before:
 
 ```php
-
 use webignition\NormalisedUrl\NormalisedUrl;
 
 $normalizedUrl = new NormalisedUrl('http://example.com/?b=bar&a=foo');
@@ -86,7 +85,6 @@ echo (string) $normalizedUrl;
 After:
 
 ```php
-
 use webignition\Url\Normalizer;
 use webignition\Url\Url;
 
