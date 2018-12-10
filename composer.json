@@ -1,7 +1,7 @@
 {
     "name": "webignition/url",
-    "description": "Represents a URL, a library to be used in many other places. Applies semantically-lossless normalisation for comparisons.",
-    "keywords": ["url"],
+    "description": "A PSR-7 UriInterface implementation. A normalizer for applying sixteen lossy and lossless normalizations.",
+    "keywords": ["url", "uri", "psr-7", "normalise", "normalize", "normaliser", "normalizer"],
     "homepage": "https://github.com/webignition/url",
     "type": "library",
     "license": "MIT",
@@ -13,15 +13,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "webignition\\Url\\": "src/Url",
-            "webignition\\NormalisedUrl\\": "src/NormalisedUrl"
+            "webignition\\Url\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "webignition\\Tests\\NormalisedUrl\\": "tests/NormalisedUrl",
-            "webignition\\Tests\\Url\\": "tests/Url",
-            "webignition\\Tests\\DataProvider\\": "tests/DataProvider"
+            "webignition\\Url\\Tests\\": "tests"
         }
     },
     "scripts": {
@@ -33,14 +30,15 @@
         ]
     },
     "require": {
-        "php": ">=5.6.0",
-        "etechnika/idna-convert": "1.0.*",
+        "php": ">=7.2",
+        "psr/http-message": "^1",
+        "mso/idna-convert": "^1",
         "xrstf/ip-utils": "v1.0.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~5.0",
+        "phpunit/phpunit": "^7",
         "squizlabs/php_codesniffer": "3.*",
-        "mockery/mockery": "~0.9",
-        "php-mock/php-mock-mockery": "1.1.0"
+        "mockery/mockery": "^1",
+        "php-mock/php-mock-mockery": "^1"
     }
 }

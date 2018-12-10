@@ -1,4 +1,4 @@
 /vendor
 /composer.lock
-/.idea
 /build
+/docs/_build/
