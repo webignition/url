@@ -269,3 +269,24 @@ Remove fragment component.
 
     (string) $normalizedUrl;
     // "http://example.com
+
+.. _normalizations-remove-www:
+
+---------------------
+Remove www Sub-domain
+---------------------
+
+Remove the www sub-domain.
+
+.. code-block:: php
+
+    <?php
+
+    use webignition\Url\Normalizer;
+    use webignition\Url\Url;
+
+    $url = new Url('http://www.example.com');
+    $normalizedUrl = Normalizer::normalize($url, Normalizer::REMOVE_WWW);
+
+    (string) $normalizedUrl;
+    // "http://example.com
