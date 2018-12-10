@@ -1,6 +1,6 @@
-===============
-Getting Started
-===============
+=============================
+Requirements and Installation
+=============================
 
 ------------
 Requirements

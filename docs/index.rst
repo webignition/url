@@ -16,7 +16,7 @@ You might want to skip straight to the :doc:`Url usage guide </url>` or the :doc
     :caption: First Steps
 
     overview
-    getting-started
+    requirements-and-installation
 
 .. toctree::
     :caption: Usage
