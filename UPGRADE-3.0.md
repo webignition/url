@@ -14,7 +14,7 @@ with 2.x:
 
 If you're running a version of PHP older than 7.2, you will have to upgrade. There's no other way.
 
-## Url Implements `UriInterface`
+## Url Implements UriInterface
 
 `Url` now implements the [ PSR-7` UriInterface`](https://github.com/php-fig/http-message/blob/master/src/UriInterface.php).
 
@@ -65,7 +65,7 @@ named `with*()` which return a new instance that has a relevant changed componen
 | `isPubliclyRoutable()` | `Inspector::isPubliclyRoutable($url)` |
 | `getConfiguration()` | No alternative |
 
-## Remove `NormalisedUrl`, Replace With `Normalizer`
+## Remove NormalisedUrl, Replace With Normalizer
 
 Having both `Url` and `NormalisedUrl` classes has started to make less and less sense.
 
