@@ -28,15 +28,3 @@ Parser
 
 .. include:: includes/parser/introduction.rst
 .. include:: includes/parser/example.rst
-
----------
-Inspector
----------
-
-The ``Inspector`` examines ``UriInterface`` instance.
-
---------------
-Scope Comparer
---------------
-
-The ``ScopeComparer`` examines whether two ``UriInterface`` instances are in the same scope.
