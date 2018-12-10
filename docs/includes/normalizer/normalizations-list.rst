@@ -9,7 +9,7 @@
 - :ref:`sort query parameters <normalizations-sort-query-parameters>`
 - :ref:`add path trailing slash <normalizations-add-path-trailing-slash>`-
 - :ref:`remove user info <normalizations-remove-user-info>`
-- remove fragment
+- :ref:`remove fragment <normalizations-remove-fragment>`
 - remove www sub-domain
 - apply a default scheme if none is set
 - remove filenames from path by pattern

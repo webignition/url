@@ -248,3 +248,24 @@ Remove user credentials.
 
     (string) $normalizedUrl;
     // "http://example.com
+
+.. _normalizations-remove-fragment:
+
+---------------
+Remove Fragment
+---------------
+
+Remove fragment component.
+
+.. code-block:: php
+
+    <?php
+
+    use webignition\Url\Normalizer;
+    use webignition\Url\Url;
+
+    $url = new Url('http://example.com#fragment');
+    $normalizedUrl = Normalizer::normalize($url, Normalizer::REMOVE_FRAGMENT);
+
+    (string) $normalizedUrl;
+    // "http://example.com
