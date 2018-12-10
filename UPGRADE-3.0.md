@@ -74,8 +74,7 @@ equivalent normalization.
 
 Before:
 
-```
-php
+```php
 
 use webignition\NormalisedUrl\NormalisedUrl;
 
@@ -86,8 +85,7 @@ echo (string) $normalizedUrl;
 
 After:
 
-```
-php
+```php
 
 use webignition\Url\Normalizer;
 use webignition\Url\Url;
