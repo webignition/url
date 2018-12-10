@@ -1,69 +1,41 @@
-URL
-===
+# URL
 
-Represents a URL, a library to be used in many other places.
+A PSR-7 `UriInterface` for modelling a URL and accessing/modifying components.
+ 
+A `Normalizer` for applying a range of semantically-lossless, potentially-lossless or lossy normalizations,
+most commonly for comparison.
 
-Provides access to individual URL components, works correctly with absolute,
-relative and protocol-relative variants.
+## Requirements
 
-Applies semantically-lossless normalisation for comparisons:
+- PHP 7.2.0 or greater
+- [composer](https://getcomposer.org/)
 
- * scheme and host case is ignored
- * percent-encoded entities are capitalised
- * decodes percent-encoded representations of unreserved characters
- * trailing / added to directory-ending URLs
- * default port removed
- * dot segments (/./ and /../) are removed
- * query string arguments are sorted by key name
- * IDN host names are normalised to the ASCII variant
+## Upgrading from 2.x to 3.0
 
-Usage
------
+3.0 is by no means backwards-compatible with 2.x. Read the [upgrade notes][upgrade-2.x-3.0].
 
-### Initialisation via constructor or init() method for DI convenience
+## Documentation
 
-```php
-<?php
-$url1 = new \webignition\Url\Url('https://github.com/webignition/url/');
+- [Documentation home][documentation-home]
+- [Overview][documentation-overview]
+- [Requirements and installation][documentation-requirements-and-installation]
+- Usage
+    - [Url Model][documentation-usage-url-model]
+    - [Normalizer][documentation-usage-normalizer]
+- Normalization details
+    - [Applying multiple normalizations][documentation-applying-multiple-normalizations]
+    - [Semantically-lossless normalizations][documentation-semantically-lossless-normalizations]
+    - [Potentially-lossy normalizations][documentation-potentially-lossless-normalizations]
+    - [Lossy normalizations][documentation-lossy-normalizations]
 
-$url2 = new \webignition\Url\Url();
-$url2->init('https://github.com/webignition/url/');
-
-$this->assertEquals((string)$url1, (string)$url2);
-
-```
-
-### Example of component access
-
-```php
-<?php
-$url = new \webignition\Url\Url('https://github.com/webignition/url/');
-
-$this->assertEquals('https', $url->getScheme());
-$this->assertFalse($url->hasUser());
-```
-
-### Example of component modification
-
-```php
-<?php
-$url = new \webignition\Url\Url('https://github.com/webignition/url/');
-
-$url->setScheme('http');
-$url->setHost('example.com');
-$url->setPath('/');
-
-$this->assertEquals('http://example.com/', (string)$url);
-```
-
-
-### Example of query normalisation
-
-```php
-<?php
-$url = new \webignition\NormalisedUrl\NormalisedUrl('http://www.example.com?a=1&c=3&b=2');
-$this->assertEquals('http://www.example.com/?a=1&b=2&c=3', (string)$url);
-
-$url = new \webignition\Url('http://www.example.com?');
-$this->assertEquals('http://www.example.com/', (string)$url);
-```
+[upgrade-2.x-3.0]: https://github.com/webignition/url/blob/master/UPGRADE-3.0.md
+[documentation-home]: https://url.webignition.net/en/latest/
+[documentation-overview]: https://url.webignition.net/en/latest/overview.html
+[documentation-requirements-and-installation]: https://url.webignition.net/en/latest/requirements-and-installation.html
+[documentation-getting-started]: https://url.webignition.net/en/latest/requirements-and-installation.html
+[documentation-usage-url-model]: https://url.webignition.net/en/latest/url.html
+[documentation-usage-normalizer]: https://url.webignition.net/en/latest/normalizer.html
+[documentation-applying-multiple-normalizations]: https://url.webignition.net/en/latest/applying-multiple-normalizations.html
+[documentation-semantically-lossless-normalizations]: https://url.webignition.net/en/latest/semantically-lossless-normalizations.html
+[documentation-potentially-lossless-normalizations]: https://url.webignition.net/en/latest/potentially-lossy-normalizations.html
+[documentation-lossy-normalizations]: https://url.webignition.net/en/latest/lossy-normalizations.html
