@@ -47,4 +47,15 @@ class Inspector
 
         return false;
     }
+
+    public static function isProtocolRelative(UriInterface $uri): bool
+    {
+        $scheme = $uri->getScheme();
+
+        if ('' !== $scheme) {
+            return false;
+        }
+
+        return '' !== $uri->getHost();
+    }
 }
