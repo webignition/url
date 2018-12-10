@@ -23,7 +23,7 @@ class Inspector
      *
      * @throws InvalidExpressionException
      */
-    public function isNotPubliclyRoutable(UriInterface $url): bool
+    public static function isNotPubliclyRoutable(UriInterface $url): bool
     {
         $host = $url->getHost();
         if ('' === $host) {
