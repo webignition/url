@@ -75,6 +75,11 @@ class UserInfoTest extends \PHPUnit\Framework\TestCase
                 'expectedUser' => 'user',
                 'expectedPassword' => null,
             ],
+            'user and empty password' => [
+                'userInfoString' => 'user:',
+                'expectedUser' => 'user',
+                'expectedPassword' => null,
+            ],
             'user and password' => [
                 'userInfoString' => 'user:password',
                 'expectedUser' => 'user',
