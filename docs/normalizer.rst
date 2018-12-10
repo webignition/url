@@ -338,3 +338,30 @@ Useful for stripping common default filenames such as ``index.html``, ``index.js
 
     (string) $normalizedUrl;
     // "http://example.com/
+
+.. _normalizations-remove-query-parameters-by-pattern:
+
+----------------------------------
+Remove Query Parameters By Pattern
+----------------------------------
+
+Remove query parameters where the parameter key matches one of a set of patterns.
+
+Useful for stripping query parameters considered by you to be irrelevant to the canonical form of a URL.
+
+.. code-block:: php
+
+    <?php
+
+    use webignition\Url\Normalizer;
+    use webignition\Url\Url;
+
+    $url = new Url('http//www.example.com?x=1&y=2&utm_source=facebook&utm_medium=18');
+    $normalizedUrl = Normalizer::normalize($url, Normalizer::NONE, [
+        Normalizer::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS => [
+            '/^utm_\w+/i',
+        ],
+    ]);
+
+    (string) $normalizedUrl;
+    // "http://example.com?page=1&category=2

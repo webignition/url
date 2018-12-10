@@ -13,4 +13,4 @@
 - :ref:`remove www sub-domain <normalizations-remove-www>`
 - :ref:`specify a default scheme <normalizations-default-scheme>`
 - :ref:`remove filenames from path by pattern <normalizations-remove-filenames-from-path-by-pattern>`
-- remove query parameters by pattern
+- :ref:`remove query parameters by pattern <normalizations-remove-query-parameters-by-pattern>`
