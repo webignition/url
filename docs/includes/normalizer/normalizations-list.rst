@@ -7,8 +7,8 @@
 - :ref:`convert host unicode to punycode <normalizations-convert-host-unicode-to-punycode>`
 - :ref:`reduce duplicate path slashes <normalizations-reduce-duplicate-path-slashes>`
 - :ref:`sort query parameters <normalizations-sort-query-parameters>`
-- :ref:`add path trailing slash <normalizations-add-path-trailing-slash>`
-- remove user info
+- :ref:`add path trailing slash <normalizations-add-path-trailing-slash>`-
+- :ref:`remove user info <normalizations-remove-user-info>`
 - remove fragment
 - remove www sub-domain
 - apply a default scheme if none is set

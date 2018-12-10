@@ -227,3 +227,24 @@ Add a trailing slash to the path if not present.
 
     (string) $normalizedUrl;
     // "http://example.com/
+
+.. _normalizations-remove-user-info:
+
+----------------
+Remove User Info
+----------------
+
+Remove user credentials.
+
+.. code-block:: php
+
+    <?php
+
+    use webignition\Url\Normalizer;
+    use webignition\Url\Url;
+
+    $url = new Url('http://user:password@example.com');
+    $normalizedUrl = Normalizer::normalize($url, Normalizer::REMOVE_USER_INFO);
+
+    (string) $normalizedUrl;
+    // "http://example.com
