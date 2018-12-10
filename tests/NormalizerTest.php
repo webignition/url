@@ -127,37 +127,37 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
             'removePathFilesPatterns: empty path' => [
                 'url' => 'http://example.com',
                 'expectedUrl' => 'http://example.com',
-                'flags' => 0,
+                'flags' => Normalizer::NONE,
                 'options' => $options,
             ],
             'removePathFilesPatterns: no filename' => [
                 'url' => 'http://example.com/',
                 'expectedUrl' => 'http://example.com/',
-                'flags' => 0,
+                'flags' => Normalizer::NONE,
                 'options' => $options,
             ],
             'removePathFilesPatterns: foo-index.html' => [
                 'url' => 'http://example.com/foo-index.html',
                 'expectedUrl' => 'http://example.com/foo-index.html',
-                'flags' => 0,
+                'flags' => Normalizer::NONE,
                 'options' => $options,
             ],
             'removePathFilesPatterns: index-foo.html' => [
                 'url' => 'http://example.com/index-foo.html',
                 'expectedUrl' => 'http://example.com/index-foo.html',
-                'flags' => 0,
+                'flags' => Normalizer::NONE,
                 'options' => $options,
             ],
             'removePathFilesPatterns: index.html' => [
                 'url' => 'http://example.com/index.html',
                 'expectedUrl' => 'http://example.com',
-                'flags' => 0,
+                'flags' => Normalizer::NONE,
                 'options' => $options,
             ],
             'removePathFilesPatterns: index.js' => [
                 'url' => 'http://example.com/index.js',
                 'expectedUrl' => 'http://example.com',
-                'flags' => 0,
+                'flags' => Normalizer::NONE,
                 'options' => $options,
             ],
         ];
@@ -376,7 +376,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
             'removeQueryParameters: patterns not an array' => [
                 'url' => $url,
                 'expectedUrl' => $url,
-                'flags' => 0,
+                'flags' => Normalizer::NONE,
                 'options' => [
                     Normalizer::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS => false,
                 ],
@@ -384,7 +384,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
             'removeQueryParameters: empty patterns' => [
                 'url' => $url,
                 'expectedUrl' => $url,
-                'flags' => 0,
+                'flags' => Normalizer::NONE,
                 'options' => [
                     Normalizer::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS => [],
                 ],
@@ -392,7 +392,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
             'removeQueryParameters: non-empty patterns (1)' => [
                 'url' => $url,
                 'expectedUrl' => 'http://example.com/',
-                'flags' => 0,
+                'flags' => Normalizer::NONE,
                 'options' => [
                     Normalizer::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS => [
                         '/^f[a-z]+$/'
@@ -402,7 +402,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
             'removeQueryParameters: non-empty patterns (2)' => [
                 'url' => $url,
                 'expectedUrl' => 'http://example.com/?fizz=buzz&fizzbuzz',
-                'flags' => 0,
+                'flags' => Normalizer::NONE,
                 'options' => [
                     Normalizer::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS => [
                         '/^foo/'
@@ -412,7 +412,7 @@ class NormalizerTest extends \PHPUnit\Framework\TestCase
             'removeQueryParameters: non-empty patterns (3)' => [
                 'url' => $url,
                 'expectedUrl' => 'http://example.com/?foobar&fizzbuzz',
-                'flags' => 0,
+                'flags' => Normalizer::NONE,
                 'options' => [
                     Normalizer::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS => [
                         '/^(foo|fizz)$/'
