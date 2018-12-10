@@ -54,7 +54,7 @@ the ``flags`` argument.
 Apply All Semantically-Lossless Normalizations
 ----------------------------------------------
 
-There is a set of normalizations that do not change the semantics of a URL. These are defined as
+A set of normalizations that do not change the semantics of a URL are defined as
 ``Normalizer::PRESERVING_NORMALIZATIONS``.
 
 Read more about :doc:`semantically-lossless normalizations </semantically-lossless-normalizations>` to see what
