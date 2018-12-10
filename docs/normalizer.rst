@@ -290,3 +290,26 @@ Remove the www sub-domain.
 
     (string) $normalizedUrl;
     // "http://example.com
+
+.. _normalizations-default-scheme:
+
+------------------------
+Specify a Default Scheme
+------------------------
+
+Specify a default scheme to be applied if none is present.
+
+.. code-block:: php
+
+    <?php
+
+    use webignition\Url\Normalizer;
+    use webignition\Url\Url;
+
+    $url = new Url('//www.example.com');
+    $normalizedUrl = Normalizer::normalize($url, Normalizer::NONE, [
+        Normalizer::OPTION_DEFAULT_SCHEME => 'http',
+    ]);
+
+    (string) $normalizedUrl;
+    // "http://example.com

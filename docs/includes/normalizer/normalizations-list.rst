@@ -11,6 +11,6 @@
 - :ref:`remove user info <normalizations-remove-user-info>`
 - :ref:`remove fragment <normalizations-remove-fragment>`
 - :ref:`remove www sub-domain <normalizations-remove-www>`
-- apply a default scheme if none is set
+- :ref:`specify a default scheme <normalizations-default-scheme>`
 - remove filenames from path by pattern
 - remove query parameters by pattern
