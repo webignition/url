@@ -4,6 +4,8 @@ namespace webignition\Url;
 
 class UserInfo
 {
+    const USER_PASS_DELIMITER = ':';
+
     private $user = '';
     private $password = null;
 
@@ -11,6 +13,26 @@ class UserInfo
     {
         $this->user = $user;
         $this->password = $password;
+    }
+
+    public static function fromString(string $userInfo): UserInfo
+    {
+        $parts = explode(self::USER_PASS_DELIMITER, $userInfo, 2);
+        $partCount = count($parts);
+
+        $user = '';
+        $password = null;
+
+        if ($partCount) {
+            $user = $parts[0];
+
+            if ($partCount > 1) {
+                $password = $parts[1];
+                $password = empty($password) ? null : $password;
+            }
+        }
+
+        return new static($user, $password);
     }
 
     public function getUser(): string
@@ -32,7 +54,7 @@ class UserInfo
         }
 
         if (!empty($this->password)) {
-            $userInfo .= ':' . $this->password;
+            $userInfo .=  self::USER_PASS_DELIMITER . $this->password;
         }
 
         return $userInfo;
