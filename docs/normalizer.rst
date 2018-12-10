@@ -313,3 +313,28 @@ Specify a default scheme to be applied if none is present.
 
     (string) $normalizedUrl;
     // "http://example.com
+
+.. _normalizations-remove-filenames-from-path-by-pattern:
+
+-------------------------------------
+Remove Filenames From Path By Pattern
+-------------------------------------
+
+Remove the filename from the path component. Removal is defined through one or more patterns.
+
+Useful for stripping common default filenames such as ``index.html``, ``index.js`` or ``default.asp``.
+
+.. code-block:: php
+
+    <?php
+
+    use webignition\Url\Normalizer;
+    use webignition\Url\Url;
+
+    $url = new Url('http//www.example.com/index.html');
+    $normalizedUrl = Normalizer::normalize($url, Normalizer::NONE, [
+        Normalizer::OPTION_REMOVE_PATH_FILES_PATTERNS => Normalizer::REMOVE_INDEX_FILE_PATTERN,
+    ]);
+
+    (string) $normalizedUrl;
+    // "http://example.com/
