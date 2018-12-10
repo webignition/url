@@ -206,3 +206,24 @@ Sorting is neither locale- nor unicode-aware. The purpose is to be able to compa
 
     (string) $normalizedUrl;
     // "http://example.com?a=apple&b=bear&c=cow"
+
+.. _normalizations-add-path-trailing-slash:
+
+-----------------------
+Add Path Trailing Slash
+-----------------------
+
+Add a trailing slash to the path if not present.
+
+.. code-block:: php
+
+    <?php
+
+    use webignition\Url\Normalizer;
+    use webignition\Url\Url;
+
+    $url = new Url('http://example.com');
+    $normalizedUrl = Normalizer::normalize($url, Normalizer::ADD_PATH_TRAILING_SLASH);
+
+    (string) $normalizedUrl;
+    // "http://example.com/
