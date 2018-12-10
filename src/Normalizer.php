@@ -45,6 +45,8 @@ class Normalizer
     const REMOVE_FRAGMENT = 2048;
     const REMOVE_WWW = 4096;
 
+    const NONE = 0;
+
     const HOST_STARTS_WITH_WWW_PATTERN = '/^www\./';
     const REMOVE_INDEX_FILE_PATTERN = '/^index\.[a-z]+$/i';
 
@@ -53,28 +55,87 @@ class Normalizer
         int $flags = self::PRESERVING_NORMALIZATIONS,
         ?array $options = []
     ): UriInterface {
-        if ($flags & self::REMOVE_USER_INFO && '' !== $uri->getUserInfo()) {
-            $uri = $uri->withUserInfo('');
-        }
-
-        if ($flags & self::REMOVE_FRAGMENT && '' !== $uri->getFragment()) {
-            $uri = $uri->withFragment('');
-        }
-
-        if ('' !== $uri->getHost()) {
-            $host = $uri->getHost();
-
-            if ($flags & self::CONVERT_HOST_UNICODE_TO_PUNYCODE) {
-                $host = PunycodeEncoder::encode($host);
+        if ($flags !== self::NONE) {
+            if ($flags & self::REMOVE_USER_INFO && '' !== $uri->getUserInfo()) {
+                $uri = $uri->withUserInfo('');
             }
 
-            if ($flags & self::REMOVE_WWW) {
-                if (preg_match(self::HOST_STARTS_WITH_WWW_PATTERN, $host) > 0) {
-                    $host = preg_replace(self::HOST_STARTS_WITH_WWW_PATTERN, '', $host);
+            if ($flags & self::REMOVE_FRAGMENT && '' !== $uri->getFragment()) {
+                $uri = $uri->withFragment('');
+            }
+
+            if ('' !== $uri->getHost()) {
+                $host = $uri->getHost();
+
+                if ($flags & self::CONVERT_HOST_UNICODE_TO_PUNYCODE) {
+                    $host = PunycodeEncoder::encode($host);
+                }
+
+                if ($flags & self::REMOVE_WWW) {
+                    if (preg_match(self::HOST_STARTS_WITH_WWW_PATTERN, $host) > 0) {
+                        $host = preg_replace(self::HOST_STARTS_WITH_WWW_PATTERN, '', $host);
+                    }
+                }
+
+                $uri = $uri->withHost($host);
+            }
+
+            if ($flags & self::REMOVE_PATH_DOT_SEGMENTS) {
+                $uri = $uri->withPath(self::removePathDotSegments($uri->getPath()));
+            }
+
+            if ($flags & self::REDUCE_DUPLICATE_PATH_SLASHES) {
+                $uri->withPath(preg_replace('#//++#', '/', $uri->getPath()));
+            }
+
+            if ($flags & self::ADD_PATH_TRAILING_SLASH) {
+                $uri = $uri->withPath(self::addPathTrailingSlash($uri->getPath()));
+            }
+
+            if ($flags & self::SORT_QUERY_PARAMETERS && '' !== $uri->getQuery()) {
+                $query = self::mutateQuery($uri->getQuery(), function (array &$queryKeyValues) {
+                    sort($queryKeyValues);
+                });
+
+                $uri = $uri->withQuery($query);
+            }
+
+            if ($flags & self::DECODE_UNRESERVED_CHARACTERS) {
+                $uri = self::applyPregReplaceCallbackToPathAndQuery(
+                    $uri,
+                    '/%(?:2D|2E|5F|7E|3[0-9]|[46][1-9A-F]|[57][0-9A])/i',
+                    function (array $match) {
+                        return rawurldecode($match[0]);
+                    }
+                );
+            }
+
+            if ($flags & self::REMOVE_DEFAULT_PORT) {
+                if (DefaultPortIdentifier::isDefaultPort($uri->getScheme(), $uri->getPort())) {
+                    $uri = $uri->withPort(null);
                 }
             }
 
-            $uri = $uri->withHost($host);
+            if ($flags & self::CAPITALIZE_PERCENT_ENCODING) {
+                $uri = self::applyPregReplaceCallbackToPathAndQuery(
+                    $uri,
+                    '/(?:%[A-Fa-f0-9]{2})++/',
+                    function (array $match) {
+                        return strtoupper($match[0]);
+                    }
+                );
+            }
+
+            if ($flags & self::CONVERT_EMPTY_HTTP_PATH && $uri->getPath() === '' &&
+                (self::SCHEME_HTTP === $uri->getScheme() || self::SCHEME_HTTPS === $uri->getScheme())
+            ) {
+                $uri = $uri->withPath('/');
+            }
+
+            if ($flags & self::REMOVE_DEFAULT_FILE_HOST &&
+                self::SCHEME_FILE === $uri->getScheme() && 'localhost' === $uri->getHost()) {
+                $uri = $uri->withHost('');
+            }
         }
 
         if (isset($options[self::OPTION_REMOVE_PATH_FILES_PATTERNS])) {
@@ -82,63 +143,6 @@ class Normalizer
                 $uri->getPath(),
                 $options[self::OPTION_REMOVE_PATH_FILES_PATTERNS]
             ));
-        }
-
-        if ($flags & self::REMOVE_PATH_DOT_SEGMENTS) {
-            $uri = $uri->withPath(self::removePathDotSegments($uri->getPath()));
-        }
-
-        if ($flags & self::REDUCE_DUPLICATE_PATH_SLASHES) {
-            $uri->withPath(preg_replace('#//++#', '/', $uri->getPath()));
-        }
-
-        if ($flags & self::ADD_PATH_TRAILING_SLASH) {
-            $uri = $uri->withPath(self::addPathTrailingSlash($uri->getPath()));
-        }
-
-        if ($flags & self::SORT_QUERY_PARAMETERS && '' !== $uri->getQuery()) {
-            $query = self::mutateQuery($uri->getQuery(), function (array &$queryKeyValues) {
-                sort($queryKeyValues);
-            });
-
-            $uri = $uri->withQuery($query);
-        }
-
-        if ($flags & self::DECODE_UNRESERVED_CHARACTERS) {
-            $uri = self::applyPregReplaceCallbackToPathAndQuery(
-                $uri,
-                '/%(?:2D|2E|5F|7E|3[0-9]|[46][1-9A-F]|[57][0-9A])/i',
-                function (array $match) {
-                    return rawurldecode($match[0]);
-                }
-            );
-        }
-
-        if ($flags & self::REMOVE_DEFAULT_PORT) {
-            if (DefaultPortIdentifier::isDefaultPort($uri->getScheme(), $uri->getPort())) {
-                $uri = $uri->withPort(null);
-            }
-        }
-
-        if ($flags & self::CAPITALIZE_PERCENT_ENCODING) {
-            $uri = self::applyPregReplaceCallbackToPathAndQuery(
-                $uri,
-                '/(?:%[A-Fa-f0-9]{2})++/',
-                function (array $match) {
-                    return strtoupper($match[0]);
-                }
-            );
-        }
-
-        if ($flags & self::CONVERT_EMPTY_HTTP_PATH && $uri->getPath() === '' &&
-            (self::SCHEME_HTTP === $uri->getScheme() || self::SCHEME_HTTPS === $uri->getScheme())
-        ) {
-            $uri = $uri->withPath('/');
-        }
-
-        if ($flags & self::REMOVE_DEFAULT_FILE_HOST &&
-            self::SCHEME_FILE === $uri->getScheme() && 'localhost' === $uri->getHost()) {
-            $uri = $uri->withHost('');
         }
 
         if (isset($options[self::OPTION_REMOVE_QUERY_PARAMETERS_PATTERNS]) &&
