@@ -26,8 +26,10 @@ You might want to skip straight to the :doc:`Url usage guide </url>` or the :doc
     normalizer
 
 .. toctree::
-    :caption: Normalization Examples
+    :caption: Normalization Details
     :maxdepth: 3
 
     applying-multiple-normalizations
     semantically-lossless-normalizations
+    potentially-lossy-normalizations
+    lossy-normalizations
