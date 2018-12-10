@@ -54,9 +54,9 @@ class Url implements UriInterface
         $user = $components[Parser::COMPONENT_USER] ?? '';
         $pass = $components[Parser::COMPONENT_PASS] ?? '';
 
-        $userInfo = UserInfoFactory::create($user, $pass);
+        $userInfo = new UserInfo($user, $pass);
 
-        self::applyComponents($this, $scheme, $userInfo, $host, $port, $path, $query, $fragment);
+        self::applyComponents($this, $scheme, (string) $userInfo, $host, $port, $path, $query, $fragment);
     }
 
     public function getScheme(): string
@@ -130,7 +130,7 @@ class Url implements UriInterface
 
     public function withUserInfo($user, $password = null)
     {
-        $userInfo = UserInfoFactory::create($user, $password);
+        $userInfo = (string) (new UserInfo($user, $password));
 
         if ($this->userInfo === $userInfo) {
             return $this;
