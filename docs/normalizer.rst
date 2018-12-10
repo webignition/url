@@ -2,8 +2,12 @@
 Normalizer
 ==========
 
-.. rst-class:: precede-list
 .. include:: includes/normalizer/introduction.rst
+
+Normalizations are specified through either `flags` or `options`. Flags are for normalizations that can be turned or
+turned off (you either want it or you don't). Options are for normalizations that act on one or more variables that
+you get to choose.
+
 .. include:: includes/normalizer/normalizations-list.rst
 
 .. _normalizations-capitalize-percent-encoding:
@@ -226,7 +230,7 @@ Add a trailing slash to the path if not present.
     $normalizedUrl = Normalizer::normalize($url, Normalizer::ADD_PATH_TRAILING_SLASH);
 
     (string) $normalizedUrl;
-    // "http://example.com/
+    // "http://example.com/"
 
 .. _normalizations-remove-user-info:
 
@@ -247,7 +251,7 @@ Remove user credentials.
     $normalizedUrl = Normalizer::normalize($url, Normalizer::REMOVE_USER_INFO);
 
     (string) $normalizedUrl;
-    // "http://example.com
+    // "http://example.com"
 
 .. _normalizations-remove-fragment:
 
@@ -268,7 +272,7 @@ Remove fragment component.
     $normalizedUrl = Normalizer::normalize($url, Normalizer::REMOVE_FRAGMENT);
 
     (string) $normalizedUrl;
-    // "http://example.com
+    // "http://example.com"
 
 .. _normalizations-remove-www:
 
@@ -289,7 +293,7 @@ Remove the www sub-domain.
     $normalizedUrl = Normalizer::normalize($url, Normalizer::REMOVE_WWW);
 
     (string) $normalizedUrl;
-    // "http://example.com
+    // "http://example.com"
 
 .. _normalizations-default-scheme:
 
@@ -312,7 +316,7 @@ Specify a default scheme to be applied if none is present.
     ]);
 
     (string) $normalizedUrl;
-    // "http://example.com
+    // "http://example.com"
 
 .. _normalizations-remove-filenames-from-path-by-pattern:
 
@@ -337,7 +341,7 @@ Useful for stripping common default filenames such as ``index.html``, ``index.js
     ]);
 
     (string) $normalizedUrl;
-    // "http://example.com/
+    // "http://example.com/"
 
 .. _normalizations-remove-query-parameters-by-pattern:
 
@@ -364,4 +368,4 @@ Useful for stripping query parameters considered by you to be irrelevant to the 
     ]);
 
     (string) $normalizedUrl;
-    // "http://example.com?page=1&category=2
+    // "http://example.com?page=1&category=2"

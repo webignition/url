@@ -24,3 +24,10 @@ You might want to skip straight to the :doc:`Url usage guide </url>` or the :doc
 
     url
     normalizer
+
+.. toctree::
+    :caption: Normalization Examples
+    :maxdepth: 3
+
+    applying-multiple-normalizations
+    semantically-lossless-normalizations
