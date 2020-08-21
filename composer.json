@@ -5,6 +5,7 @@
     "homepage": "https://github.com/webignition/url",
     "type": "library",
     "license": "MIT",
+    "abandoned": "webignition/uri",
     "authors": [
         {
             "name": "Jon Cram",
