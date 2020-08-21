@@ -5,6 +5,10 @@ A PSR-7 `UriInterface` for modelling a URL and accessing/modifying components.
 A `Normalizer` for applying a range of semantically-lossless, potentially-lossless or lossy normalizations,
 most commonly for comparison.
 
+## Replaced!
+
+This package has been replaced by `webiginition/uri`. You should avoid using this in new projects, and migrate existing projects to the replacement.
+
 ## Requirements
 
 - PHP 7.2.0 or greater
